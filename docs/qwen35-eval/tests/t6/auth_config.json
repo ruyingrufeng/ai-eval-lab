@@ -1,0 +1,7 @@
+{
+  "auth_method": "OAuth2",
+  "issuer": "https://auth.example.com",
+  "client_id": "web-app-01",
+  "token_endpoint": "/oauth/token",
+  "session_timeout_sec": 3600
+}

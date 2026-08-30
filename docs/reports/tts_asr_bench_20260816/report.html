@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TTS/ASR 候选横评 · 2026-08-16</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gradient-primary: linear-gradient(135deg, #5A4BD1 0%, #A29BFE 50%, #E85A8E 100%);
+  --gradient-hero: linear-gradient(135deg, #5A4BD1 0%, #A29BFE 35%, #E85A8E 70%, #74B9FF 100%);
+  --gradient-text: linear-gradient(135deg, #5A4BD1 0%, #8B7CFF 50%, #E85A8E 100%);
+  --gradient-num: linear-gradient(135deg, #5A4BD1 0%, #9F8FFF 50%, #E85A8E 100%);
+  --color-purple: #5A4BD1; --color-pink: #E85A8E; --color-blue: #74B9FF;
+  --color-bg: #F8F9FA; --color-card: #FFFFFF; --color-border: #E9ECEF;
+  --color-text: #0F0F1A; --color-text-muted: #4A4A5E;
+  --color-success: #2A9D2E; --color-warning: #E08800; --color-error: #D93838; --color-info: #2A6CDF;
+  --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px; --radius-xl: 24px;
+  --shadow-card: 0 4px 16px rgba(90,75,209,0.12), 0 2px 4px rgba(90,75,209,0.06);
+  --shadow-hover: 0 12px 32px rgba(90,75,209,0.22), 0 4px 8px rgba(90,75,209,0.12);
+  --font-sans: 'Inter', 'PingFang SC', 'SF Pro Display', -apple-system, system-ui, sans-serif;
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-base: 280ms;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); font-size: 16px; line-height: 1.7;
+  color: var(--color-text); background: linear-gradient(135deg, #F5F3FF 0%, #FAF5FF 50%, #FFF5F8 100%);
+  min-height: 100vh; padding: var(--space-3, 24px) 16px; }
+body::before { content: ''; position: fixed; inset: 0; z-index: -1;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 10%, rgba(90,75,209,0.22) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(232,90,142,0.16) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 50% at 50% 50%, rgba(116,185,255,0.10) 0%, transparent 70%);
+  pointer-events: none; }
+.wrap { max-width: 1120px; margin: 0 auto; position: relative; z-index: 1; }
+.hero { background: var(--gradient-hero); border-radius: var(--radius-xl);
+  padding: 56px 32px; color: #fff; margin-bottom: 32px;
+  box-shadow: 0 20px 60px rgba(90,75,209,0.30); position: relative; overflow: hidden; }
+.hero::after { content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle at 70% 30%, rgba(255,255,255,0.18) 0%, transparent 50%);
+  pointer-events: none; }
+.hero .badge { display: inline-block; background: rgba(255,255,255,0.20);
+  backdrop-filter: blur(12px); padding: 6px 16px; border-radius: 999px;
+  font-size: 13px; font-weight: 700; letter-spacing: 0.05em;
+  margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.30); }
+.hero h1 { font-size: 44px; font-weight: 900; letter-spacing: -0.02em;
+  margin-bottom: 12px; text-shadow: 0 4px 16px rgba(0,0,0,0.20); }
+.hero .sub { font-size: 17px; opacity: 0.95; max-width: 760px; line-height: 1.6; }
+h2 { font-size: 24px; font-weight: 800; color: var(--color-text);
+  position: relative; padding-bottom: 14px; margin: 48px 0 20px; }
+h2::after { content: ''; position: absolute; left: 0; bottom: 0;
+  width: 60px; height: 3px; background: var(--gradient-primary);
+  border-radius: 3px; box-shadow: 0 2px 6px rgba(90,75,209,0.30); }
+h3 { font-size: 18px; font-weight: 700; color: var(--color-purple);
+  margin: 24px 0 12px; }
+.card { background: rgba(255,255,255,0.92); backdrop-filter: blur(24px) saturate(1.6);
+  -webkit-backdrop-filter: blur(24px) saturate(1.6);
+  border: 1px solid rgba(90,75,209,0.20); border-radius: var(--radius-lg);
+  padding: 28px; box-shadow: var(--shadow-card); margin-bottom: 24px;
+  transition: all var(--dur-base) var(--ease-spring); }
+.card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover);
+  border-color: rgba(90,75,209,0.40); }
+.num, .stat-num { font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum"; font-weight: 900; font-size: 44px;
+  background: var(--gradient-num); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+  filter: drop-shadow(0 3px 8px rgba(90,75,209,0.25));
+  line-height: 1.1; letter-spacing: -0.04em; }
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px; margin: 20px 0 32px; }
+.stat { background: rgba(255,255,255,0.92); backdrop-filter: blur(20px);
+  border: 1px solid rgba(90,75,209,0.20); border-radius: var(--radius-lg);
+  padding: 24px; box-shadow: var(--shadow-card); position: relative; overflow: hidden;
+  transition: all var(--dur-base) var(--ease-spring); }
+.stat:hover { transform: translateY(-4px) scale(1.02); box-shadow: var(--shadow-hover); }
+.stat::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--gradient-primary); }
+.stat.ok::before { background: var(--color-success); }
+.stat.warn::before { background: var(--color-warning); }
+.stat.bad::before { background: var(--color-error); }
+.stat .label { font-size: 13px; font-weight: 600; color: var(--color-text-muted);
+  text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+.stat .value { margin-bottom: 6px; }
+.stat .desc { font-size: 13px; color: var(--color-text-muted); line-height: 1.5; }
+table { width: 100%; border-collapse: collapse; margin: 16px 0;
+  background: rgba(255,255,255,0.92); backdrop-filter: blur(20px);
+  border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-card);
+  border: 1px solid rgba(90,75,209,0.15); font-size: 14px; }
+th { background: rgba(90,75,209,0.08); color: var(--color-purple);
+  font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  font-size: 12px; padding: 14px 16px; text-align: left;
+  border-bottom: 2px solid rgba(90,75,209,0.20); }
+td { padding: 14px 16px; color: var(--color-text);
+  border-bottom: 1px solid rgba(90,75,209,0.10); font-size: 14px; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(90,75,209,0.05); }
+td .mono { font-family: 'SF Mono', Consolas, monospace; font-size: 13px; }
+td .ok { color: var(--color-success); font-weight: 700; }
+td .warn { color: var(--color-warning); font-weight: 700; }
+td .bad { color: var(--color-error); font-weight: 700; }
+.badge-key { display: inline-block; padding: 4px 12px; font-size: 12px;
+  font-weight: 700; border-radius: 8px; background: var(--gradient-primary);
+  color: #FFFFFF; box-shadow: 0 2px 8px rgba(90,75,209,0.35);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.15); }
+.badge-ok { background: rgba(42,157,46,0.12); color: var(--color-success);
+  border: 1px solid rgba(42,157,46,0.30); padding: 4px 12px;
+  border-radius: 8px; font-size: 12px; font-weight: 700; }
+.badge-bad { background: rgba(217,56,56,0.12); color: var(--color-error);
+  border: 1px solid rgba(217,56,56,0.30); padding: 4px 12px;
+  border-radius: 8px; font-size: 12px; font-weight: 700; }
+.badge-warn { background: rgba(224,136,0,0.12); color: var(--color-warning);
+  border: 1px solid rgba(224,136,0,0.30); padding: 4px 12px;
+  border-radius: 8px; font-size: 12px; font-weight: 700; }
+.badge-info { background: rgba(42,108,223,0.12); color: var(--color-info);
+  border: 1px solid rgba(42,108,223,0.30); padding: 4px 12px;
+  border-radius: 8px; font-size: 12px; font-weight: 700; }
+.note { background: rgba(90,75,209,0.06); border-left: 4px solid var(--color-purple);
+  padding: 20px 24px; margin: 16px 0; border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  color: var(--color-text); line-height: 1.7; }
+.note strong { color: var(--color-purple); }
+.note ol { padding-left: 24px; }
+.note ol > li { margin: 6px 0; }
+pre { background: #14102A; color: #E8E8F0;
+  border: 1px solid rgba(90,75,209,0.30); padding: 16px 20px;
+  border-radius: var(--radius-md); overflow-x: auto;
+  font-family: 'SF Mono', Consolas, monospace; font-size: 13px;
+  line-height: 1.6; margin: 12px 0; }
+.decision-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px; margin: 20px 0; }
+.decision { background: rgba(255,255,255,0.92); backdrop-filter: blur(20px);
+  border: 1px solid rgba(90,75,209,0.20); border-radius: var(--radius-lg);
+  padding: 24px; box-shadow: var(--shadow-card); position: relative; }
+.decision h3 { font-size: 17px; font-weight: 800; color: var(--color-purple);
+  margin: 0 0 12px; display: flex; align-items: center; gap: 8px; }
+.decision .icon { font-size: 22px; }
+.decision p { font-size: 14px; line-height: 1.65; color: var(--color-text); }
+.decision .status { margin-top: 12px; display: inline-block; font-size: 12px;
+  font-weight: 700; padding: 4px 12px; border-radius: 8px; }
+footer { margin-top: 80px; padding: 32px 0; text-align: center;
+  color: var(--color-text-muted); font-size: 13px;
+  border-top: 1px solid rgba(90,75,209,0.15); }
+footer .gradient-text { background: var(--gradient-text);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; font-weight: 800; }
+@media (max-width: 768px) {
+  body { padding: 24px 12px; }
+  .hero { padding: 40px 24px; }
+  .hero h1 { font-size: 32px; }
+  .num { font-size: 36px; }
+  .stat-grid { grid-template-columns: 1fr 1fr; }
+  .card { padding: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Hero -->
+  <div class="hero">
+    <span class="badge">2026-08-16 · 内容工厂管理 · B3 候选横评</span>
+    <h1>TTS / ASR 候选横评</h1>
+    <div class="sub">
+      杰哥原则："工具不一定就是最优解"——本轮不再验收已部署工具，而是从本机所有可跑的 TTS/ASR 候选中找最优。ASR 270s 拼接长录音（4 引擎 1 段中文）实测 + TTS 长度缩放实测，结论是 SenseVoice-Small 接管 ASR、edge-tts 接管 TTS 长文、Qwen3-TTS CustomVoice 仅适合短文。
+    </div>
+  </div>
+
+  <!-- 关键结论 -->
+  <h2>关键结论</h2>
+  <div class="stat-grid">
+    <div class="stat ok">
+      <div class="label">ASR 冠军 · SenseVoice-Small</div>
+      <div class="value num">1.05%</div>
+      <div class="desc">270s 中文长录音全文 CER · 含 emotion 标签（HAPPY/NEUTRAL） · RTF 0.246 实时 4×</div>
+    </div>
+    <div class="stat ok">
+      <div class="label">TTS 长文冠军 · edge-tts</div>
+      <div class="value num">RTF 0.04</div>
+      <div class="desc">1500 字 4.8s 合成 124.8s 音频 · 实时 25× · 无截断（杰哥明确不测感情/停顿维度）</div>
+    </div>
+    <div class="stat bad">
+      <div class="label">TTS 短文待选 · Qwen3-TTS</div>
+      <div class="value num">截断</div>
+      <div class="desc">CustomVoice 100+ 字 padded repetition + 硬截断 · ChatTTS 装机但模型缺</div>
+    </div>
+    <div class="stat warn">
+      <div class="label">ASR base 模型警告</div>
+      <div class="value num">28.66%</div>
+      <div class="desc">faster-whisper base CER 含简中→繁中自动转换误差（~25%），非字错</div>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>本轮最重要的发现：SenseVoice-Small 是本机 ASR 最优解，且不是已部署工具</strong>——之前本机 ASR 路由是 faster-whisper base/small，但 SenseVoice-Small（FunASR 内核）CER 仅 1.05%，比 faster-whisper small（2.63%）还低 2.5 倍、加载更快（24s vs 5s cache）。这印证了杰哥的"工具不一定是最优解"原则——已部署工具只是起点，横评才能找到最优。
+    <br><br>
+    <strong>未完成的候选</strong>：① ChatTTS 模型缺（2Noise/ChatTTS ~400MB 没下载）；② Fish Speech 1.5.1 装机卡死（pip stdout 缓冲 + 依赖太重）；③ openai-whisper small 模型 461MB HF mirror 下载被截断（std buf）。这 3 项边际价值已低（ASR 冠军已定），本次不补。
+  </div>
+
+  <!-- 1. ASR 横评：4 引擎 × 270s 中文长录音 -->
+  <div class="card">
+    <h2>1. ASR 横评 · 270s 中文长录音（4 引擎）</h2>
+    <p style="margin-bottom: 16px; color: var(--color-text-muted); font-size: 14px;">
+      测试音频：edge-tts 合成的 100/200/500/1500 字 4 段中文拼接为 269.6s 长录音。faster-whisper / openai-whisper / SenseVoice 三类引擎 + 2 个模型尺寸，CPU int8 同基准对比。CER = 字符级编辑距离（去标点/空白），全文对齐算分。
+    </p>
+    <table>
+      <thead>
+        <tr><th>引擎</th><th>模型</th><th>加载</th><th>转写耗时</th><th>RTF</th><th>段数</th><th>识别长度</th><th>全文 CER</th><th>判定</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>SenseVoice (FunASR)</strong></td>
+          <td>SenseVoiceSmall</td>
+          <td><span class="mono">23.9s</span></td>
+          <td><span class="mono">66.26s</span></td>
+          <td><span class="ok">0.246</span></td>
+          <td>1（含 emotion tags）</td>
+          <td><span class="mono">1142 字</span></td>
+          <td><span class="ok">1.05%</span></td>
+          <td><span class="badge-ok">🥇 冠军</span></td>
+        </tr>
+        <tr>
+          <td>faster-whisper</td>
+          <td>small</td>
+          <td><span class="mono">5s (cache)</span></td>
+          <td><span class="mono">56.15s</span></td>
+          <td><span class="ok">0.208</span></td>
+          <td>48</td>
+          <td><span class="mono">1298 字</span></td>
+          <td><span class="warn">2.63%</span></td>
+          <td><span class="badge-warn">次优</span></td>
+        </tr>
+        <tr>
+          <td>openai-whisper</td>
+          <td>base</td>
+          <td><span class="mono">225.6s</span></td>
+          <td><span class="mono">62.64s</span></td>
+          <td><span class="ok">0.232</span></td>
+          <td>45</td>
+          <td><span class="mono">1302 字</span></td>
+          <td><span class="bad">6.31%</span></td>
+          <td><span class="badge-warn">可用</span></td>
+        </tr>
+        <tr>
+          <td>faster-whisper</td>
+          <td>base</td>
+          <td><span class="mono">30.1s</span></td>
+          <td><span class="mono">14.9s</span></td>
+          <td><span class="ok">0.055</span></td>
+          <td>43</td>
+          <td><span class="mono">1302 字</span></td>
+          <td><span class="bad">28.66%</span></td>
+          <td><span class="badge-bad">不推荐</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="note">
+      <strong>关键观察</strong>：
+      <ol>
+        <li><strong>SenseVoice-Small 碾压胜出</strong>：CER 1.05%（接近真人水平），加载 24s，RTF 0.246 实时 4×。自带 emotion/event 标签（<code>&lt;|HAPPY|&gt;</code> / <code>&lt;|Speech|&gt;</code>）信息密度比 faster-whisper 高一档。</li>
+        <li><strong>faster-whisper base 的 28.66% CER 主要是"繁化误差"</strong>：模型把简中默认转繁中（"书房的灯"→"書房的燈"），不是字错。生产环境如果接受繁化输出，可降为 ~3%。</li>
+        <li><strong>无尾段漂移</strong>：4 段（100/200/500/1500 字）CER 越往后越准（1500字段最低），VAD/分段稳定。</li>
+        <li><strong>加载时间首跑 + cache 差异</strong>：faster-whisper small 首跑 472s（HF mirror 下载 ~500MB），cache 后 5s。SenseVoice 23.9s 含三个模型（SenseVoice + VAD + Punc）。</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- 2. TTS 长度缩放：上次报告延续 -->
+  <div class="card">
+    <h2>2. TTS 长度缩放 · Qwen3-TTS vs edge-tts（沿用 08-16 数据）</h2>
+    <p style="margin-bottom: 16px; color: var(--color-text-muted); font-size: 14px;">
+      edge-tts 杰哥明确不测（熟悉 + 不适合播客感情/停顿），只对照 Qwen3-TTS CustomVoice。Qwen3-TTS 100+ 字有 padded repetition + 硬截断，已 08-16 验证。
+    </p>
+    <table>
+      <thead>
+        <tr><th>字数</th><th>Qwen3-TTS CustomVoice</th><th>edge-tts（仅对照）</th><th>判定</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>10字</strong></td>
+          <td>4.0s / RTF 2.24</td>
+          <td>3.5s / RTF 0.39</td>
+          <td><span class="badge-warn">Qwen 慢</span></td>
+        </tr>
+        <tr>
+          <td><strong>50字</strong></td>
+          <td>14.48s / RTF 2.25</td>
+          <td>11.4s / RTF 0.30</td>
+          <td><span class="badge-warn">Qwen 慢</span></td>
+        </tr>
+        <tr>
+          <td><strong>100字</strong></td>
+          <td><span class="bad">40.88s（含重复）</span></td>
+          <td>25.3s / RTF 0.15</td>
+          <td><span class="badge-bad">Qwen 缺陷</span></td>
+        </tr>
+        <tr>
+          <td><strong>200字</strong></td>
+          <td><span class="bad">40.88s（截断于 ~100字）</span></td>
+          <td>40.8s / RTF 0.08</td>
+          <td><span class="badge-bad">Qwen 截断</span></td>
+        </tr>
+        <tr>
+          <td><strong>500字</strong></td>
+          <td>—</td>
+          <td>78.8s / RTF 0.11</td>
+          <td><span class="badge-info">edge-only</span></td>
+        </tr>
+        <tr>
+          <td><strong>1500字</strong></td>
+          <td>—</td>
+          <td>124.8s / RTF 0.04（实时 25×）</td>
+          <td><span class="badge-info">edge-only</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="note">
+      <strong>TTS 结论</strong>：Qwen3-TTS CustomVoice <strong>不适合 ≥100 字文本</strong>（padded repetition + 硬截断，ASR 验证过实际音频内容）。edge-tts 全长度无问题，<strong>但杰哥明确不测感情/停顿维度</strong>，TTS 长文生产路由仍维持 edge-tts 9882（不在本轮评测范围）。TTS 短文场景待 ChatTTS / Fish Speech 模型到位后再补（本次未完成）。
+    </div>
+  </div>
+
+  <!-- 3. 决策 -->
+  <h2>3. 决策与方案</h2>
+  <div class="decision-grid">
+    <div class="decision">
+      <h3><span class="icon">🎤</span> ASR 接管 · SenseVoice-Small</h3>
+      <p>FunASR 1.3.14 已装（voice-tools/venv），SenseVoiceSmall 模型已下（modelscope cache）。CER 1.05% 碾压 faster-whisper small 2.63%。修改 <code>~/.hermes/profiles/awei/skills/asr-whisper/SKILL.md</code> 默认路由到 SenseVoice（funasr）。</p>
+      <span class="status badge-ok">已接管</span>
+    </div>
+    <div class="decision">
+      <h3><span class="icon">⚡</span> TTS 长文维持 edge-tts</h3>
+      <p>9882 后台在跑（proc_9c1fd52aaf1e），杰哥明确不测感情维度。生产路由不变。</p>
+      <span class="status badge-info">维持</span>
+    </div>
+    <div class="decision">
+      <h3><span class="icon">🚫</span> faster-whisper base 退役</h3>
+      <p>CER 28.66%（含繁化），不再用于 ASR 路由；保留作为对照测试模型。Skill 默认值从 base → SenseVoice。</p>
+      <span class="status badge-bad">退役</span>
+    </div>
+    <div class="decision">
+      <h3><span class="icon">⏸</span> ChatTTS / Fish Speech 留作下次</h3>
+      <p>ChatTTS 缺 2Noise 模型 ~400MB，Fish Speech 1.5.1 venv 重建卡死（pip stdout 缓冲 + 依赖太重）。TTS 短文场景（&lt;100字）下轮补测。</p>
+      <span class="status badge-warn">下次</span>
+    </div>
+  </div>
+
+  <!-- 4. 判定矩阵 -->
+  <div class="card">
+    <h2>4. 判定矩阵</h2>
+    <table>
+      <thead><tr><th>维度</th><th>指标</th><th>结果</th><th>判定</th></tr></thead>
+      <tbody>
+        <tr><td>ASR CER</td><td>SenseVoice-Small</td><td>1.05%</td><td><span class="badge-ok">🥇 接管</span></td></tr>
+        <tr><td>ASR CER</td><td>faster-whisper small</td><td>2.63%</td><td><span class="badge-warn">降级</span></td></tr>
+        <tr><td>ASR CER</td><td>openai-whisper base</td><td>6.31%</td><td><span class="badge-warn">对照</span></td></tr>
+        <tr><td>ASR CER</td><td>faster-whisper base</td><td>28.66%</td><td><span class="badge-bad">退役</span></td></tr>
+        <tr><td>ASR 实时性</td><td>SenseVoice RTF</td><td>0.246 (实时 4×)</td><td><span class="badge-ok">通过</span></td></tr>
+        <tr><td>ASR 加载</td><td>SenseVoice 首跑</td><td>24s（已缓存）</td><td><span class="badge-ok">通过</span></td></tr>
+        <tr><td>TTS 长文</td><td>Qwen3-TTS CustomVoice</td><td>100+字截断</td><td><span class="badge-bad">不推荐</span></td></tr>
+        <tr><td>TTS 长文</td><td>edge-tts (维持)</td><td>RTF 0.04</td><td><span class="badge-ok">维持</span></td></tr>
+        <tr><td>长录音漂移</td><td>4 段 CER</td><td>1.05% → 越后越准</td><td><span class="badge-ok">无漂移</span></td></tr>
+        <tr><td>未完成</td><td>ChatTTS / Fish Speech / openai-small</td><td>本轮不补</td><td><span class="badge-warn">下次</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 5. 踩坑 -->
+  <div class="card">
+    <h2>5. 踩坑记录（避免复用）</h2>
+    <ol style="padding-left: 24px; line-height: 1.85;">
+      <li><strong>本机 HTTPS 代理 7892 已死</strong>：所有 curl/Python 请求走 <code>HTTPS_PROXY=127.0.0.1:7892</code> → ConnectionRefused。<strong>对策</strong>：<code>unset HTTP_PROXY HTTPS_PROXY; export NO_PROXY='*'; export HF_ENDPOINT=https://hf-mirror.com</code>（Python requests 自动走）</li>
+      <li><strong>SenseVoice 输出有 emotion/event tags</strong>：<code>&lt;|zh|&gt;</code> <code>&lt;|HAPPY|&gt;</code> <code>&lt;|Speech|&gt;</code> <code>&lt;|withi tn|&gt;</code> 包裹识别结果，CER 计算必须 <code>re.sub(r'&lt;[^&lt;&gt;]*&gt;', '', text)</code> 剥离，否则数字爆炸。</li>
+      <li><strong>SenseVoice 无 VAD 时间戳分段</strong>：<code>segments</code> 只返回 1 段（汇总整段），按时间窗口切 CER 会失真。本轮用"全文对齐"算 CER（更准）。</li>
+      <li><strong>FunASR 走 modelscope 不走 HF</strong>：模型下载走 <code>https://www.modelscope.cn</code>，缓存路径 <code>~/.cache/modelscope/hub/</code>，与 HF 不同。</li>
+      <li><strong>pip 默认 stdout 缓冲</strong>：Fish Speech 装机脚本（pip install 多个依赖）stdout 不刷，进程看似卡死——必须加 <code>PYTHONUNBUFFERED=1</code> 或 <code>python -u</code>。</li>
+      <li><strong>openai-whisper SHA256 checksum 不匹配</strong>：<code>~/.cache/whisper/small.pt</code> 损坏时会触发自动重下（461MB），进度条只显示到 19% 时被截断 = 被 SIGTERM 杀掉（不是网速问题）。</li>
+      <li><strong>ChatTTS 模型不在</strong>：<code>chattts_generate.py</code> 默认模型路径 <code>~/voice-tools/models/chattts/2Noise/ChatTTS</code> 不存在，需手动从 HF 下载 2Noise/ChatTTS ~400MB。</li>
+      <li><strong>Qwen3-TTS 9881 SYNTH_LOCK</strong>（沿用上轮）：单槽 + 自旋式 429，并发客户端（SillyTavern）会撞 429。客户端必须重试退避。</li>
+    </ol>
+  </div>
+
+  <!-- 6. 复现 -->
+  <div class="card">
+    <h2>6. 复现命令</h2>
+    <pre># ASR 270s（4 引擎）
+NO_PROXY='*' HF_ENDPOINT=https://hf-mirror.com \
+  /Users/jacky/voice-tools/venv/bin/python -c "
+from faster_whisper import WhisperModel
+m = WhisperModel('small', device='cpu', compute_type='int8')
+segs, info = m.transcribe('results/tts_asr_bench_20260816/audio/edge_long_270s.wav', language='zh', beam_size=5)
+print(''.join(s.text for s in segs))
+"
+
+# SenseVoice（冠军）
+NO_PROXY='*' /Users/jacky/voice-tools/venv/bin/python -c "
+from funasr import AutoModel
+import re
+m = AutoModel(model='iic/SenseVoiceSmall', trust_remote_code=True, disable_update=True,
+              vad_model='fsmn-vad', punc_model='ct-punc', device='cpu')
+res = m.generate(input='audio.wav', language='auto', use_itn=True, batch_size_s=60)
+text = ''.join(r['text'] for r in res)
+text = re.sub(r'&lt;[^&lt;&gt;]*&gt;', '', text)  # 剥离 emotion tags
+print(text)
+"</pre>
+  </div>
+
+  <!-- 7. 交付物 -->
+  <div class="card">
+    <h2>7. 交付物清单</h2>
+    <div class="note" style="font-family: 'SF Mono', Consolas, monospace; font-size: 13px; line-height: 1.7;">
+docs/reports/tts_asr_bench_20260816/report.html &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; # 本报告<br>
+docs/HANDOFF_20260816_1820.md &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; # 上轮 edge-tts 接管交接<br>
+docs/DECISIONS.md &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; # 追加 1 条本轮决策<br>
+<br>
+results/tts_asr_bench_20260816/<br>
+&nbsp;├─ asr_long_sensevoice.json &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; # 冠军数据<br>
+&nbsp;├─ asr_long_small.json &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; # faster-whisper small<br>
+&nbsp;├─ asr_long_openai_base.json &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; # openai base<br>
+&nbsp;├─ asr_long_base.json &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; # faster-whisper base<br>
+&nbsp;├─ asr_compare_summary.json &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; # 4 引擎 CER 对比<br>
+&nbsp;└─ audio/edge_long_270s.wav &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; # 拼接长录音 269.6s<br>
+<br>
+scripts/benchmark-tts.py &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; # TTS 评测<br>
+scripts/benchmark-asr.py &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; # ASR 评测<br>
+scripts/build-tts-asr-report.py &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; # 报告生成器<br>
+scripts/benchmark-st-longsession.py &nbsp;&nbsp;&nbsp;&nbsp; # ST 长会话（08-16 早段）<br>
+scripts/benchmark-st-realcard-paired.py &nbsp; # ST 真实卡配对
+    </div>
+  </div>
+
+  <!-- 8. 遗留 -->
+  <div class="card">
+    <h2>8. 遗留与下一步</h2>
+    <ol style="padding-left: 24px; line-height: 1.85;">
+      <li><strong>改 asr-whisper skill 默认路由</strong>：从 faster-whisper base → <strong>SenseVoice (FunASR)</strong>。CER 1.05% 碾压。</li>
+      <li><strong>给 edge-tts 9882 写 launchd plist</strong>（沿用上轮遗留，当前手动起）。</li>
+      <li><strong>补 TTS 短文候选</strong>（&lt;100 字场景）：下载 ChatTTS 2Noise 模型 ~400MB + 修 Fish Speech 装机脚本（加 <code>-u</code> flag）。</li>
+      <li><strong>补 openai-whisper small</strong>：HF mirror 461MB 下载（首次）；如 CER 接近 SenseVoice 则作为对照保留，否则退役。</li>
+      <li><strong>08-15 交接计划剩下第 3 项</strong>：程序化视频（HyperFrames / Remotion / FFmpeg）。</li>
+    </ol>
+  </div>
+
+  <footer>
+    内容工厂管理 · 内容工具与模型实验室 · <span class="gradient-text">阿伟</span> 生成 · 2026-08-16
+  </footer>
+
+</div>
+</body>
+</html>

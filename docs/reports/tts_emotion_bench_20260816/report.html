@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TTS 情感配音评测 · 2026-08-16</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gradient-primary: linear-gradient(135deg, #5A4BD1 0%, #A29BFE 50%, #E85A8E 100%);
+  --gradient-hero: linear-gradient(135deg, #5A4BD1 0%, #A29BFE 35%, #E85A8E 70%, #74B9FF 100%);
+  --gradient-text: linear-gradient(135deg, #5A4BD1 0%, #8B7CFF 50%, #E85A8E 100%);
+  --gradient-num: linear-gradient(135deg, #5A4BD1 0%, #9F8FFF 50%, #E85A8E 100%);
+  --color-purple: #5A4BD1; --color-pink: #E85A8E; --color-blue: #74B9FF;
+  --color-bg: #F8F9FA; --color-card: #FFFFFF; --color-border: #E9ECEF;
+  --color-text: #0F0F1A; --color-text-muted: #4A4A5E;
+  --color-success: #2A9D2E; --color-warning: #E08800; --color-error: #D93838; --color-info: #2A6CDF;
+  --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px; --radius-xl: 24px;
+  --shadow-card: 0 4px 16px rgba(90,75,209,0.12), 0 2px 4px rgba(90,75,209,0.06);
+  --shadow-hover: 0 12px 32px rgba(90,75,209,0.22), 0 4px 8px rgba(90,75,209,0.12);
+  --font-sans: 'Inter', 'PingFang SC', 'SF Pro Display', -apple-system, system-ui, sans-serif;
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-base: 280ms;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); font-size: 16px; line-height: 1.7;
+  color: var(--color-text); background: linear-gradient(135deg, #F5F3FF 0%, #FAF5FF 50%, #FFF5F8 100%);
+  min-height: 100vh; padding: 24px 16px; }
+body::before { content: ''; position: fixed; inset: 0; z-index: -1;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 10%, rgba(90,75,209,0.22) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(232,90,142,0.16) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 50% at 50% 50%, rgba(116,185,255,0.10) 0%, transparent 70%);
+  pointer-events: none; }
+.wrap { max-width: 1120px; margin: 0 auto; position: relative; z-index: 1; }
+.hero { background: var(--gradient-hero); border-radius: var(--radius-xl);
+  padding: 56px 32px; color: #fff; margin-bottom: 32px;
+  box-shadow: 0 20px 60px rgba(90,75,209,0.30); position: relative; overflow: hidden; }
+.hero::after { content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle at 70% 30%, rgba(255,255,255,0.18) 0%, transparent 50%);
+  pointer-events: none; }
+.hero .badge { display: inline-block; background: rgba(255,255,255,0.20);
+  backdrop-filter: blur(12px); padding: 6px 16px; border-radius: 999px;
+  font-size: 13px; font-weight: 700; letter-spacing: 0.05em;
+  margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.30); }
+.hero h1 { font-size: 44px; font-weight: 900; letter-spacing: -0.02em;
+  margin-bottom: 12px; text-shadow: 0 4px 16px rgba(0,0,0,0.20); }
+.hero .sub { font-size: 17px; opacity: 0.95; max-width: 800px; line-height: 1.6; }
+h2 { font-size: 24px; font-weight: 800; color: var(--color-text);
+  position: relative; padding-bottom: 14px; margin: 48px 0 20px; }
+h2::after { content: ''; position: absolute; left: 0; bottom: 0;
+  width: 60px; height: 3px; background: var(--gradient-primary);
+  border-radius: 3px; box-shadow: 0 2px 6px rgba(90,75,209,0.30); }
+h3 { font-size: 18px; font-weight: 700; color: var(--color-purple); margin: 24px 0 12px; }
+.card { background: rgba(255,255,255,0.92); backdrop-filter: blur(24px) saturate(1.6);
+  -webkit-backdrop-filter: blur(24px) saturate(1.6);
+  border: 1px solid rgba(90,75,209,0.20); border-radius: var(--radius-lg);
+  padding: 28px; box-shadow: var(--shadow-card); margin-bottom: 24px;
+  transition: all var(--dur-base) var(--ease-spring); }
+.card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover);
+  border-color: rgba(90,75,209,0.40); }
+.num, .stat-num { font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum"; font-weight: 900; font-size: 44px;
+  background: var(--gradient-num); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+  filter: drop-shadow(0 3px 8px rgba(90,75,209,0.25));
+  line-height: 1.1; letter-spacing: -0.04em; }
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px; margin: 20px 0 32px; }
+.stat { background: rgba(255,255,255,0.92); backdrop-filter: blur(20px);
+  border: 1px solid rgba(90,75,209,0.20); border-radius: var(--radius-lg);
+  padding: 24px; box-shadow: var(--shadow-card); position: relative; overflow: hidden;
+  transition: all var(--dur-base) var(--ease-spring); }
+.stat:hover { transform: translateY(-4px) scale(1.02); box-shadow: var(--shadow-hover); }
+.stat::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--gradient-primary); }
+.stat.ok::before { background: var(--color-success); }
+.stat.warn::before { background: var(--color-warning); }
+.stat.bad::before { background: var(--color-error); }
+.stat.info::before { background: var(--color-info); }
+.stat .label { font-size: 13px; font-weight: 600; color: var(--color-text-muted);
+  text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+.stat .value { margin-bottom: 6px; }
+.stat .desc { font-size: 13px; color: var(--color-text-muted); line-height: 1.5; }
+table { width: 100%; border-collapse: collapse; margin: 16px 0;
+  background: rgba(255,255,255,0.92); backdrop-filter: blur(20px);
+  border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-card);
+  border: 1px solid rgba(90,75,209,0.15); font-size: 14px; }
+th { background: rgba(90,75,209,0.08); color: var(--color-purple);
+  font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  font-size: 12px; padding: 14px 16px; text-align: left;
+  border-bottom: 2px solid rgba(90,75,209,0.20); }
+td { padding: 14px 16px; color: var(--color-text);
+  border-bottom: 1px solid rgba(90,75,209,0.10); font-size: 14px; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(90,75,209,0.05); }
+td .mono { font-family: 'SF Mono', Consolas, monospace; font-size: 13px; }
+td .ok { color: var(--color-success); font-weight: 700; }
+td .warn { color: var(--color-warning); font-weight: 700; }
+td .bad { color: var(--color-error); font-weight: 700; }
+.badge-ok { background: rgba(42,157,46,0.12); color: var(--color-success);
+  border: 1px solid rgba(42,157,46,0.30); padding: 4px 12px;
+  border-radius: 8px; font-size: 12px; font-weight: 700; }
+.badge-bad { background: rgba(217,56,56,0.12); color: var(--color-error);
+  border: 1px solid rgba(217,56,56,0.30); padding: 4px 12px;
+  border-radius: 8px; font-size: 12px; font-weight: 700; }
+.badge-warn { background: rgba(224,136,0,0.12); color: var(--color-warning);
+  border: 1px solid rgba(224,136,0,0.30); padding: 4px 12px;
+  border-radius: 8px; font-size: 12px; font-weight: 700; }
+.badge-info { background: rgba(42,108,223,0.12); color: var(--color-info);
+  border: 1px solid rgba(42,108,223,0.30); padding: 4px 12px;
+  border-radius: 8px; font-size: 12px; font-weight: 700; }
+.note { background: rgba(90,75,209,0.06); border-left: 4px solid var(--color-purple);
+  padding: 20px 24px; margin: 16px 0; border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  color: var(--color-text); line-height: 1.7; }
+.note strong { color: var(--color-purple); }
+.note ol { padding-left: 24px; }
+.note ol > li { margin: 6px 0; }
+pre { background: #14102A; color: #E8E8F0;
+  border: 1px solid rgba(90,75,209,0.30); padding: 16px 20px;
+  border-radius: var(--radius-md); overflow-x: auto;
+  font-family: 'SF Mono', Consolas, monospace; font-size: 13px;
+  line-height: 1.6; margin: 12px 0; }
+audio { width: 100%; margin: 6px 0; }
+.audio-cell { min-width: 200px; }
+footer { margin-top: 80px; padding: 32px 0; text-align: center;
+  color: var(--color-text-muted); font-size: 13px;
+  border-top: 1px solid rgba(90,75,209,0.15); }
+footer .gradient-text { background: var(--gradient-text);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; font-weight: 800; }
+@media (max-width: 768px) {
+  body { padding: 24px 12px; }
+  .hero { padding: 40px 24px; }
+  .hero h1 { font-size: 32px; }
+  .num { font-size: 36px; }
+  .stat-grid { grid-template-columns: 1fr 1fr; }
+  .card { padding: 20px; }
+  table { font-size: 12px; }
+  td, th { padding: 10px 8px; }
+  .audio-cell { min-width: 140px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Hero -->
+  <div class="hero">
+    <span class="badge">2026-08-16 · 内容工厂管理 · TTS 情感配音评测</span>
+    <h1>TTS 情感配音评测（第 1 轮）</h1>
+    <div class="sub">
+      杰哥 4 场景（讲解视频配音 / 个人播客 / 有声电子书朗读 / 数字人配音）× 4 核心需求（感情 / 停顿 / 语速控制 / 自然度）。本轮覆盖 edge-tts 4/4、ChatTTS 4/4、MiniMax-TTS 2/4（Token 用完）、Qwen3-TTS 1/1；Fish Speech 装机失败留待下轮。ChatTTS 4/4、Fish Speech 4/4（本机新装 v1.5.1）、MiniMax 2/4（Token 用完）、edge-tts 4/4、Qwen3-TTS 1/1。
+    </div>
+  </div>
+
+  <!-- 关键数字 -->
+  <h2>关键数字</h2>
+  <div class="stat-grid">
+    <div class="stat ok">
+      <div class="label">MiniMax-TTS</div>
+      <div class="value num">2.25s</div>
+      <div class="desc">T1 讲解 17.3s 音频合成耗时 · 感情/停顿/语速全参数可控 · 但 Token 用完需充值</div>
+    </div>
+    <div class="stat info">
+      <div class="label">edge-tts 对照</div>
+      <div class="value num">4/4</div>
+      <div class="desc">T1-T4 全完成（1.6-2.6s/段）· 但无感情、无停顿控制 → 仅作对照</div>
+    </div>
+    <div class="stat ok">
+      <div class="label">ChatTTS</div>
+      <div class="value num">4/4</div>
+      <div class="desc">T1-T4 全完成（15-20s/用例）· 感情+停顿+语速 3 合一 · 模型已从 modelscope 拉通（14MB/s）</div>
+    </div>
+    <div class="stat bad">
+      <div class="label">Fish Speech</div>
+      <div class="value num">失败</div>
+      <div class="desc">pip 装依赖 30min 卡死（多进程锁）· 下轮用 pip install fish-speech 0.1.0 单包重试</div>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>当前结论（ChatTTS 已跑通）</strong>：本轮阻塞点很明确——① MiniMax-TTS 效果最好但 <strong>Token Plan 用量已用完</strong>（T3/T4 无法测，需充值）；② ChatTTS 是免费本地方案中最匹配"感情+停顿+语速"的，<strong>模型正在从 hf-mirror 下载</strong>（1.7GB 主权重）；③ Fish Speech 装机失败（pip 多进程锁死）。<br><br>
+    <strong>下一轮动作</strong>：ChatTTS 模型下完后立即补测 4 用例；Fish Speech 用 <code>pip install fish-speech==0.1.0</code> 单包重装；MiniMax 充值后补 T3/T4。
+  </div>
+
+  <!-- 1. 测试用例 -->
+  <div class="card">
+    <h2>1. 测试用例（4 场景 × 4 需求）</h2>
+    <table>
+      <thead><tr><th>用例</th><th>场景</th><th>文本（节选）</th><th>期望</th></tr></thead>
+      <tbody>
+        <tr><td><strong>T1</strong></td><td>讲解视频配音</td><td class="mono">"今天我们来讲一个关于爱情的故事。从前，有一对情侣，在雨季的咖啡馆相遇..."</td><td>中性、清晰、慢节奏、停顿分明</td></tr>
+        <tr><td><strong>T2</strong></td><td>播客对话</td><td class="mono">"主持人：欢迎来到今天的节目，我们请到了一位特别的嘉宾。嘉宾：谢谢邀请..."</td><td>对话感、感情丰富、两人音色切换</td></tr>
+        <tr><td><strong>T3</strong></td><td>有声电子书朗读</td><td class="mono">"她站在窗前，望着远方的山峦。山顶的雪已经化了一半，露出灰褐色的岩石..."</td><td>叙事感、慢语速、段落停顿、情感低沉</td></tr>
+        <tr><td><strong>T4</strong></td><td>数字人配音</td><td class="mono">"哈哈哈哈，今天真是太开心了！终于完成了这个大项目，感觉整个世界都亮了！..."</td><td>笑声、情绪起伏、语速变化、语气自然</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 2. 结果矩阵 -->
+  <div class="card">
+    <h2>2. 候选 × 用例 结果矩阵</h2>
+    <table>
+      <thead>
+        <tr><th>候选</th><th>T1 讲解</th><th>T2 播客</th><th>T3 有声书</th><th>T4 数字人</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>MiniMax-TTS</strong>（speech-2.8-hd）</td>
+          <td><span class="badge-ok">✅ 2.25s / 17.3s</span><br><span class="mono">273KB</span></td>
+          <td><span class="badge-ok">✅ 2.06s / 15.5s</span><br><span class="mono">244KB</span></td>
+          <td><span class="badge-bad">❌ Token 用完</span></td>
+          <td><span class="badge-bad">❌ Token 用完</span></td>
+        </tr>
+        <tr>
+          <td><strong>edge-tts</strong>（对照）</td>
+          <td><span class="badge-ok">✅ 2.61s / 17.2s</span></td>
+          <td><span class="badge-ok">✅ 1.85s / 16.8s</span></td>
+          <td><span class="badge-ok">✅ 2.61s / 16.4s</span></td>
+          <td><span class="badge-ok">✅ 1.59s / 12.9s</span></td>
+        </tr>
+        <tr>
+          <td><strong>Qwen3-TTS</strong> CustomVoice</td>
+          <td><span class="badge-warn">⚠️ 120s / 40.88s</span><br><span class="mono">截断（已知）</span></td>
+          <td><span class="badge-bad">❌ 卡死</span></td>
+          <td>—</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td><strong>ChatTTS</strong>（本地）</td>
+          <td><span class="badge-ok">✅ 19.6s / 15.2s</span><br><span class="mono">711KB</span></td>
+          <td><span class="badge-ok">✅ 15.3s / 9.6s</span><br><span class="mono">449KB</span></td>
+          <td><span class="badge-ok">✅ 19.1s / 13.1s</span><br><span class="mono">614KB</span></td>
+          <td><span class="badge-ok">✅ 17.0s / 10.7s</span><br><span class="mono">503KB</span></td>
+        </tr>
+        <tr>
+          <td><strong>Fish Speech</strong>（本地 v1.5.1）</td>
+          <td><span class="badge-ok">✅ 29.7s / 14.1s</span><br><span class="mono">1.25MB</span></td>
+          <td><span class="badge-ok">✅ 27.6s / 13.1s</span><br><span class="mono">1.16MB</span></td>
+          <td><span class="badge-ok">✅ 32.3s / 14.4s</span><br><span class="mono">1.27MB</span></td>
+          <td><span class="badge-ok">✅ 29.6s / 11.5s</span><br><span class="mono">1.01MB</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 3. 可听样本 -->
+  <div class="card">
+    <h2>3. 可听样本（已完成部分）</h2>
+
+    <h3>MiniMax-TTS · T1 讲解视频</h3>
+    <audio controls src="../../results/tts_emotion_bench_20260816/audio/minimax_T1_video_narration.mp3"></audio>
+    <div class="note small" style="font-size: 13px;">合成 2.25s / 音频 17.3s / 273KB · 情感中性、清晰、节奏好</div>
+
+    <h3>MiniMax-TTS · T2 播客对话</h3>
+    <audio controls src="../../results/tts_emotion_bench_20260816/audio/minimax_T2_podcast_dialog.mp3"></audio>
+    <div class="note small" style="font-size: 13px;">合成 2.06s / 音频 15.5s / 244KB · 对话感强、音色自然</div>
+
+
+    <h3>ChatTTS · T1 讲解视频</h3>
+    <audio controls src="../../results/tts_emotion_bench_20260816/audio/chattts_T1_video_narration.wav"></audio>
+    <div class="note small" style="font-size: 13px;">合成 19.6s / 音频 15.2s / 711KB · 本地 CPU · 自然、有停顿</div>
+
+    <h3>ChatTTS · T2 播客对话</h3>
+    <audio controls src="../../results/tts_emotion_bench_20260816/audio/chattts_T2_podcast_dialog.wav"></audio>
+    <div class="note small" style="font-size: 13px;">合成 15.3s / 音频 9.6s / 449KB · 对话感、音色区分</div>
+
+    <h3>ChatTTS · T3 有声书</h3>
+    <audio controls src="../../results/tts_emotion_bench_20260816/audio/chattts_T3_audiobook.wav"></audio>
+    <div class="note small" style="font-size: 13px;">合成 19.1s / 音频 13.1s / 614KB · 叙事感、情感低沉</div>
+
+    <h3>ChatTTS · T4 数字人（欢快）</h3>
+    <audio controls src="../../results/tts_emotion_bench_20260816/audio/chattts_T4_digital_human.wav"></audio>
+    <div class="note small" style="font-size: 13px;">合成 17.0s / 音频 10.7s / 503KB · 情绪起伏、语速变化</div>
+
+    <h3>ChatTTS · T4 数字人（带 [laugh] 标记，对比用）</h3>
+    <audio controls src="../../results/tts_emotion_bench_20260816/audio/chattts_T4_digital_human_emotion.wav"></audio>
+    <div class="note small" style="font-size: 13px;">注入 [laugh][break] token 重生成 13.4s · 与上面纯文本版（10.75s）对比情感差异</div>
+
+    <h3>Fish Speech · T1 讲解视频</h3>
+    <audio controls src="../../results/tts_emotion_bench_20260816/audio/fish_T1_video_narration.wav"></audio>
+    <div class="note small" style="font-size: 13px;">合成 29.7s / 音频 14.1s / 1.25MB · 本地 · 中英双语 · 声音克隆能力</div>
+
+    <h3>Fish Speech · T3 有声书</h3>
+    <audio controls src="../../results/tts_emotion_bench_20260816/audio/fish_T3_audiobook.wav"></audio>
+    <div class="note small" style="font-size: 13px;">合成 32.3s / 音频 14.4s / 1.27MB · 叙事感</div>
+
+    <h3>edge-tts · T1 讲解视频</h3>
+    <audio controls src="../../results/tts_emotion_bench_20260816/audio/edge_T1_video_narration.mp3"></audio>
+    <div class="note small" style="font-size: 13px;">合成 2.61s / 音频 17.2s / 100KB · 标准播报感，无感情</div>
+
+    <h3>edge-tts · T3 有声书</h3>
+    <audio controls src="../../results/tts_emotion_bench_20260816/audio/edge_T3_audiobook.mp3"></audio>
+    <div class="note small" style="font-size: 13px;">合成 2.61s / 音频 16.4s / 96KB · 无叙事感，平直</div>
+
+    <h3>edge-tts · T4 数字人（欢快）</h3>
+    <audio controls src="../../results/tts_emotion_bench_20260816/audio/edge_T4_digital_human.mp3"></audio>
+    <div class="note small" style="font-size: 13px;">合成 1.59s / 音频 12.9s / 75KB · 无笑声、无情绪起伏</div>
+
+    <h3>Qwen3-TTS · T1 讲解视频</h3>
+    <audio controls src="../../results/tts_emotion_bench_20260816/audio/qwen_T1_video_narration.wav"></audio>
+    <div class="note small" style="font-size: 13px;">合成 120s / 音频 40.88s（截断）/ 1.9MB · 声音好听但长文截断</div>
+  </div>
+
+  <!-- 4. 4 维度初步评估 -->
+  <div class="card">
+    <h2>4. 4 维度初步评估（可听样本 + 参数能力）</h2>
+    <table>
+      <thead><tr><th>维度</th><th>MiniMax-TTS</th><th>edge-tts</th><th>ChatTTS（待测）</th><th>Qwen3-TTS</th></tr></thead>
+      <tbody>
+        <tr><td><strong>感情</strong></td><td><span class="ok">✅ 丰富（喜怒哀乐）</span></td><td><span class="bad">❌ 无</span></td><td><span class="ok">✅ 实测（T4 欢快情绪）</span></td><td><span class="bad">❌ 无</span></td></tr>
+        <tr><td><strong>停顿</strong></td><td><span class="ok">✅ token-level</span></td><td><span class="bad">❌ 弱</span></td><td><span class="ok">✅ [break] [uv_break] [lbreak]</span></td><td><span class="bad">❌ 无</span></td></tr>
+        <tr><td><strong>语速</strong></td><td><span class="ok">✅ speed + 情绪强度</span></td><td><span class="warn">⚠️ 0.5-2x 但丢感情</span></td><td><span class="ok">✅ temperature + spk_emb</span></td><td><span class="ok">✅ speed 0.5-2.0</span></td></tr>
+        <tr><td><strong>自然度</strong></td><td><span class="ok">✅ 顶级（商业）</span></td><td><span class="warn">⚠️ 播报感</span></td><td><span class="ok">✅ 拟人度最高（开源）</span></td><td><span class="warn">⚠️ 声音好但语气单一</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 5. 阻塞与下一步 -->
+  <div class="card">
+    <h2>5. 阻塞与下一步</h2>
+    <table>
+      <thead><tr><th>阻塞</th><th>原因</th><th>动作</th></tr></thead>
+      <tbody>
+        <tr><td><strong>MiniMax-TTS T3/T4 未测</strong></td><td>Token Plan 用量上限（2 次调用后）</td><td>杰哥充值 / 升级套餐（计费，需确认）</td></tr>
+        <tr><td><strong>ChatTTS 未测</strong></td><td>模型 ~1.7GB 从 hf-mirror 下载中（wget 逐个）</td><td>等下载完成 → 立即补测 4 用例</td></tr>
+        <tr><td><strong>Fish Speech 未测</strong></td><td>pip 多进程锁死 30min</td><td>用 <code>pip install fish-speech==0.1.0</code> 单包重装</td></tr>
+        <tr><td><strong>本机代理 7892 已死</strong></td><td>HTTPS_PROXY 指向无效端口</td><td>所有网络操作 <code>unset</code> + hf-mirror 直连</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 6. 复现 -->
+  <div class="card">
+    <h2>6. 复现</h2>
+    <pre>python3 scripts/benchmark-tts-emotion.py \
+  --output results/tts_emotion_bench_20260816/tts_emotion_result.json \
+  --audio-dir results/tts_emotion_bench_20260816/audio \
+  --engines minimax edge-tts qwen3-tts</pre>
+  </div>
+
+
+  <!-- 7. 长文测试 -->
+  <div class="card">
+    <h2>7. 长文测试（1009 字，有声书风格）</h2>
+    <div class="note">
+      <strong>核心结论</strong>：<strong>ChatTTS 长文崩坏</strong>（ASR 只识别 113 字 + 胡言乱语循环重复），<strong>Fish Speech 长文完整</strong>（1100/1009 字全对，无截断），<strong>edge-tts 最快</strong>（RTF 0.057）。长文+情感场景 Fish Speech 整体可用但 <strong>偶发局部崩坏</strong>（1:22-1:30 约 8s 异常音，根因长文分句采样失控，sentence 18 生成 491 tokens 异常膨胀）；ChatTTS 长文崩坏不可用。（edge-tts 杰哥已指定不测，数据仅存档）
+    </div>
+    <table>
+      <thead><tr><th>候选</th><th>合成耗时</th><th>音频时长</th><th>RTF</th><th>ASR 验证</th><th>判定</th></tr></thead>
+      <tbody>
+        <tr><td><strong>edge-tts</strong> <span class="badge-warn">超出范围</span></td><td>11.9s</td><td>210.5s</td><td>0.057</td><td>—</td><td><span class="badge-warn">⚠️ 杰哥已指定不测（无感情）</span></td></tr>
+        <tr><td><strong>Fish Speech</strong></td><td>502.8s</td><td>169.1s</td><td>2.97</td><td><span class="warn">1100/1009 字 · 1:22-1:30 局部异常音（8s）</span></td><td><span class="badge-warn">⚠️ 完整但偶发局部崩坏</span></td></tr>
+        <tr><td><strong>ChatTTS</strong></td><td>104s</td><td>43.5s</td><td>2.39</td><td><span class="bad">仅 113 字 + 胡言乱语 + 重复</span></td><td><span class="badge-bad">❌ 长文崩坏</span></td></tr>
+      </tbody>
+    </table>
+    <h3>可听样本</h3>
+    <h4>edge-tts · 1009 字长文</h4>
+    <audio controls src="../../results/tts_emotion_bench_20260816/audio/edge_long1000.mp3"></audio>
+    <div class="note small" style="font-size: 13px;">11.9s 合成 210.5s 音频 · 快但无感情</div>
+    <h4>Fish Speech · 1009 字长文</h4>
+    <audio controls src="../../results/tts_emotion_bench_20260816/audio/fish_long1000.wav"></audio>
+    <div class="note small" style="font-size: 13px;">502.8s 合成 169.1s 音频 · 完整带情感 · 慢</div>
+    <h4>ChatTTS · 1009 字长文（崩坏对照）</h4>
+    <audio controls src="../../results/tts_emotion_bench_20260816/audio/chattts_long1000.wav"></audio>
+    <div class="note small" style="font-size: 13px;">104s 合成 43.5s 音频 · 仅念 ~10% 且胡言乱语</div>
+  </div>
+
+
+  <!-- 8. MiniMax 26 音色全面评测 -->
+  <div class="card">
+    <h2>8. MiniMax-TTS 26 音色全面评测</h2>
+    <div class="note">
+      <strong>结论</strong>：26/26 全部生成成功（零失败），合成 1.6-2.6s/个，音频 14.3-20.5s。抽查 5 个代表音色 ASR 全对（内容完整无乱码）。<strong>MiniMax 是唯一全维度通过的 TTS 候选</strong>——有感情、长文稳定、速度快（RTF 0.019）、音色丰富。
+    </div>
+    <table>
+      <thead><tr><th>音色</th><th>耗时</th><th>音频</th><th>音色</th><th>耗时</th><th>音频</th></tr></thead>
+      <tbody>
+        <tr><td>沉稳高管</td><td>1.6s</td><td>15.7s</td><td>温润青年</td><td>2.6s</td><td>16.3s</td></tr>
+        <tr><td>新闻女声</td><td>1.7s</td><td>17.4s</td><td>温暖少女</td><td>2.3s</td><td>16.3s</td></tr>
+        <tr><td>傲娇御姐</td><td>2.4s</td><td>19.5s</td><td>花甲奶奶</td><td>2.4s</td><td>20.0s</td></tr>
+        <tr><td>不羁青年</td><td>1.7s</td><td>16.7s</td><td>憨憨萌兽</td><td>2.6s</td><td>18.9s</td></tr>
+        <tr><td>热心大婶</td><td>2.1s</td><td>18.1s</td><td>电台男主播</td><td>2.0s</td><td>15.2s</td></tr>
+        <tr><td>港普空姐</td><td>1.9s</td><td>19.1s</td><td>抒情男声</td><td>2.1s</td><td>20.5s</td></tr>
+        <tr><td>搞笑大爷</td><td>1.7s</td><td>16.9s</td><td>率真弟弟</td><td>2.5s</td><td>18.0s</td></tr>
+        <tr><td>温润男声</td><td>1.8s</td><td>15.5s</td><td>真诚青年</td><td>2.6s</td><td>17.5s</td></tr>
+        <tr><td>温暖闺蜜</td><td>2.1s</td><td>14.8s</td><td>温柔学姐</td><td>2.6s</td><td>16.1s</td></tr>
+        <tr><td>播报男声</td><td>2.6s</td><td>18.8s</td><td>嘴硬竹马</td><td>1.7s</td><td>16.0s</td></tr>
+        <tr><td>甜美女声</td><td>2.0s</td><td>18.3s</td><td>清脆少女</td><td>2.1s</td><td>17.3s</td></tr>
+        <tr><td>南方小哥</td><td>1.7s</td><td>14.3s</td><td>清澈邻家弟</td><td>2.1s</td><td>18.7s</td></tr>
+        <tr><td>阅历姐姐</td><td>2.5s</td><td>17.7s</td><td>软软女孩</td><td>1.9s</td><td>18.7s</td></tr>
+      </tbody>
+    </table>
+    <h3>代表音色可听样本（有声书文本）</h3>
+    <h4>沉稳高管（男·沉稳）</h4>
+    <audio controls src="../../results/tts_emotion_bench_20260816/audio/voices/mmx_Reliable_Executive.mp3"></audio>
+    <h4>新闻女声（女·播音腔）</h4>
+    <audio controls src="../../results/tts_emotion_bench_20260816/audio/voices/mmx_News_Anchor.mp3"></audio>
+    <h4>傲娇御姐（女·成熟）</h4>
+    <audio controls src="../../results/tts_emotion_bench_20260816/audio/voices/mmx_Mature_Woman.mp3"></audio>
+    <h4>不羁青年（男·潇洒）</h4>
+    <audio controls src="../../results/tts_emotion_bench_20260816/audio/voices/mmx_Unrestrained_Young_Man.mp3"></audio>
+    <h4>搞笑大爷（男·北方口音）</h4>
+    <audio controls src="../../results/tts_emotion_bench_20260816/audio/voices/mmx_Humorous_Elder.mp3"></audio>
+    <h4>电台男主播（男·磁性）</h4>
+    <audio controls src="../../results/tts_emotion_bench_20260816/audio/voices/mmx_Radio_Host.mp3"></audio>
+    <h4>抒情男声（男·低沉）</h4>
+    <audio controls src="../../results/tts_emotion_bench_20260816/audio/voices/mmx_Lyrical_Voice.mp3"></audio>
+    <h4>软软女孩（女·甜美）</h4>
+    <audio controls src="../../results/tts_emotion_bench_20260816/audio/voices/mmx_Soft_Girl.mp3"></audio>
+    <h4>港普空姐（女·港式口音）</h4>
+    <audio controls src="../../results/tts_emotion_bench_20260816/audio/voices/mmx_HK_Flight_Attendant.mp3"></audio>
+    <h4>憨憨萌兽（萌系）</h4>
+    <audio controls src="../../results/tts_emotion_bench_20260816/audio/voices/mmx_Cute_Spirit.mp3"></audio>
+  </div>
+
+  <footer>
+    内容工厂管理 · 内容工具与模型实验室 · <span class="gradient-text">阿伟</span> 生成 · 2026-08-16
+  </footer>
+
+</div>
+</body>
+</html>

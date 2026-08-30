@@ -1,0 +1,57 @@
+{
+  "evaluation_id": "digital_human_e2e_20260818",
+  "date": "2026-08-18",
+  "category": "digital_human",
+  "stage": "verified",
+  "goal": "数字人端到端链路联调：MiniMax-TTS → SadTalker → LivePortrait 全链路出第一段成品 demo，验证业务'像真人对话'可行性",
+  "pipeline": {
+    "stage_1_tts": {
+      "tool": "MiniMax-TTS",
+      "voice": "Chinese (Mandarin)_Gentle_Senior (温柔学姐)",
+      "text_chars": 87,
+      "audio_duration_sec": 12.67,
+      "sample_rate": 32000,
+      "quota_remaining_percent": 83
+    },
+    "stage_2_lipsync": {
+      "tool": "SadTalker v0.0.2",
+      "source_image": "LivePortrait/examples/source/s9.jpg (LivePortrait 自带)",
+      "driven_audio": "stage_1 tts_dh_demo.wav",
+      "size": 256,
+      "batch_size": 2,
+      "render_time_sec": 202,
+      "video_duration_sec": 12.6,
+      "resolution": "256x256 @ 25fps"
+    },
+    "stage_3_expression": {
+      "tool": "LivePortrait",
+      "source_image": "s9.jpg (与 SadTalker 同图)",
+      "driving_video": "LivePortrait/examples/driving/d0.mp4",
+      "render_time_sec": 64,
+      "video_duration_sec": 3.12,
+      "resolution": "720x1280 @ 25fps"
+    }
+  },
+  "artifacts": {
+    "tts_audio": "results/digital_human_e2e_20260818/tts/tts_dh_demo.wav",
+    "sadtalker_video": "results/digital_human_e2e_20260818/sadtalker_s9.mp4 (256x256, 12.6s, 嘴型同步)",
+    "liveportrait_video": "results/digital_human_e2e_20260818/liveportrait/s9--d0.mp4 (720x1280, 3.12s, 表情迁移)",
+    "e2e_with_audio": "results/digital_human_e2e_20260818/e2e_sadtalker_audio.mp4 (256x256 + 中文音频, 12.5s)"
+  },
+  "verdict": {
+    "sadtalker": "✅ 已 verified 链路：MiniMax 中文音频 → 嘴型同步完整。显存占用低（256 模式 ~1.5GB），12s 音频 ~3:22 渲染",
+    "liveportrait": "✅ 已 verified 链路：LivePortrait examples 自带驱动视频 → 表情迁移清晰",
+    "chain_verdict": "⚠️ SadTalker + LivePortrait 是两个独立 pipeline，**没有简单的串接公式**。两个工具的输入/输出形态不一致（SadTalker: 静态图+音频→视频；LivePortrait: 静态图+驱动视频→视频）。要做出'既会动又有表情'的数字人，业务侧需要：(1) 优先用 SadTalker 做嘴型（音频驱动）；(2) 用 LivePortrait 做静态表情帧/重定向特定片段；或 (3) 等待端到端音频→表情模型（如 EchoMimic，Mac 当前 blocked）。",
+    "business_use": "SadTalker 单点链路（音频+静态图→嘴型视频）已 production-ready，可直接用于数字人讲解/播客片段；LivePortrait 适合做头像替换/驱动片段特写。"
+  },
+  "render_breakdown": {
+    "sadtalker_face_renderer": "158 batches × 1.36s/iter ≈ 215s",
+    "sadtalker_overhead": "3DMM + mel + audio2exp 合计 < 5s",
+    "liveportrait_total": "1:04 (含模型加载 + 驱动视频 pkl 缓存 + 渲染 + concat)"
+  },
+  "next_steps": [
+    "用 iCloud 素材库真实人脸图（bookmark: /Users/jacky/Library/Mobile Documents/com~apple~CloudDocs/AI Agent/素材/）替换 s9.jpg 出 demo",
+    "对比 SadTalker 256 vs 512（08-17 杰哥反馈 512 才有活人感）",
+    "探索 SadTalker + LivePortrait 的混合链路：从 SadTalker 输出抽帧 → LivePortrait 用同源参考视频驱动 → 合成表情+嘴型"
+  ]
+}

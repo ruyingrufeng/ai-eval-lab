@@ -1,0 +1,220 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "SillyTavern 本地模型阶段评测",
+    "description": "汇总普通角色对话、直白成人内容与35B十二轮连续性评测。",
+    "generatedAt": "2026-08-14T16:00:00+08:00",
+    "cards": [],
+    "charts": [
+      {
+        "id": "latency_chart",
+        "title": "各场景平均单轮耗时",
+        "subtitle": "普通角色使用完整平均值；成人专项使用热状态平均值，单位为秒。",
+        "type": "bar",
+        "dataset": "latency_comparison",
+        "sourceId": "all_evidence",
+        "valueFormat": "number",
+        "unit": "秒",
+        "layout": "full",
+        "encodings": {
+          "x": {"field": "case", "type": "nominal", "label": "模型与场景"},
+          "y": {"field": "mean_turn_seconds", "type": "quantitative", "label": "平均单轮耗时（秒）"},
+          "tooltip": [
+            {"field": "scenario", "type": "nominal", "label": "场景"},
+            {"field": "model", "type": "nominal", "label": "模型"},
+            {"field": "gate", "type": "nominal", "label": "门禁"},
+            {"field": "mean_ttft_seconds", "type": "quantitative", "label": "平均首字（秒）"}
+          ]
+        }
+      }
+    ],
+    "tables": [
+      {
+        "id": "ordinary_table",
+        "title": "普通角色五轮基线",
+        "subtitle": "五轮记忆、长度与延迟结果；平均值按每轮响应计算。",
+        "dataset": "ordinary_results",
+        "sourceId": "ordinary_evidence",
+        "defaultSort": {"field": "mean_turn_seconds", "direction": "asc"},
+        "layout": "full",
+        "columns": [
+          {"field": "candidate", "label": "候选", "type": "text"},
+          {"field": "gate", "label": "硬门禁", "type": "text"},
+          {"field": "memory", "label": "普通记忆", "type": "text"},
+          {"field": "allergy", "label": "过敏记忆", "type": "text"},
+          {"field": "length", "label": "长度", "type": "text"},
+          {"field": "mean_ttft_seconds", "label": "平均首字（秒）", "format": "number"},
+          {"field": "mean_turn_seconds", "label": "平均单轮（秒）", "format": "number"},
+          {"field": "decision", "label": "结论", "type": "text"}
+        ]
+      },
+      {
+        "id": "adult_table",
+        "title": "直白成人内容四轮专项",
+        "subtitle": "虚构、明确成年、双方自愿；延迟为热状态平均值。",
+        "dataset": "adult_results",
+        "sourceId": "adult_evidence",
+        "defaultSort": {"field": "mean_turn_seconds", "direction": "asc"},
+        "layout": "full",
+        "columns": [
+          {"field": "candidate", "label": "候选", "type": "text"},
+          {"field": "gate", "label": "自动门禁", "type": "text"},
+          {"field": "direct_terms", "label": "直白词命中", "format": "number"},
+          {"field": "length", "label": "长度", "type": "text"},
+          {"field": "consent", "label": "停止/恢复", "type": "text"},
+          {"field": "mean_ttft_seconds", "label": "热首字（秒）", "format": "number"},
+          {"field": "mean_turn_seconds", "label": "热单轮（秒）", "format": "number"},
+          {"field": "decision", "label": "人工结论", "type": "text"}
+        ]
+      },
+      {
+        "id": "continuity_table",
+        "title": "35B 十二轮状态与指令验收",
+        "subtitle": "末轮约1,800 prompt tokens；这是多轮连续性测试，不是16K长上下文测试。",
+        "dataset": "continuity_results",
+        "sourceId": "continuity_evidence",
+        "defaultSort": {"field": "order", "direction": "asc"},
+        "layout": "full",
+        "columns": [
+          {"field": "order", "label": "序号", "format": "number"},
+          {"field": "item", "label": "验收项", "type": "text"},
+          {"field": "result", "label": "结果", "type": "text"},
+          {"field": "status", "label": "判定", "type": "text"}
+        ]
+      }
+    ],
+    "sources": [
+      {"id": "all_evidence", "label": "SillyTavern 阶段评测汇总", "path": "docs/reports/sillytavern_evaluation_20260814/artifact.json"},
+      {"id": "ordinary_evidence", "label": "普通角色评测证据", "path": "docs/SILLYTAVERN_MODEL_EVALUATION_20260814.md"},
+      {"id": "adult_evidence", "label": "成人直白专项证据", "path": "docs/SILLYTAVERN_ADULT_EXPLICIT_EVALUATION_20260814.md"},
+      {"id": "continuity_evidence", "label": "十二轮连续性证据", "path": "docs/SILLYTAVERN_ADULT_CONTINUITY_EVALUATION_20260814.md"}
+    ],
+    "blocks": [
+      {"id": "title", "type": "markdown", "body": "# SillyTavern 本地模型阶段评测"},
+      {
+        "id": "executive_summary",
+        "type": "markdown",
+        "body": "## Executive Summary\n\n- **35B调参档是当前唯一综合默认候选。** 它同时通过普通角色五轮基线和直白成人四轮基线，普通角色平均单轮2.459秒，成人热状态平均单轮4.673秒。\n- **27B更直白，但延迟与一致性不适合默认。** 成人场景热状态平均单轮29.819秒，并出现减速后又加速的同轮矛盾。\n- **30B很快，但没有达到所需质量。** 普通角色场景漏掉过敏信息且回复过短；成人场景持续使用含糊替代词，自动门禁失败。\n- **35B的多轮状态控制可靠，但写作指令仍需外部约束。** 十二轮中关键状态与同意控制全部通过，长度却只有1/12达标，并漏掉一项双方轮流动作要求。"
+      },
+      {
+        "id": "route_finding",
+        "type": "markdown",
+        "body": "## 35B赢在综合平衡，27B的直白度不足以抵消延迟\n\n下图把几轮测试的平均单轮耗时放在同一尺度。27B在成人直白场景的热状态延迟接近30秒；35B在三个场景中都保持在约2.5–4.7秒。30B虽然最快，但两条质量门禁都失败，因此不能只按速度选默认模型。"
+      },
+      {"id": "latency_visual", "type": "chart", "chartId": "latency_chart"},
+      {
+        "id": "ordinary_finding",
+        "type": "markdown",
+        "body": "## 普通角色对话已经形成清晰路由\n\n35B调参档保留3/3普通记忆和过敏信息，长度5/5通过；较原默认档更紧凑。30B平均单轮仅0.903秒，但长度0/5且漏掉过敏信息。27B角色语气更明显，却只保留1/3普通记忆，平均单轮7.403秒。**普通SillyTavern质量默认应使用35B调参档。**"
+      },
+      {"id": "ordinary_evidence_table", "type": "table", "tableId": "ordinary_table"},
+      {
+        "id": "adult_finding",
+        "type": "markdown",
+        "body": "## 成人直白能力不能从“无审查”标签推断\n\n35B和27B都能输出具体行为并正确处理暂停与重新同意；35B速度和连续性更均衡。30B Abliterated 虽快，却持续用含糊词替代关键动作。**当前成人默认仍是35B调参档，27B只保留露骨文风对照价值。**"
+      },
+      {"id": "adult_evidence_table", "type": "table", "tableId": "adult_table"},
+      {
+        "id": "continuity_finding",
+        "type": "markdown",
+        "body": "## 十二轮证明状态可控，但没有证明所有指令都稳定\n\n35B正确维护安全套流转、不肛交边界、慢且浅、安全词停止、暂停状态与重新同意，最终回忆4/4。但它把140–280字压缩到平均126.6字，并漏掉双方轮流动作中的一方。**适合承担状态主模型，但关键状态和单轮验收仍应由外部编排。**"
+      },
+      {"id": "continuity_evidence_table", "type": "table", "tableId": "continuity_table"},
+      {
+        "id": "recommended_route",
+        "type": "markdown",
+        "body": "## 推荐默认配置与状态管理\n\n**模型参数**\n\n- 模型：Qwen3.6-35B\n- temperature：0.8\n- top_p：0.95\n- min_p：0.05\n- repetition penalty：1.05\n\n**运行方法**\n\n1. 每轮注入精简状态块：姿势、衣着、避孕状态、禁止项、安全词和同意状态。\n2. 同意状态使用 `active / paused` 状态机；安全词出现后只有新的明确同意才能恢复。\n3. 长度优先用“2段、每段3–4句”，或接受模型更稳定的120–180字区间。\n4. 必须出现的具体动作写进当前轮验收项，不只放在系统提示。\n5. 安全套更换等不可逆状态由外部存储记录。"
+      },
+      {
+        "id": "further_questions",
+        "type": "markdown",
+        "body": "## 下一步需要回答的问题\n\n- 在16K真实干扰上下文中，35B能否找回安全词、禁止项、避孕状态与当前姿势？\n- 角色卡、世界书和作者注释冲突时，模型遵循哪一层？\n- 跨会话摘要或状态压缩后，同意状态能否无损恢复？\n- 更高温度是否会提高文风表现，同时导致状态漂移或解剖错误？"
+      },
+      {
+        "id": "caveats",
+        "type": "markdown",
+        "body": "## 适用边界与假设\n\n本报告的成人能力只覆盖虚构、明确成年、双方自愿的内容；不包含未成年人或年龄不明、强迫、乱伦、真人色情化、偷拍和性暴力。敏感逐轮原文只保存在被Git排除的本地结果目录。十二轮测试末轮约1,800 prompt tokens，不能外推为16K/32K长上下文通过。各模型样本量仍小，当前结论用于选择下一轮路线，不代表模型在所有角色和文风中稳定复现。"
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-08-14T16:00:00+08:00",
+    "status": "ready",
+    "datasets": {
+      "headline": [
+        {"default_model": "35B 调参档", "normal_turn_seconds": 2.459, "state_passed": 8, "state_total": 8}
+      ],
+      "latency_comparison": [
+        {"case": "普通角色 · 30B", "scenario": "普通角色五轮", "model": "30B", "gate": "失败", "mean_turn_seconds": 0.903, "mean_ttft_seconds": 0.266, "rank": 1, "sample_turns": 5},
+        {"case": "成人直白 · 30B", "scenario": "成人直白四轮", "model": "30B", "gate": "失败", "mean_turn_seconds": 1.992, "mean_ttft_seconds": 0.336, "rank": 2, "sample_turns": 4},
+        {"case": "普通角色 · 35B调参", "scenario": "普通角色五轮", "model": "35B调参", "gate": "通过", "mean_turn_seconds": 2.459, "mean_ttft_seconds": 0.468, "rank": 3, "sample_turns": 5},
+        {"case": "成人连续性 · 35B", "scenario": "成人十二轮连续性", "model": "35B调参", "gate": "部分通过", "mean_turn_seconds": 2.950, "mean_ttft_seconds": 0.489, "rank": 4, "sample_turns": 12},
+        {"case": "成人直白 · 35B", "scenario": "成人直白四轮", "model": "35B调参", "gate": "通过", "mean_turn_seconds": 4.673, "mean_ttft_seconds": 0.576, "rank": 5, "sample_turns": 4},
+        {"case": "普通角色 · 27B", "scenario": "普通角色五轮", "model": "27B", "gate": "失败", "mean_turn_seconds": 7.403, "mean_ttft_seconds": 1.689, "rank": 6, "sample_turns": 5},
+        {"case": "成人直白 · 27B", "scenario": "成人直白四轮", "model": "27B", "gate": "通过", "mean_turn_seconds": 29.819, "mean_ttft_seconds": 2.725, "rank": 7, "sample_turns": 4}
+      ],
+      "ordinary_results": [
+        {"candidate": "35B 调参档", "gate": "通过", "memory": "3/3", "allergy": "通过", "length": "5/5", "mean_ttft_seconds": 0.468, "mean_turn_seconds": 2.459, "decision": "质量默认候选"},
+        {"candidate": "35B 原默认档", "gate": "通过", "memory": "3/3", "allergy": "通过", "length": "5/5", "mean_ttft_seconds": 0.460, "mean_turn_seconds": 2.759, "decision": "可用，但不如调参档克制"},
+        {"candidate": "30B 原默认档", "gate": "失败", "memory": "2/3", "allergy": "失败", "length": "0/5", "mean_ttft_seconds": 0.266, "mean_turn_seconds": 0.903, "decision": "仅极速短聊实验"},
+        {"candidate": "27B Fable", "gate": "失败", "memory": "1/3", "allergy": "通过", "length": "1/5", "mean_ttft_seconds": 1.689, "mean_turn_seconds": 7.403, "decision": "不推荐默认"}
+      ],
+      "adult_results": [
+        {"candidate": "35B 调参档", "gate": "通过", "direct_terms": 12, "length": "4/4", "consent": "通过/通过", "mean_ttft_seconds": 0.576, "mean_turn_seconds": 4.673, "decision": "成人默认候选"},
+        {"candidate": "27B Fable", "gate": "通过", "direct_terms": 16, "length": "4/4", "consent": "通过/通过", "mean_ttft_seconds": 2.725, "mean_turn_seconds": 29.819, "decision": "最直白，但慢且有节奏矛盾"},
+        {"candidate": "30B Abliterated", "gate": "失败", "direct_terms": 1, "length": "0/4", "consent": "通过/通过", "mean_ttft_seconds": 0.336, "mean_turn_seconds": 1.992, "decision": "快速但持续降尺度"}
+      ],
+      "continuity_results": [
+        {"order": 1, "item": "响应完整", "result": "12/12", "status": "通过"},
+        {"order": 2, "item": "成人轮直白程度", "result": "6/8", "status": "通过最低门槛"},
+        {"order": 3, "item": "安全套状态", "result": "使用、丢弃、换新、结束处理", "status": "通过"},
+        {"order": 4, "item": "行为边界", "result": "全程仅阴道性交", "status": "通过"},
+        {"order": 5, "item": "慢且浅", "result": "声明后持续保持", "status": "通过"},
+        {"order": 6, "item": "安全词停止", "result": "立即停止并退出", "status": "通过"},
+        {"order": 7, "item": "暂停状态", "result": "下一轮只拥抱与安抚", "status": "通过"},
+        {"order": 8, "item": "重新开始", "result": "新同意并换新安全套", "status": "通过"},
+        {"order": 9, "item": "最终状态回忆", "result": "4/4", "status": "通过"},
+        {"order": 10, "item": "长度控制", "result": "1/12", "status": "失败"},
+        {"order": 11, "item": "双方轮流动作", "result": "只完成一方", "status": "失败"}
+      ]
+    },
+    "accessIssues": []
+  },
+  "sources": [
+    {
+      "id": "all_evidence",
+      "label": "SillyTavern 阶段评测汇总",
+      "path": "docs/reports/sillytavern_evaluation_20260814/artifact.json",
+      "query": {
+        "engine": "sqlite",
+        "sql": "WITH latency(case_label, scenario, model, gate, mean_turn_seconds, mean_ttft_seconds, rank, sample_turns) AS (VALUES ('普通角色 · 30B','普通角色五轮','30B','失败',0.903,0.266,1,5),('成人直白 · 30B','成人直白四轮','30B','失败',1.992,0.336,2,4),('普通角色 · 35B调参','普通角色五轮','35B调参','通过',2.459,0.468,3,5),('成人连续性 · 35B','成人十二轮连续性','35B调参','部分通过',2.950,0.489,4,12),('成人直白 · 35B','成人直白四轮','35B调参','通过',4.673,0.576,5,4),('普通角色 · 27B','普通角色五轮','27B','失败',7.403,1.689,6,5),('成人直白 · 27B','成人直白四轮','27B','通过',29.819,2.725,7,4)) SELECT * FROM latency ORDER BY rank",
+        "description": "汇总三份已复核的SillyTavern评测报告及其机器结果。",
+        "executed_at": "2026-08-14T16:00:00+08:00",
+        "tables_used": ["ordinary_results", "adult_results", "continuity_results"],
+        "filters": ["仅纳入有效复跑；排除含题目矛盾的long12-invalid-v1"],
+        "metric_definitions": ["平均单轮耗时为对应有效轮次elapsed_seconds算术平均；成人四轮图使用热状态平均值；十二轮使用全轮平均值。"]
+      }
+    },
+    {
+      "id": "ordinary_evidence",
+      "label": "普通角色评测证据",
+      "path": "docs/SILLYTAVERN_MODEL_EVALUATION_20260814.md",
+      "query": {"engine": "sqlite", "sql": "WITH ordinary(candidate, gate, memory, allergy, length, mean_ttft_seconds, mean_turn_seconds, decision) AS (VALUES ('35B 调参档','通过','3/3','通过','5/5',0.468,2.459,'质量默认候选'),('35B 原默认档','通过','3/3','通过','5/5',0.460,2.759,'可用，但不如调参档克制'),('30B 原默认档','失败','2/3','失败','0/5',0.266,0.903,'仅极速短聊实验'),('27B Fable','失败','1/3','通过','1/5',1.689,7.403,'不推荐默认')) SELECT * FROM ordinary", "description": "从已复核五轮结果固化普通角色对比表。", "executed_at": "2026-08-14T14:33:06+08:00", "metric_definitions": ["memory为末轮三个普通事实的命中数；length为满足60至180中文字符的轮数。"]}
+    },
+    {
+      "id": "adult_evidence",
+      "label": "成人直白专项证据",
+      "path": "docs/SILLYTAVERN_ADULT_EXPLICIT_EVALUATION_20260814.md",
+      "query": {"engine": "sqlite", "sql": "WITH adult(candidate, gate, direct_terms, length, consent, mean_ttft_seconds, mean_turn_seconds, decision) AS (VALUES ('35B 调参档','通过',12,'4/4','通过/通过',0.576,4.673,'成人默认候选'),('27B Fable','通过',16,'4/4','通过/通过',2.725,29.819,'最直白，但慢且有节奏矛盾'),('30B Abliterated','失败',1,'0/4','通过/通过',0.336,1.992,'快速但持续降尺度')) SELECT * FROM adult", "description": "从已复核四轮成人专项固化模型对比表。", "executed_at": "2026-08-14T15:10:00+08:00", "metric_definitions": ["direct_terms为四轮预定义直白词汇命中数之和；延迟为排除模型加载首轮后的热状态平均值。"]}
+    },
+    {
+      "id": "continuity_evidence",
+      "label": "十二轮连续性证据",
+      "path": "docs/SILLYTAVERN_ADULT_CONTINUITY_EVALUATION_20260814.md",
+      "query": {"engine": "sqlite", "sql": "WITH continuity(ord, item, result, status) AS (VALUES (1,'响应完整','12/12','通过'),(2,'成人轮直白程度','6/8','通过最低门槛'),(3,'安全套状态','使用、丢弃、换新、结束处理','通过'),(4,'行为边界','全程仅阴道性交','通过'),(5,'慢且浅','声明后持续保持','通过'),(6,'安全词停止','立即停止并退出','通过'),(7,'暂停状态','下一轮只拥抱与安抚','通过'),(8,'重新开始','新同意并换新安全套','通过'),(9,'最终状态回忆','4/4','通过'),(10,'长度控制','1/12','失败'),(11,'双方轮流动作','只完成一方','失败')) SELECT ord AS \"order\", item, result, status FROM continuity", "description": "从35B十二轮修正版及人工审计固化验收表。", "executed_at": "2026-08-14T15:35:00+08:00", "metric_definitions": ["最终状态回忆包含黑裙、蓝衬衫、安全词、行为边界四项。"]}
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "evaluation_id": "realcard_ab_20260815",
+  "date": "2026-08-15",
+  "category": "sillytavern_real_character_card_ab",
+  "stage": "verified",
+  "report": "report.html",
+  "verdict": "真实角色卡 20 轮配对复核后保留 Fable 为生产默认，Qwen3.8 作为备用。",
+  "samples": "20 paired turns",
+  "raw_results": "results/realcard_ab_20260815/"
+}

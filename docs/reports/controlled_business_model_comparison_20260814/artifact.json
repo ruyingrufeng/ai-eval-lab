@@ -1,0 +1,159 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "title": "受控业务流程：35B质量相当，速度快约11倍",
+    "description": "比较27B双槽并发与35B单槽独占在相同外部编排业务三步中的质量、速度和资源表现。",
+    "blocks": [
+      {"id": "title", "type": "markdown", "body": "# 受控业务流程：35B质量相当，速度快约11倍"},
+      {
+        "id": "executive_summary",
+        "type": "markdown",
+        "body": "## Executive Summary｜结论摘要\n\n- **35B应成为重要业务任务的独占默认。** 同样的事实表、内容策略和提纲三步，35B用37.65秒完成，27B并发业务线用419.79秒，观测速度约快11.1倍。\n- **速度不是靠明显缩短输出换来的。** 35B输出1552 tokens，27B为1625，只少约4.5%；两者都通过9/9事实、策略5部分和提纲7类要求。\n- **本轮没有证明35B质量碾压。** 35B策略更清楚，27B检查清单更细；各有轻微建议性表述，单个案例只支持“35B质量至少相当”。\n- **两者用途已经分开。** 35B负责重要方案与最终稿；27B只在必须同时保留两个64K会话时承担并行常驻后台任务。"
+      },
+      {
+        "id": "comparison_scope",
+        "type": "markdown",
+        "body": "## 两组使用完全相同的三步任务\n\n外部系统依次要求模型生成事实表、内容策略和文章提纲，每一步生成后立即校验。固定资料、提示词、采样参数和硬门禁一致。27B是在另一个槽位同时跑6轮对话的真实并发条件；35B是按路由设计单槽独占运行。\n\n因此这不是纯模型基准，而是两个计划生产路由的实际完成时间对比：27B双槽容量档，对比35B单槽质量档。"
+      },
+      {
+        "id": "speed_finding",
+        "type": "markdown",
+        "body": "## 35B三步都显著更快\n\n事实表、策略、提纲三步中，35B分别用10.42、17.15、10.08秒；27B并发业务线分别用128.67、185.37、105.74秒。35B平均首字约0.48秒，27B约3.58秒。\n\n**实际含义：** 当用户愿意暂停27B双槽并切换到35B时，重要业务任务不仅质量不降，等待时间也大幅缩短。旧的“35B只是更慢的质量档”假设不成立。"
+      },
+      {"id": "speed_chart_block", "type": "chart", "chartId": "step_latency_chart"},
+      {
+        "id": "quality_finding",
+        "type": "markdown",
+        "body": "## 两者都过硬门槛，质量差异暂时不够大\n\n两组事实表都原样保留9条事实；内容策略都包含受众、目标、角度、优先级和拒绝夸张写法；提纲都覆盖时间、区域、票价、换乘、无障碍、小程序与检查清单。\n\n人工复核认为35B的受众需求和信息层级更清楚，27B的出发前清单更细。27B加入了“账户余额充足”，35B加入了“19:00前到站”等资料外建议；都属于轻微问题，不能据此宣称一方质量全面胜出。"
+      },
+      {"id": "quality_table_block", "type": "table", "tableId": "quality_table"},
+      {
+        "id": "recommended_routing",
+        "type": "markdown",
+        "body": "## 推荐路由\n\n1. 35B单槽64K：重要方案、最终稿、需要快速完成的受控业务任务。\n2. 27B双槽64K×2：必须同时保留Hermes式后台任务和SillyTavern会话的常驻容量档。\n3. 两者都使用外部拆步、校验和结束协议，不恢复完整自主管理工具循环。\n4. 图片生成前卸载大型语言模型；35B不测双槽，也不与Flux并发。"
+      },
+      {
+        "id": "further_questions",
+        "type": "markdown",
+        "body": "## 下一轮问题\n\n- 35B在文章写作与改稿阶段能否保持同样速度和事实约束？\n- 35B的策略优势能否在多案例匿名评审中稳定复现？\n- 27B双槽在16K以上真实历史上下文下是否仍保持隔离和延迟？"
+      },
+      {
+        "id": "caveats",
+        "type": "markdown",
+        "body": "## 结论边界\n\n只有一个固定业务案例，不能据此给两模型的所有写作能力排名。27B数据来自真实双槽并发，35B来自单槽独占，11.1倍是生产路由观测差异，不是控制并发后的纯模型速度倍率。35B运行仅38秒、资源样本8个，不能代替长时间稳定性测试；两组上下文都远低于64K上限。"
+      }
+    ],
+    "charts": [
+      {
+        "id": "step_latency_chart",
+        "title": "三步业务任务完成时间",
+        "subtitle": "相同提示与校验；27B为双槽并发业务线，35B为单槽独占，单位：秒。",
+        "type": "bar",
+        "dataset": "step_latency",
+        "sourceId": "comparison_evidence",
+        "valueFormat": "number",
+        "unit": "秒",
+        "layout": "full",
+        "encodings": {
+          "x": {"field": "step", "type": "nominal", "label": "业务步骤"},
+          "y": {"field": "elapsed_seconds", "type": "quantitative", "label": "完成时间（秒）"},
+          "color": {"field": "model_route", "type": "nominal", "label": "模型路由"},
+          "tooltip": [
+            {"field": "first_token_seconds", "type": "quantitative", "label": "首字（秒）"},
+            {"field": "completion_tokens", "type": "quantitative", "label": "输出tokens"},
+            {"field": "validation", "type": "nominal", "label": "校验"}
+          ]
+        }
+      }
+    ],
+    "tables": [
+      {
+        "id": "quality_table",
+        "title": "同标准质量复核",
+        "subtitle": "固定事实与结构采用自动校验；策略清晰度和建议性表述采用人工复核。",
+        "dataset": "quality_review",
+        "sourceId": "comparison_evidence",
+        "defaultSort": {"field": "order", "direction": "asc"},
+        "layout": "full",
+        "columns": [
+          {"field": "order", "label": "序号", "format": "number"},
+          {"field": "criterion", "label": "质量项", "type": "text"},
+          {"field": "route_27b", "label": "27B双槽业务线", "type": "text"},
+          {"field": "route_35b", "label": "35B单槽", "type": "text"},
+          {"field": "interpretation", "label": "判断", "type": "text"}
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "id": "comparison_evidence",
+        "label": "27B与35B受控业务运行结果",
+        "path": "results/text/35b-controlled-business-20260814/summary.json",
+        "query": {
+          "engine": "sqlite",
+          "sql": "SELECT * FROM step_latency ORDER BY \"order\"; SELECT * FROM quality_review ORDER BY \"order\"",
+          "description": "合并27B双槽业务线与35B单槽的逐步延迟、token、自动门禁及人工质量复核。",
+          "executed_at": "2026-08-14T22:45:00+08:00",
+          "tables_used": ["snapshot.step_latency", "snapshot.quality_review"],
+          "filters": ["相同业务三步", "相同固定资料", "相同采样参数", "27B按双槽生产路由", "35B按单槽生产路由"],
+          "metric_definitions": [
+            "总完成时间倍率为419.79除以37.649，约11.1倍。",
+            "硬门禁包括9/9事实、策略五部分和提纲七类信息。",
+            "输出tokens来自各步API usage的completion_tokens求和。"
+          ]
+        }
+      },
+      {
+        "id": "benchmark_definition",
+        "label": "受控业务运行器",
+        "path": "scripts/benchmark-27b-dual-slot.py",
+        "query": {"engine": "python", "language": "python", "description": "定义相同业务三步、采样参数、输出与硬门禁。", "executed_at": "2026-08-14T22:45:00+08:00"}
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-08-14T22:45:00+08:00",
+    "status": "ready",
+    "datasets": {
+      "step_latency": [
+        {"order": 1, "step": "事实表", "model_route": "27B双槽业务线", "elapsed_seconds": 128.671, "first_token_seconds": 4.798, "completion_tokens": 430, "validation": "通过"},
+        {"order": 2, "step": "事实表", "model_route": "35B单槽", "elapsed_seconds": 10.418, "first_token_seconds": 0.594, "completion_tokens": 422, "validation": "通过"},
+        {"order": 3, "step": "内容策略", "model_route": "27B双槽业务线", "elapsed_seconds": 185.371, "first_token_seconds": 3.066, "completion_tokens": 672, "validation": "通过"},
+        {"order": 4, "step": "内容策略", "model_route": "35B单槽", "elapsed_seconds": 17.146, "first_token_seconds": 0.427, "completion_tokens": 715, "validation": "通过"},
+        {"order": 5, "step": "文章提纲", "model_route": "27B双槽业务线", "elapsed_seconds": 105.737, "first_token_seconds": 2.875, "completion_tokens": 523, "validation": "通过"},
+        {"order": 6, "step": "文章提纲", "model_route": "35B单槽", "elapsed_seconds": 10.083, "first_token_seconds": 0.404, "completion_tokens": 415, "validation": "通过"}
+      ],
+      "quality_review": [
+        {"order": 1, "criterion": "来源事实", "route_27b": "9/9；通过", "route_35b": "9/9；通过", "interpretation": "并列"},
+        {"order": 2, "criterion": "策略结构", "route_27b": "5/5部分；通过", "route_35b": "5/5部分；通过", "interpretation": "35B层级更清楚"},
+        {"order": 3, "criterion": "提纲覆盖", "route_27b": "7/7类；通过", "route_35b": "7/7类；通过", "interpretation": "27B清单更细"},
+        {"order": 4, "criterion": "输出规模", "route_27b": "1625 tokens", "route_35b": "1552 tokens", "interpretation": "只差约4.5%，35B未明显缩短"},
+        {"order": 5, "criterion": "轻微资料外建议", "route_27b": "账户余额充足", "route_35b": "19:00前到站", "interpretation": "两者各1处，需编辑复核"},
+        {"order": 6, "criterion": "综合", "route_27b": "合格", "route_35b": "合格", "interpretation": "35B质量至少相当；单样本不判碾压"}
+      ]
+    },
+    "accessIssues": []
+  },
+  "sources": [
+    {
+      "id": "comparison_evidence",
+      "label": "27B与35B受控业务运行结果",
+      "path": "results/text/35b-controlled-business-20260814/summary.json",
+      "query": {
+        "engine": "sqlite",
+        "sql": "SELECT * FROM step_latency ORDER BY \"order\"; SELECT * FROM quality_review ORDER BY \"order\"",
+        "description": "合并27B双槽业务线与35B单槽的逐步延迟、token、自动门禁及人工质量复核。",
+        "executed_at": "2026-08-14T22:45:00+08:00",
+        "tables_used": ["snapshot.step_latency", "snapshot.quality_review"]
+      }
+    },
+    {
+      "id": "benchmark_definition",
+      "label": "受控业务运行器",
+      "path": "scripts/benchmark-27b-dual-slot.py",
+      "query": {"engine": "python", "language": "python", "description": "定义相同业务三步、采样参数、输出与硬门禁。", "executed_at": "2026-08-14T22:45:00+08:00"}
+    }
+  ]
+}

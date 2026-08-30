@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "PingFang SC";
+        src: local("PingFang SC");
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #0f0f1a;
+      }
+      body {
+        font-family: "Inter", "PingFang SC", sans-serif;
+      }
+      .bg {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, #5a4bd1 0%, #a29bfe 50%, #e85a8e 100%);
+      }
+      .title {
+        position: absolute;
+        top: 380px;
+        left: 120px;
+        width: 1680px;
+        font-size: 88px;
+        font-weight: 900;
+        color: #ffffff;
+        letter-spacing: -0.02em;
+        text-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+      }
+      .subtitle {
+        position: absolute;
+        top: 520px;
+        left: 120px;
+        width: 1680px;
+        font-size: 40px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.85);
+      }
+      .chart-bar {
+        position: absolute;
+        bottom: 260px;
+        width: 120px;
+        border-radius: 12px 12px 0 0;
+        background: rgba(255, 255, 255, 0.9);
+      }
+      .caption {
+        position: absolute;
+        bottom: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 1600px;
+        text-align: center;
+        font-size: 34px;
+        font-weight: 600;
+        color: #e4e4e4;
+        background: #000000;
+        border-radius: 16px;
+        padding: 16px 32px;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="15"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div class="bg"></div>
+
+      <audio src="narration.mp3" data-start="0" data-duration="13.6" data-track-index="4"></audio>
+
+      <div id="scene1" class="clip" data-start="0" data-duration="5" data-track-index="1">
+        <div id="scene1inner" style="opacity: 0;">
+          <div style="position: absolute; top: 380px; left: 120px; font-size: 120px; font-weight: 900; color: #fff; padding: 40px;">
+            内容工厂
+          </div>
+          <div style="position: absolute; top: 560px; left: 160px; font-size: 48px; color: #ffffff; text-shadow: 0 2px 8px rgba(0,0,0,0.8);">
+            程序化视频 · 十五秒评测
+          </div>
+        </div>
+      </div>
+
+      <div id="scene2" class="clip" data-start="5" data-duration="4.5" data-track-index="2">
+        <div id="scene2inner" style="opacity: 0;">
+          <div id="chart1" style="position: absolute; bottom: 260px; left: 260px; width: 120px; height: 0px; border-radius: 12px 12px 0 0; background: rgba(255,255,255,0.9);"></div>
+          <div id="chart2" style="position: absolute; bottom: 260px; left: 460px; width: 120px; height: 0px; border-radius: 12px 12px 0 0; background: rgba(255,255,255,0.75);"></div>
+          <div id="chart3" style="position: absolute; bottom: 260px; left: 660px; width: 120px; height: 0px; border-radius: 12px 12px 0 0; background: rgba(255,255,255,0.6);"></div>
+          <div id="chart4" style="position: absolute; bottom: 260px; left: 860px; width: 120px; height: 0px; border-radius: 12px 12px 0 0; background: rgba(255,255,255,0.45);"></div>
+          <div id="chartLabel" style="position: absolute; bottom: 190px; left: 200px; width: 900px; font-size: 36px; color: #ffffff; font-weight: 700; text-shadow: 0 2px 8px rgba(0,0,0,0.8);">
+            渲染吞吐对比：HyperFrames · Remotion · FFmpeg
+          </div>
+        </div>
+      </div>
+
+      <div id="caption" class="clip" data-start="0" data-duration="15" data-track-index="3"
+           style="opacity: 1;">
+        写好代码，渲染成片，全程自动化
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      tl.fromTo(
+        "#scene1inner",
+        { opacity: 0, y: -60 },
+        { opacity: 1, y: 0, duration: 1.2, ease: "power3.out" },
+        0.2
+      );
+      tl.to("#scene1inner", { opacity: 0, y: -40, duration: 0.8, ease: "power2.in" }, 4.2);
+      tl.set("#scene1inner", { opacity: 0, y: -40, visibility: "hidden" }, 5.0);
+
+      tl.fromTo("#scene2inner", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 5.0);
+      tl.fromTo(
+        "#chart1",
+        { height: 0 },
+        { height: 420, duration: 1.0, ease: "power2.out" },
+        5.4
+      );
+      tl.fromTo(
+        "#chart2",
+        { height: 0 },
+        { height: 520, duration: 1.1, ease: "power2.out" },
+        5.6
+      );
+      tl.fromTo(
+        "#chart3",
+        { height: 0 },
+        { height: 380, duration: 1.2, ease: "power2.out" },
+        5.8
+      );
+      tl.fromTo(
+        "#chart4",
+        { height: 0 },
+        { height: 640, duration: 1.3, ease: "power2.out" },
+        6.0
+      );
+      tl.fromTo("#chartLabel", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8 }, 6.4);
+
+      tl.to("#scene2inner", { opacity: 0, duration: 0.6 }, 9.4);
+      tl.set("#scene2inner", { opacity: 0, visibility: "hidden" }, 9.5);
+
+      tl.fromTo(
+        "#caption",
+        { opacity: 0 },
+        { opacity: 1, duration: 0.6 },
+        0.5
+      );
+      tl.to("#caption", { opacity: 1, duration: 0 }, 2.0);
+      tl.to("#caption", { opacity: 0, duration: 0.5 }, 14.2);
+      tl.set("#caption", { opacity: 0 }, 15.0);
+
+      window.__timelines["main"] = tl;    </script>
+  </body>
+</html>

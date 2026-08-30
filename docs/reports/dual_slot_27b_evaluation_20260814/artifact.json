@@ -1,0 +1,216 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "title": "27B 双槽并发：能稳定同时工作，但不是质量默认",
+    "description": "用非技术语言说明27B双64K配置能否同时承担受控业务任务与角色对话。",
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "body": "# 27B 双槽并发：能稳定同时工作，但不是质量默认"
+      },
+      {
+        "id": "executive_summary",
+        "type": "markdown",
+        "body": "## Executive Summary｜结论摘要\n\n- **双槽架构通过。** 27B在两个64K槽位同时工作时，业务3步和对话6轮全部完成，没有请求失败或上下文串线。\n- **资源比预检更稳。** 7分钟并发测试中最低可用内存15%，swap净变化为−40 MiB，没有进入红色内存压力。\n- **外部编排解决了业务Agent的收尾问题。** 事实表、内容策略和提纲3/3通过，但三步合计约420秒，适合后台工作，不适合追求快速交互。\n- **对话并发可用，质量仍不够当默认。** 普通对话平均首字3.24秒、成人对话4.36秒，均达到并发门槛；但普通回复3/3低于角色卡长度下限，35B仍保留为独占质量档。"
+      },
+      {
+        "id": "scope",
+        "type": "markdown",
+        "body": "## 这次验证的是“能否同时工作”\n\n服务器保持生产目标配置：总上下文131072、两个并行槽位、每槽65536。一个槽位由外部系统依次生成事实表、内容策略和文章提纲；另一个槽位同时完成3轮普通角色对话和3轮合法虚构成年人对话。\n\n通过线要求：两边无请求失败、无上下文串线；业务保留9/9固定事实；对话平均首字不超过3秒或不超过历史单跑的2倍；swap本轮净增不超过2GB；不连续进入低于10%可用内存的红色区。"
+      },
+      {
+        "id": "latency_finding",
+        "type": "markdown",
+        "body": "## 首字延迟达标，但长输出吞吐仍慢\n\n下图展示9次并发请求的首字时间。普通对话首轮和业务事实表都接近4.8秒，随后热请求明显回落；按三轮平均，普通对话为3.24秒、成人对话为4.36秒，分别低于3.38秒和5.45秒的门槛。\n\n**首字可接受不等于任务很快。** 成人长回复每轮约67–82秒，业务内容策略单步185秒。27B适合让两个后台任务共用一个常驻服务，不适合替代35B的最终稿质量与效率判断。"
+      },
+      {
+        "id": "ttft_chart_block",
+        "type": "chart",
+        "chartId": "request_ttft_chart"
+      },
+      {
+        "id": "gate_finding",
+        "type": "markdown",
+        "body": "## 六项硬门禁全部通过\n\n业务3步都生成了可用产物：事实表保留9/9来源事实，内容策略包含五个要求部分，提纲覆盖时间、区域、票价、换乘、无障碍、小程序和检查清单。对话6轮均返回结果，隔离标识没有泄漏到另一槽位。\n\n资源方面共采样84次，最低可用内存15%，没有一次低于10%；swap从3523 MiB降至3483 MiB。这个结果支持27B作为“双64K并行常驻候选”，但仍禁止与Flux等大型图片服务默认共存。"
+      },
+      {
+        "id": "gate_table_block",
+        "type": "table",
+        "tableId": "gate_table"
+      },
+      {
+        "id": "quality_boundary",
+        "type": "markdown",
+        "body": "## 并发稳定性通过，写作质量没有自动升级\n\n普通对话正确处理了花生过敏相关物品，成人对话在撤回同意后立即停止并抽离，关键安全状态正确。但普通三轮仅38、46、44个中文字，全部低于角色卡要求的60–180字。\n\n因此本轮修正的是部署判断：27B可以同时服务Hermes式受控业务流程和SillyTavern对话；它没有推翻此前35B在角色感、记忆和成稿质量上的优势。"
+      },
+      {
+        "id": "recommended_next",
+        "type": "markdown",
+        "body": "## 推荐路由与下一步\n\n1. 27B保持双64K、两槽配置，作为可并行常驻的后台服务。\n2. 业务任务继续由外部系统拆步、校验和结束；不要恢复让模型自行管理整个工具循环。\n3. 对话侧保留27B作并发或更直白文风候选，不替换35B质量档。\n4. 图片生成前卸载大型语言模型，不测试27B与Flux默认共存。\n5. 下一项测试卸载27B后，用35B单槽64K跑同一份三步业务资料做质量与耗时对照。"
+      },
+      {
+        "id": "further_questions",
+        "type": "markdown",
+        "body": "## 下一轮需要回答的问题\n\n- 35B在同样外部编排下，内容质量提升是否足以抵消独占运行成本？\n- 27B在真实16K以上历史上下文中还能否维持当前双槽延迟与隔离？\n- 27B普通对话的过短问题能否靠更明确的段落或句数约束稳定修正？"
+      },
+      {
+        "id": "caveats",
+        "type": "markdown",
+        "body": "## 结论边界\n\n本轮持续约7分钟，实际上下文远低于64K容量上限；它验证了两个槽位同时活跃，不代表16K、32K或64K长上下文已经通过。对话只测两类各3轮，业务只测内容增长第一阶段。swap开始值已受测试前历史负载影响，因此资源结论使用本轮净变化，不把已有swap算作新增。敏感逐轮正文没有嵌入报告。"
+      }
+    ],
+    "charts": [
+      {
+        "id": "request_ttft_chart",
+        "title": "并发请求首字时间",
+        "subtitle": "同一27B双64K服务的9次请求；秒，数值越低越快。",
+        "type": "bar",
+        "dataset": "requests",
+        "sourceId": "dual_slot_summary",
+        "valueFormat": "number",
+        "unit": "秒",
+        "layout": "full",
+        "encodings": {
+          "x": {"field": "request", "type": "nominal", "label": "请求"},
+          "y": {"field": "first_token_seconds", "type": "quantitative", "label": "首字时间（秒）"},
+          "color": {"field": "lane", "type": "nominal", "label": "任务槽"},
+          "tooltip": [
+            {"field": "lane", "type": "nominal", "label": "任务槽"},
+            {"field": "first_token_seconds", "type": "quantitative", "label": "首字（秒）"},
+            {"field": "elapsed_seconds", "type": "quantitative", "label": "总耗时（秒）"},
+            {"field": "completion_tokens", "type": "quantitative", "label": "输出tokens"}
+          ]
+        }
+      }
+    ],
+    "tables": [
+      {
+        "id": "gate_table",
+        "title": "双槽硬门禁结果",
+        "subtitle": "所有门禁基于同一次真实并发运行；资源每5秒采样一次。",
+        "dataset": "gates",
+        "sourceId": "dual_slot_summary",
+        "defaultSort": {"field": "order", "direction": "asc"},
+        "layout": "full",
+        "columns": [
+          {"field": "order", "label": "序号", "format": "number"},
+          {"field": "gate", "label": "门禁", "type": "text"},
+          {"field": "observed", "label": "实测", "type": "text"},
+          {"field": "threshold", "label": "通过线", "type": "text"},
+          {"field": "status", "label": "结果", "type": "text"},
+          {"field": "meaning", "label": "含义", "type": "text"}
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "id": "dual_slot_summary",
+        "label": "27B双槽并发机器结果",
+        "path": "results/text/27b-dual-slot-20260814/summary.json",
+        "query": {
+          "engine": "sqlite",
+          "sql": "SELECT * FROM requests ORDER BY \"order\"; SELECT * FROM gates ORDER BY \"order\"",
+          "description": "从双槽运行汇总中提取9次请求延迟、业务与对话门禁、隔离和资源结论。",
+          "executed_at": "2026-08-14T22:30:00+08:00",
+          "tables_used": ["snapshot.requests", "snapshot.gates"],
+          "filters": ["27B总上下文131072", "parallel=2", "每槽65536", "业务与对话同时启动"],
+          "metric_definitions": [
+            "first_token_seconds为请求发出到收到首段可见正文的墙钟时间。",
+            "swap_net_change_mib为最后一次资源采样减第一次资源采样。",
+            "串线通过表示任一槽位均未输出另一槽位的隔离标识。"
+          ]
+        }
+      },
+      {
+        "id": "resource_samples",
+        "label": "macOS资源采样曲线",
+        "path": "results/text/27b-dual-slot-20260814/resources.jsonl",
+        "query": {
+          "engine": "sqlite",
+          "sql": "SELECT MIN(memory_free_percent), MAX(swap_used_mib), MAX(swap_used_mib)-MIN(swap_used_mib) FROM resource_samples",
+          "description": "汇总并发期间每5秒的可用内存、swap和进程资源样本。",
+          "executed_at": "2026-08-14T22:30:00+08:00",
+          "tables_used": ["results.resource_samples"],
+          "filters": ["只包含本次并发运行窗口", "84个样本"]
+        }
+      },
+      {
+        "id": "benchmark_definition",
+        "label": "双槽专项运行器与固定资料",
+        "path": "scripts/benchmark-27b-dual-slot.py",
+        "query": {
+          "engine": "python",
+          "language": "python",
+          "description": "定义业务三步、普通三轮、成人三轮、隔离标识、延迟与资源门禁。",
+          "executed_at": "2026-08-14T22:30:00+08:00"
+        }
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-08-14T22:30:00+08:00",
+    "status": "ready",
+    "datasets": {
+      "requests": [
+        {"order": 1, "request": "业务·事实表", "lane": "业务槽", "first_token_seconds": 4.798, "elapsed_seconds": 128.671, "completion_tokens": 430, "validation": "通过"},
+        {"order": 2, "request": "普通·第1轮", "lane": "普通对话", "first_token_seconds": 4.797, "elapsed_seconds": 14.072, "completion_tokens": 40, "validation": "响应成功"},
+        {"order": 3, "request": "普通·第2轮", "lane": "普通对话", "first_token_seconds": 2.446, "elapsed_seconds": 13.563, "completion_tokens": 47, "validation": "响应成功"},
+        {"order": 4, "request": "普通·第3轮", "lane": "普通对话", "first_token_seconds": 2.465, "elapsed_seconds": 13.201, "completion_tokens": 44, "validation": "响应成功"},
+        {"order": 5, "request": "成人·第1轮", "lane": "成人对话", "first_token_seconds": 3.264, "elapsed_seconds": 81.714, "completion_tokens": 282, "validation": "响应成功"},
+        {"order": 6, "request": "成人·第2轮", "lane": "成人对话", "first_token_seconds": 4.961, "elapsed_seconds": 74.547, "completion_tokens": 237, "validation": "响应成功"},
+        {"order": 7, "request": "成人·第3轮", "lane": "成人对话", "first_token_seconds": 4.865, "elapsed_seconds": 67.004, "completion_tokens": 199, "validation": "停止同意通过"},
+        {"order": 8, "request": "业务·内容策略", "lane": "业务槽", "first_token_seconds": 3.066, "elapsed_seconds": 185.371, "completion_tokens": 672, "validation": "通过"},
+        {"order": 9, "request": "业务·提纲", "lane": "业务槽", "first_token_seconds": 2.875, "elapsed_seconds": 105.737, "completion_tokens": 523, "validation": "通过"}
+      ],
+      "gates": [
+        {"order": 1, "gate": "业务完整性", "observed": "3/3步骤；9/9事实", "threshold": "3步齐全且事实完整", "status": "通过", "meaning": "外部编排可替代模型自主管理流程"},
+        {"order": 2, "gate": "对话请求", "observed": "普通3/3；成人3/3", "threshold": "6轮无失败", "status": "通过", "meaning": "两类对话在并发中均完成"},
+        {"order": 3, "gate": "上下文隔离", "observed": "未发现串线或隔离标识回显", "threshold": "零串线", "status": "通过", "meaning": "两个槽位未互相污染"},
+        {"order": 4, "gate": "对话首字", "observed": "普通3.24秒；成人4.36秒", "threshold": "≤3秒或≤单跑2倍", "status": "通过", "meaning": "交互等待仍在约定范围"},
+        {"order": 5, "gate": "swap净增", "observed": "−40 MiB", "threshold": "≤2048 MiB", "status": "通过", "meaning": "本轮没有新增换页压力"},
+        {"order": 6, "gate": "可用内存", "observed": "最低15%；红色样本0/84", "threshold": "不连续低于10%", "status": "通过", "meaning": "并发期间未进入红色内存区"}
+      ]
+    },
+    "accessIssues": []
+  },
+  "sources": [
+    {
+      "id": "dual_slot_summary",
+      "label": "27B双槽并发机器结果",
+      "path": "results/text/27b-dual-slot-20260814/summary.json",
+      "query": {
+        "engine": "sqlite",
+        "sql": "SELECT * FROM requests ORDER BY \"order\"; SELECT * FROM gates ORDER BY \"order\"",
+        "description": "从双槽运行汇总中提取9次请求延迟、业务与对话门禁、隔离和资源结论。",
+        "executed_at": "2026-08-14T22:30:00+08:00",
+        "tables_used": ["snapshot.requests", "snapshot.gates"]
+      }
+    },
+    {
+      "id": "resource_samples",
+      "label": "macOS资源采样曲线",
+      "path": "results/text/27b-dual-slot-20260814/resources.jsonl",
+      "query": {
+        "engine": "sqlite",
+        "sql": "SELECT MIN(memory_free_percent), MAX(swap_used_mib), MAX(swap_used_mib)-MIN(swap_used_mib) FROM resource_samples",
+        "description": "汇总并发期间每5秒的可用内存、swap和进程资源样本。",
+        "executed_at": "2026-08-14T22:30:00+08:00",
+        "tables_used": ["results.resource_samples"]
+      }
+    },
+    {
+      "id": "benchmark_definition",
+      "label": "双槽专项运行器与固定资料",
+      "path": "scripts/benchmark-27b-dual-slot.py",
+      "query": {
+        "engine": "python",
+        "language": "python",
+        "description": "定义业务三步、普通三轮、成人三轮、隔离标识、延迟与资源门禁。",
+        "executed_at": "2026-08-14T22:30:00+08:00"
+      }
+    }
+  ]
+}

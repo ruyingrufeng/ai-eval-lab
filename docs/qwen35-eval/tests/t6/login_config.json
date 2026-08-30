@@ -1,0 +1,5 @@
+{
+  "payment_gateway": "stripe",
+  "currency": "USD",
+  "refund_policy": "14-day no-questions refund"
+}

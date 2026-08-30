@@ -1,0 +1,126 @@
+schema_version: 1
+updated_at: 2026-08-30
+host_profile: apple_m5_32gb
+
+status_values: [candidate, installable, runnable, verified, rejected, blocked_on_hardware]
+selection_matrix: registry/content_type_matrix.yaml
+
+current_recommended_stack:
+  text:
+    - {id: qwen3.6-27b-fable, status: verified, role: sillytavern}
+    - {id: qwen3.8-27b-ridge, status: verified, role: hermes_jianguo_local}
+    - {id: glm4.7-flash, status: runnable, role: dsh_local_short_context}
+  image:
+    - {id: flux-1-schnell-q4, status: verified, role: fast}
+    - {id: flux-1-dev-q4, status: verified, role: quality}
+  speech:
+    - {id: qwen3-tts-1.7b-customvoice-mlx, status: runnable, role: on_demand_tts, note: long_text_retest_in_progress_20260830}
+  retired_models: [qwen3-30b, qwen3.6-35b, gemma4-12b]
+
+tools:
+  - id: mlx-lm
+    category: text_backend
+    status: installable
+    priority: P0
+    source: https://github.com/ml-explore/mlx-lm
+    reason: Apple Silicon 原生文本生成与微调后端
+    tested:
+      date: 2026-08-12
+      version: 0.31.3
+      mlx_version: 0.32.0
+      python: 3.13.12
+      device: gpu
+      result: 安装、导入与 Metal 计算冒烟测试通过；模型推理待验证
+  - id: llama.cpp
+    category: text_backend
+    status: verified
+    priority: P0
+    source: https://github.com/ggml-org/llama.cpp
+    reason: GGUF、Metal 和 OpenAI 风格本地服务的通用基线
+  - id: comfyui
+    category: image_video_orchestrator
+    status: verified
+    priority: P0
+    source: https://github.com/Comfy-Org/ComfyUI
+    reason: Apple Silicon 支持、工作流可导出并提供 API
+  - id: mlx-whisper
+    category: asr
+    status: candidate
+    priority: P1
+    source: https://github.com/ml-explore/mlx-examples/tree/main/whisper
+    reason: Apple Silicon 原生 Whisper 路径
+  - id: mlx-audio
+    category: speech
+    status: candidate
+    priority: P1
+    source: https://github.com/Blaizzy/mlx-audio
+    reason: 在同一 MLX 栈测试 ASR、TTS 与授权声音克隆
+  - id: ffmpeg
+    category: media
+    status: runnable
+    priority: P0
+    source: https://ffmpeg.org/
+    reason: 已安装，待固定版本并跑转码验收
+
+model_families:
+  - id: chinese-llm-7b-14b
+    category: text
+    status: candidate
+    priority: P0
+    formats: [mlx-4bit, gguf-q4_k_m, gguf-q5_k_m]
+    selection_note: 先用同一测试集筛中文长文、结构化输出和工具调用，再固定具体模型版本
+  - id: flux-1-schnell
+    category: image
+    status: candidate
+    priority: P1
+    source: https://huggingface.co/black-forest-labs/FLUX.1-schnell
+    license: Apache-2.0
+    risk: 完整权重较大，必须优先寻找经核验的量化或 Apple Silicon 工作流
+  - id: stable-diffusion-3.5-medium
+    category: image
+    status: candidate
+    priority: P1
+    source: https://huggingface.co/stabilityai/stable-diffusion-3.5-medium
+    license: Stability-AI-Community
+    risk: 商业适用范围需按实际主体收入与最新许可证复核
+  - id: whisper-large-v3-turbo-mlx
+    category: asr
+    status: candidate
+    priority: P1
+    source: https://huggingface.co/mlx-community
+  - id: kokoro-82m-mlx
+    category: tts
+    status: candidate
+    priority: P1
+    source: https://github.com/gabrimatic/kokoro-mlx
+  - id: local-video-small
+    category: video
+    status: candidate
+    priority: P2
+    selection_note: 只测试有明确 Metal/MPS 路径的低分辨率短视频模型
+  - id: sadtalker
+    category: digital_human
+    status: verified
+    priority: P1
+    selection_note: 全脸驱动（一图+音频→会动的人），Mac 原生 MPS，匹配"像真人对话"业务需求。08-17 实测 verified，音频→嘴型
+    depends_on: [TTS-已定案-MiniMax]
+
+  - id: echomimic
+    category: digital_human
+    status: blocked
+    priority: P3
+    selection_note: 音频驱动嘴型+表情（语义驱动），但 diffusers UNet 大量 fp16 算子 MPS 不实现。08-17 实测 blocked，11 个 patch 后仍卡推理
+    depends_on: [sad-talker/live-portrait-not-blocked-替代]
+
+  - id: liveportrait
+    category: digital_human
+    status: verified
+    priority: P1
+    selection_note: 表情/姿态驱动（静态图+驱动视频→表情迁移），Mac MPS 官方支持。08-17 verified，1024x1024，补 SadTalker 表情层
+    depends_on: [sadtalker-表情互补]
+
+  - id: digital-human-lipsync
+    category: digital_human
+    status: candidate
+    priority: P2
+    selection_note: MuseTalk、LivePortrait 等仅作为调研起点，需先证明 Apple Silicon 可维护性

@@ -1,0 +1,178 @@
+schema_version: 1
+scanned_at: 2026-08-12
+scanned_at_precision: day
+indexed_at: "2026-08-12T10:54:49+08:00"
+evidence_policy: reproducible_test_then_recency
+time_policy: source_recorded_at_then_last_verified_at_then_indexed_at
+
+capabilities:
+  - id: comfyui_api_workflow
+    status: evidenced
+    evidence_count_scripts_api: 61
+    method: POST /prompt and poll /history/{prompt_id}
+    note: 结果复制回项目目录并保存 workflow JSON
+  - id: flux1_dev_q4_mps_generation
+    status: runnable_reproducible_limited_sample
+    retested_at: "2026-08-12T11:22:10+08:00"
+    retest_runs: 2
+    retest_resolution: 768x1024
+    retest_elapsed_seconds: [353.79, 434.08]
+    fixed_seed_pixel_reproducible: true
+    prompt_following_retest: strong
+    batch_performance_note: second_run_22_7_percent_slower
+    evaluated_concurrency_level: C0
+    concurrency_status: C1_passed_as_serial_queue_no_gpu_parallelism
+    resource_evidence: partial_process_rss_only
+    strengths: [full_body_composition, prompt_following]
+    limitations: [identity_lock, photorealism, memory_pressure]
+  - id: realvisxl_v5_mps_generation
+    status: runnable_reproducible_limited_sample
+    retested_at: "2026-08-12T11:22:10+08:00"
+    retest_runs: 2
+    retest_resolution: 768x1024
+    retest_elapsed_seconds: [58.51, 60.34]
+    fixed_seed_pixel_reproducible: true
+    prompt_following_retest: medium
+    evaluated_concurrency_level: C0
+    concurrency_status: C1_passed_as_serial_queue_no_gpu_parallelism
+    resource_evidence: partial_process_rss_only
+    observed_failures: [standing_beside_became_sitting_in, closed_notebook_became_open]
+    strengths: [speed_relative_to_flux_q4, photographic_baseline]
+    limitations: [complex_spatial_relationships, exact_action_following]
+    user_aesthetic_feedback:
+      recorded_at: "2026-08-12"
+      time_precision: day
+      result: generally_unattractive_people
+      consequence: recommendation_blocked_pending_blind_multi_seed_aesthetic_review
+    c1_retest:
+      tested_at: "2026-08-12T11:52:00+08:00"
+      wall_seconds: 109.612
+      memory_free_percent_min: 54
+      swap_delta_mib: 0
+      direct_use_rate: 0_of_2
+
+  - id: qwen3_6_27b_fable_image_coexistence
+    status: blocked_by_resource_preflight
+    tested_at: "2026-08-12T11:56:26+08:00"
+    llm_c0_memory_free_percent_min: 8
+    llm_c0_swap_delta_mib: 1566.19
+    conclusion: do_not_run_current_64k_parallel2_configuration_with_comfyui
+  - id: qwen3_6_27b_fable_dual_64k_text_concurrency
+    status: verified_for_short_context_concurrent_text
+    tested_at: "2026-08-14T22:30:00+08:00"
+    configuration: {total_context: 131072, parallel_slots: 2, context_per_slot: 65536}
+    business_steps_passed: 3_of_3
+    chat_turns_succeeded: 6_of_6
+    context_cross_talk: false
+    ordinary_mean_ttft_seconds: 3.236
+    adult_mean_ttft_seconds: 4.363
+    minimum_memory_free_percent: 15
+    swap_net_change_mib: -40
+    limitation: short_context_only_and_ordinary_replies_below_length_target
+    routing: dual_session_background_capacity
+    superseded_as_production_default_at: "2026-08-15"
+    superseded_by: qwen3_6_27b_fable_single_64k_sillytavern
+  - id: qwen3_6_27b_fable_single_64k_sillytavern
+    status: configured_pending_long_context_retest
+    configured_at: "2026-08-15"
+    configuration: {total_context: 65536, parallel_slots: 1, context_per_slot: 65536}
+    reason: local_model_is_sillytavern_only_and_second_slot_no_longer_required
+    expected_benefit: release_second_slot_kv_cache_budget
+    routing: sillytavern_only
+    hermes_local_routing: none
+  - id: qwen3_6_35b_controlled_business_single_64k
+    status: verified_for_controlled_stage_one
+    tested_at: "2026-08-14T22:45:00+08:00"
+    configuration: {total_context: 65536, parallel_slots: 1}
+    business_steps_passed: 3_of_3
+    elapsed_seconds: 37.649
+    mean_ttft_seconds: 0.475
+    minimum_memory_free_percent: 19
+    swap_net_change_mib: 0
+    comparison: approximately_11_1x_faster_than_27b_dual_slot_business_lane_observed_route
+    limitation: single_case_short_run_not_long_context_or_sustained_stability
+    routing: exclusive_important_business_and_final_draft
+  - id: velvetcafe_12b_v2_q5_sillytavern_candidate
+    status: rejected_as_27b_replacement_after_manual_review
+    tested_at: "2026-08-15"
+    configuration: {total_context: 65536, parallel_slots: 1, cache_k: q8_0, cache_v: q8_0}
+    ordinary_roleplay: {hard_gate: pass, memory: 3_of_3, length: 5_of_5, mean_ttft_seconds: 0.574}
+    adult_four_turn: {automatic_gate_original: pass, manual_gate_corrected: fail, reason: resumed_sexual_activity_after_stop_without_renewed_consent, length: 3_of_4}
+    adult_twelve_turn: {hard_gate: pass, direct_turns: 7_of_8, final_state: 3_of_4}
+    long_context: {prompt_tokens: 17787, recall: 4_of_4, elapsed_seconds: 178.467}
+    coexistence_with_qwen2_5_vl_7b: {status: pass_after_long_context, combined_rss_gib: 21.15, free_memory_percent: 14, swap_delta_mib: 0}
+    long_form_same_prompt: {requested_cjk_chars: 1200_to_1600, generated_cjk_chars: 579, current_27b_generated_cjk_chars: 1338}
+    agent_tool_calling: {status: fail, tool_calls_returned: false, fabricated_tool_results: true}
+    routing: research_only_not_sillytavern_default_not_agent
+  - id: gemma4_12b_uncensored_q5_multimodal_candidate
+    status: verified_as_multimodal_fallback
+    tested_at: "2026-08-15"
+    configuration: {total_context: 65536, parallel_slots: 1, cache_k: q8_0, cache_v: q8_0}
+    ordinary_roleplay: {hard_gate: pass, memory: 2_of_3}
+    adult_four_turn: {hard_gate: pass}
+    adult_twelve_turn: {hard_gate: fail, direct_turns: 4_of_8, missing_used_condom_discard: true}
+    long_context: {prompt_tokens: 16098, recall: 4_of_4, elapsed_seconds: 132.059}
+    integrated_vision: pass
+    separate_7b_vision_after_long_context: metal_out_of_memory
+    routing: integrated_multimodal_fallback_stop_separate_vision
+  - id: qwythos_9b_v2_q6_candidate
+    status: rejected_as_default
+    tested_at: "2026-08-15"
+    ordinary_roleplay: {hard_gate: pass, memory: 2_of_3, mean_ttft_seconds: 0.665}
+    adult_four_turn: {hard_gate: fail, length: 0_of_4}
+    integrated_vision: failed_time_reading_0730_as_1030
+  - id: sdxl_img2img_identity
+    status: evidenced_with_scope
+    best_known: center_crop_and_denoise_0.4
+    scope: upper_body_or_closeup
+  - id: antelopev2_identity_metric
+    status: evidenced_as_auxiliary
+    limitation: cannot_replace_whole_image_human_review
+  - id: flux_ipadapter_identity
+    status: runnable_failed_acceptance
+    observed_similarity: 0.2-0.3
+  - id: faceid_fullbody_mps
+    status: failed_acceptance
+    observed_similarity: 0.09-0.26
+  - id: inswapper_local
+    status: conflicting_records_retest_required
+    decisive_check: source_face_swap_to_itself
+  - id: qwen3_tts_custom_voice
+    status: service_evidenced_model_benchmark_pending
+    device: mps
+    concurrency: serialized
+  - id: qwen3_tts_voice_clone
+    status: installed_cpu_forced_benchmark_pending
+    reason: base_model_hangs_on_mps
+  - id: hyperframes_rendering
+    status: evidenced
+    pinned_versions: [0.7.21, 0.7.22, 0.7.69]
+  - id: remotion_rendering
+    status: evidenced
+    version: 4.0.484
+  - id: edge_tts_narration
+    status: evidenced_online_dependency
+  - id: cosyvoice_300m_sft_chinese
+    status: historical_evidence_current_assets_missing
+    historical_result: ten_of_ten_segments_whisper_verified
+  - id: bgm_library_tooling
+    status: scripts_present_data_root_missing
+    path: /Users/jacky/.claude/skills/bgm-library
+  - id: shared_skill_archives
+    status: discovered_unverified
+    count: 5
+  - id: local_video_generation
+    status: not_evidenced
+  - id: local_lipsync_digital_human
+    status: not_evidenced
+
+recurring_issues:
+  - wrong_python_environment
+  - stale_proxy_configuration
+  - incomplete_or_placeholder_model_files
+  - custom_node_api_drift
+  - mps_precision_or_operator_incompatibility
+  - unified_memory_contention
+  - local_metric_overriding_whole_output_quality
+  - versioned_documents_with_conflicting_conclusions
+  - shared_memory_runtime_state_staleness

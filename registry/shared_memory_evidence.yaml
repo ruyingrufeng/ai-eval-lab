@@ -1,0 +1,124 @@
+schema_version: 1
+source_library: /Users/jacky/Library/Mobile Documents/com~apple~CloudDocs/AI Agent/共享记忆库
+indexed_at: "2026-08-12T10:54:49+08:00"
+timezone: Asia/Shanghai
+time_policy:
+  required_fields: [source_recorded_at, source_time_precision, last_verified_at, indexed_at]
+  unknown_value: unknown
+  rule: do_not_infer_missing_source_times
+
+records:
+  - id: cosyvoice_300m_sft_chinese_success
+    source_file: 07_agent交接日志.md
+    source_heading: "2026-06-29 · 阿伟（CosyVoice 播客 v4: 切换 SFT 模型成功）"
+    source_recorded_at: "2026-06-29"
+    source_time_precision: day
+    last_verified_at: "2026-08-12"
+    last_verified_precision: day
+    indexed_at: "2026-08-12T10:54:49+08:00"
+    status: historical_result_current_weights_missing
+    result: ten_of_ten_segments_whisper_verified
+
+  - id: bgm_library_tooling_created
+    source_file: 07_agent交接日志.md
+    source_heading: "2026-06-30 · 阿伟"
+    source_recorded_at: "2026-06-30"
+    source_time_precision: day
+    last_verified_at: "2026-08-12"
+    last_verified_precision: day
+    indexed_at: "2026-08-12T10:54:49+08:00"
+    status: scripts_present_data_root_missing
+
+  - id: instantid_scoped_success
+    source_file: 07_agent交接日志.md
+    source_heading: "2026-08-07 13:15 · 阿伟"
+    source_recorded_at: "2026-08-07T13:15:00+08:00"
+    source_time_precision: minute
+    last_verified_at: "2026-08-12"
+    last_verified_precision: day
+    indexed_at: "2026-08-12T10:54:49+08:00"
+    status: historical_success_limited_scope
+    result: similarity_0.729_to_0.831
+    superseded_in_scope_by: instantid_fullbody_limitations
+
+  - id: instantid_fullbody_limitations
+    source_file: 07_agent交接日志.md
+    source_heading: "2026-08-10 11:50 · 阿伟"
+    source_recorded_at: "2026-08-10T11:50:00+08:00"
+    source_time_precision: minute
+    last_verified_at: "2026-08-12"
+    last_verified_precision: day
+    indexed_at: "2026-08-12T10:54:49+08:00"
+    status: failed_general_fullbody_acceptance
+
+  - id: flux_q4_generation_direction
+    source_file: 07_agent交接日志.md
+    source_heading: "2026-08-10 16:05 · 阿伟"
+    source_recorded_at: "2026-08-10T16:05:00+08:00"
+    source_time_precision: minute
+    last_verified_at: "2026-08-12"
+    last_verified_precision: day
+    indexed_at: "2026-08-12T10:54:49+08:00"
+    status: generation_runnable_identity_pending
+
+  - id: flux_img2img_identity_result
+    source_file: 07_agent交接日志.md
+    source_heading: "2026-08-10 16:20 · 阿伟（共享记忆刷新 2）"
+    source_recorded_at: "2026-08-10T16:20:00+08:00"
+    source_time_precision: minute
+    last_verified_at: "2026-08-12"
+    last_verified_precision: day
+    indexed_at: "2026-08-12T10:54:49+08:00"
+    status: scoped_success_halfbody_composition
+    result: similarity_0.598
+
+  - id: flux_ipadapter_hulili_failure
+    source_file: 07_agent交接日志.md
+    source_heading: "2026-08-11 · 阿伟（Hermes）· HuLiLi 数字人项目启动 + 形象攻坚第一轮"
+    source_recorded_at: "2026-08-11"
+    source_time_precision: day
+    last_verified_at: "2026-08-12"
+    last_verified_precision: day
+    indexed_at: "2026-08-12T10:54:49+08:00"
+    status: failed_acceptance
+    result: similarity_0.24_to_0.30
+
+  - id: llama_server_multimodel_routing
+    source_file: 07_agent交接日志.md
+    source_heading: "2026-08-10 17:10 · Codex"
+    source_recorded_at: "2026-08-10T17:10:00+08:00"
+    source_time_precision: minute
+    last_verified_at: "2026-08-12"
+    last_verified_precision: day
+    indexed_at: "2026-08-12T10:54:49+08:00"
+    status: current_at_last_verification
+
+  - id: shared_skill_archives
+    source_file: multiple
+    source_heading: unknown
+    source_recorded_at: unknown
+    source_time_precision: unknown
+    last_verified_at: "2026-08-12"
+    last_verified_precision: day
+    indexed_at: "2026-08-12T10:54:49+08:00"
+    status: discovered_unverified
+    count: 5
+
+  - id: shared_memory_runtime_conflicts
+    source_file: 09_硬件档案.md
+    source_heading: multiple
+    source_recorded_at: "2026-08-10"
+    source_time_precision: day
+    last_verified_at: "2026-08-12"
+    last_verified_precision: day
+    indexed_at: "2026-08-12T10:54:49+08:00"
+    status: stale_or_conflicting
+    conflicts:
+      - comfyui_runtime_state
+      - impact_pack_install_state
+      - juggernautxl_recommendation
+      - scribble_sdxl_readiness
+      - ipadapter_general_readiness
+      - bgm_data_root
+      - cosyvoice_weight_presence
+      - free_disk_snapshot

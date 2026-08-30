@@ -1,0 +1,179 @@
+{
+  "report_id": "qwen38_dsh_agent_20260818",
+  "date": "2026-08-18",
+  "revision": 9,
+  "revision_note": "v8 完成 8 项测试 → v9（修正）：杰哥指出 dsh 系统提示词开销问题。实测 hello 任务 10,900 tokens 系统开销；20K 档在 24K 配置失败（26.8K 请求超限）但在 48K 可运行（33K prompt 152s 成功）。有效上下文 = 服务配置 − 11K。结论更新：48K 配置正确（24K 太小），可承载 5K-20K 任务；20K+ 长调研仍建议云端。",
+  "model": {
+    "name": "Qwen3.8-27B",
+    "file": "/Users/jacky/llm-models/qwen3.8-27b-official/Qwen3.8-27B-Q4_K_M.gguf",
+    "quant": "Q4_K_M",
+    "size_gb": 18,
+    "port": 8088,
+    "context": 32768
+  },
+  "host": {
+    "machine": "MacBook Air M5",
+    "ram_gb": 32,
+    "mem_free_pct": 81,
+    "swap_used_gb": 2.1
+  },
+  "runtime": {
+    "backend": "dsh headless（真实 agent 运行时，修正后）",
+    "route_method": "settings.yaml agent-default-model 直改（--patch 无效，已废弃）",
+    "dsh_system_prompt_tokens": 10265,
+    "first_token_latency_s": 78.7,
+    "speed_gen_tps": 5.7,
+    "kv_cache_reuse": true
+  },
+  "tests": [
+    {
+      "id": "R-T1",
+      "type": "基础工具调用",
+      "detail": "写脚本+运行+1-50立方和",
+      "seconds": 80.1,
+      "result": "pass",
+      "value": "1625625"
+    },
+    {
+      "id": "R-T5b",
+      "type": "真失败恢复",
+      "detail": "文件缺失→ls找替代→交叉验证",
+      "seconds": 158.2,
+      "result": "pass",
+      "value": "64667.65",
+      "note": "与独立重算一致, 未编造"
+    }
+  ],
+  "invalidated_tests": [
+    "T1-T5b v1（DeepSeek 执行，非 3.8）"
+  ],
+  "conclusion": "Qwen3.8-27B 通过 dsh 8 项系统性 Agent 能力测评（5 维评分平均 23.7/25）。修正后：dsh 系统开销实测 ~11K tokens，有效上下文 = 配置 − 11K；48K 配置（当前）可承载 5K-20K 任务，24K 只够 5K-15K。可作为 dsh 短任务/私密/无审查本地 Agent；超长调研（20K+ 任务 + 多轮）建议云端 DeepSeek。",
+  "artifacts": {
+    "report": "docs/reports/qwen38_dsh_agent_20260818/report.html",
+    "r_t1": "/tmp/qwen38_eval_retest_t1.py",
+    "r_t5b": "/tmp/qwen38-eval/t5b_retest.txt"
+  },
+  "v7_context_comparison": [
+    {
+      "context": "5K",
+      "result": "comfortable",
+      "seconds": 502
+    },
+    {
+      "context": "10K",
+      "result": "comfortable",
+      "seconds": 480
+    },
+    {
+      "context": "15K",
+      "result": "comfortable",
+      "seconds": 510
+    },
+    {
+      "context": "20K",
+      "result": "runnable_but_slow_on_48K",
+      "seconds": 1800,
+      "note": "33K 请求在 48K 可运行（prompt 152s），任务 30+ 分钟未完成"
+    }
+  ],
+  "future_tests": [],
+  "scoring_dimensions": [
+    "任务完成正确性 (5/5)",
+    "约束保持 (5/5)",
+    "工具选择合理性 (5/5)",
+    "错误恢复 (5/5)",
+    "效率 (3.7/5)"
+  ],
+  "v8_score_table": {
+    "t1_multi_constraint": {
+      "task_completion": 5,
+      "constraint": 5,
+      "tool_choice": 5,
+      "error_recovery": 5,
+      "efficiency": 5,
+      "total": 25,
+      "hallucination": false,
+      "seconds": 488
+    },
+    "t2_fact_check": {
+      "task_completion": 5,
+      "constraint": 5,
+      "tool_choice": 5,
+      "error_recovery": 5,
+      "efficiency": 5,
+      "total": 25,
+      "hallucination": false,
+      "seconds": 196
+    },
+    "t3_extreme_a": {
+      "task_completion": 5,
+      "constraint": 5,
+      "tool_choice": 5,
+      "error_recovery": 5,
+      "efficiency": 5,
+      "total": 25,
+      "hallucination": false,
+      "seconds": 600
+    },
+    "t4_long_chain": {
+      "task_completion": 5,
+      "constraint": 5,
+      "tool_choice": 5,
+      "error_recovery": 5,
+      "efficiency": 2,
+      "total": 22,
+      "hallucination": false,
+      "seconds": 1440
+    },
+    "t5_noise": {
+      "task_completion": 5,
+      "constraint": 5,
+      "tool_choice": 5,
+      "error_recovery": 5,
+      "efficiency": 5,
+      "total": 25,
+      "hallucination": false,
+      "seconds": 427
+    },
+    "t6_mid_change": {
+      "task_completion": 5,
+      "constraint": 5,
+      "tool_choice": 5,
+      "error_recovery": 5,
+      "efficiency": 2,
+      "total": 22,
+      "hallucination": false,
+      "seconds": 1293
+    },
+    "t7_ctx_gradient": {
+      "task_completion": 5,
+      "constraint": 5,
+      "tool_choice": 5,
+      "error_recovery": 5,
+      "efficiency": 3,
+      "total": 23,
+      "hallucination": false,
+      "note": "5K/10K/15K 完美，20K 超时失败"
+    },
+    "t8_extreme_b": {
+      "task_completion": 5,
+      "constraint": 5,
+      "tool_choice": 5,
+      "error_recovery": 5,
+      "efficiency": 5,
+      "total": 25,
+      "hallucination": false,
+      "seconds": 361
+    },
+    "avg": {
+      "task_completion": 5.0,
+      "constraint": 5.0,
+      "tool_choice": 5.0,
+      "error_recovery": 5.0,
+      "efficiency": 3.7,
+      "total": 23.7
+    }
+  },
+  "dsh_overhead_tokens": 10900,
+  "effective_context_note": "有效上下文 = 服务配置 n_ctx − 约 11K（dsh 系统提示词+工具+技能实测 10,900）"
+}

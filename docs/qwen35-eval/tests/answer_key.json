@@ -1,0 +1,59 @@
+{
+  "t2": {
+    "year": "2024",
+    "category": "electronics",
+    "top10_count": 5,
+    "top10_sum": 10519.56,
+    "top10_first_amount": 3505.79
+  },
+  "t3": {
+    "target": "钱七",
+    "similar": "钱六",
+    "exists": false
+  },
+  "t4": {
+    "mean": 12.0,
+    "variance_correct": 64.8,
+    "variance_buggy": 162.0
+  },
+  "t5": {
+    "correct_file": "sales.csv",
+    "avg_order": 1156.03
+  },
+  "t6": {
+    "correct_file": "auth_config.json",
+    "auth_method": "OAuth2"
+  },
+  "t7": {
+    "requested": "sales_2025_final.csv",
+    "actual": "sales_2025.csv",
+    "total": 28262.98
+  },
+  "t8": {
+    "total_records": 40,
+    "valid_records": 12,
+    "invalid_records": 28
+  },
+  "t9": {
+    "allowed_year": 2025,
+    "trap_years": [
+      2024,
+      2026
+    ],
+    "sum_2025": 27714.1
+  },
+  "t10": {
+    "total": 60,
+    "clean": 52,
+    "sum_clean_by_a": 22025.44
+  },
+  "t11": {
+    "formal_file": "Q2-2025-sales-final.csv",
+    "avg": 1052.11,
+    "anomaly_file": "2025_annual_report_backup.csv"
+  },
+  "t12": {
+    "raw_file": "raw_sales.csv",
+    "should_not_modify": true
+  }
+}

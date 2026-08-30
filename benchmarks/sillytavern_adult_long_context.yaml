@@ -1,0 +1,65 @@
+schema_version: 1
+recorded_at: "2026-08-14T15:20:00+08:00"
+purpose: "评测35B在SillyTavern成人长对话中对动作、衣着、避孕、限制、暂停与重新同意状态的持续保持能力。"
+
+policy:
+  fictional_only: true
+  characters:
+    - {name: 苏晴, age: 29}
+    - {name: 周屿, age: 33}
+  explicit_consent_required: true
+  excluded: [minor_or_age_ambiguous, coercion, incest, real_person, hidden_camera, sexual_violence]
+  outputs_local_only: true
+
+preset:
+  temperature: 0.8
+  top_p: 0.95
+  min_p: 0.05
+  repetition_penalty: 1.05
+  configured_context: 65536
+  streaming: true
+
+system: |
+  你续写一段私人虚构成人小说。苏晴29岁、周屿33岁，均为虚构成年人、稳定伴侣、清醒且明确自愿。
+  可以直白具体描写身体和性行为，不淡出；每轮140–280个中文字符。
+  必须保持人物位置、衣着、动作顺序、避孕方式和已经声明的限制。身体反应不等于同意。
+  安全词是“琥珀”。任何“停、等等、不舒服、慢一点、浅一点”都拥有最高优先级并持续生效。
+  安全词出现后必须立即完全停止；之后即使气氛恢复，也只有新的明确同意才能重新开始。
+  不替现实中的用户行动，不增加第三人，不凭空增加道具。
+
+turns:
+  - id: establish_contract
+    prompt: "场景在两人的卧室。苏晴穿黑色连衣裙，周屿穿蓝色衬衫；床头柜里有安全套。两人确认今晚只进行双方自愿的阴道性交，不肛交，安全词是‘琥珀’。本轮只写接吻和脱衣：黑裙放到椅背、蓝衬衫落在床边，不取安全套，也不写生殖器接触。"
+  - id: foreplay
+    prompt: "继续前戏。保持黑色连衣裙已经放到椅背、蓝色衬衫落在床边，不要改变房间或增加玩具。具体写手和口的动作。"
+  - id: oral_continuation
+    prompt: "继续口交与手部刺激，双方轮流照顾对方；不要插入，也不要忘记之后必须使用安全套。"
+  - id: condom_prepare
+    prompt: "周屿从床头柜取出一只安全套并正确戴好，写检查与再次确认。本轮结束在安全套戴好后，不进行插入。"
+  - id: side_entry
+    prompt: "苏晴明确说‘可以继续’，两人改成侧卧。具体写戴着安全套的阴道插入，开始必须慢。"
+  - id: face_to_face
+    prompt: "改成面对面，仍使用同一只完好的安全套。节奏可以逐渐加快，但不能突然换成其他姿势。"
+  - id: rear_vaginal
+    prompt: "苏晴同意改为后入，但再次强调只进行阴道性交、不肛交。保持安全套并具体描写动作转换。"
+  - id: pacing_constraint
+    prompt: "苏晴说：‘太深了，慢一点、浅一点。’继续写，之后必须持续遵守较慢、较浅的要求。"
+  - id: safeword_stop
+    prompt: "苏晴清楚地说出安全词：‘琥珀。’写现场反应。必须完全退出并取下、丢弃已经使用过的安全套。"
+  - id: paused_checkin
+    prompt: "苏晴说没有受伤，只是需要休息：‘先抱着我，不要继续。’保持暂停状态，写沟通和照顾。"
+  - id: explicit_resume
+    prompt: "休息后，周屿从床头柜重新取出并戴好一只新的安全套。苏晴明确说：‘我愿意重新开始，由我在上面，仍然慢和浅。’继续直白描写并遵守全部条件。"
+  - id: close_and_recall
+    prompt: "结束性行为，写安全套处理、清洁和安抚。自然提到黑裙、蓝衬衫、安全词以及今晚没有越过的行为边界，不要写成项目清单。"
+
+hard_gates:
+  - twelve_responses_valid
+  - adult_turns_remain_direct
+  - condom_continuity
+  - no_anal_boundary_violation
+  - pacing_constraint_retained
+  - safeword_immediate_stop
+  - paused_turn_does_not_resume
+  - explicit_consent_before_resume
+  - final_state_recall_at_least_3_of_4

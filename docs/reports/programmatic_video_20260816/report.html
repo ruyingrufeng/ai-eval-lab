@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>程序化视频评测 · 2026-08-16</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gradient-primary: linear-gradient(135deg, #5A4BD1 0%, #A29BFE 50%, #E85A8E 100%);
+  --gradient-hero: linear-gradient(135deg, #5A4BD1 0%, #A29BFE 35%, #E85A8E 70%, #74B9FF 100%);
+  --gradient-num: linear-gradient(135deg, #5A4BD1 0%, #9F8FFF 50%, #E85A8E 100%);
+  --color-purple: #5A4BD1; --color-pink: #E85A8E; --color-blue: #74B9FF;
+  --color-bg: #F8F9FA; --color-card: #FFFFFF; --color-border: #E9ECEF;
+  --color-text: #0F0F1A; --color-text-muted: #4A4A5E;
+  --color-success: #2A9D2E; --color-warning: #E08800; --color-error: #D93838; --color-info: #2A6CDF;
+  --radius-lg: 16px; --radius-xl: 24px;
+  --shadow-card: 0 4px 16px rgba(90,75,209,0.12), 0 2px 4px rgba(90,75,209,0.06);
+  --font-sans: 'Inter', 'PingFang SC', 'SF Pro Display', -apple-system, system-ui, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); font-size: 16px; line-height: 1.7;
+  color: var(--color-text); background: linear-gradient(135deg, #F5F3FF 0%, #FAF5FF 50%, #FFF5F8 100%);
+  min-height: 100vh; padding: 24px 16px; }
+body::before { content: ''; position: fixed; inset: 0; z-index: -1;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 10%, rgba(90,75,209,0.22) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(232,90,142,0.16) 0%, transparent 50%);
+  pointer-events: none; }
+.wrap { max-width: 1120px; margin: 0 auto; position: relative; z-index: 1; }
+.hero { background: var(--gradient-hero); border-radius: var(--radius-xl);
+  padding: 56px 32px; color: #fff; margin-bottom: 32px;
+  box-shadow: 0 20px 60px rgba(90,75,209,0.30); position: relative; overflow: hidden; }
+.hero .badge { display: inline-block; background: rgba(255,255,255,0.20);
+  backdrop-filter: blur(12px); padding: 6px 16px; border-radius: 999px;
+  font-size: 13px; font-weight: 700; letter-spacing: 0.05em;
+  margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.30); }
+.hero h1 { font-size: 44px; font-weight: 900; letter-spacing: -0.02em;
+  margin-bottom: 12px; text-shadow: 0 4px 16px rgba(0,0,0,0.20); }
+.hero .sub { font-size: 17px; opacity: 0.95; max-width: 900px; line-height: 1.6; }
+h2 { font-size: 24px; font-weight: 800; position: relative; padding-bottom: 14px; margin: 48px 0 20px; }
+h2::after { content: ''; position: absolute; left: 0; bottom: 0;
+  width: 60px; height: 3px; background: var(--gradient-primary); border-radius: 3px; }
+.card { background: rgba(255,255,255,0.92); backdrop-filter: blur(24px) saturate(1.6);
+  border: 1px solid rgba(90,75,209,0.20); border-radius: var(--radius-lg);
+  padding: 28px; box-shadow: var(--shadow-card); margin-bottom: 24px; }
+.num { font-variant-numeric: tabular-nums; font-weight: 900; font-size: 44px;
+  background: var(--gradient-num); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+  filter: drop-shadow(0 3px 8px rgba(90,75,209,0.25)); line-height: 1.1; letter-spacing: -0.04em; }
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 20px 0 32px; }
+.stat { background: rgba(255,255,255,0.92); border: 1px solid rgba(90,75,209,0.20);
+  border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-card);
+  position: relative; overflow: hidden; }
+.stat::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--gradient-primary); }
+.stat .label { font-size: 13px; font-weight: 600; color: var(--color-text-muted);
+  text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+.stat .desc { font-size: 13px; color: var(--color-text-muted); line-height: 1.5; }
+table { width: 100%; border-collapse: collapse; margin: 16px 0;
+  background: rgba(255,255,255,0.92); border-radius: var(--radius-lg); overflow: hidden;
+  box-shadow: var(--shadow-card); border: 1px solid rgba(90,75,209,0.15); font-size: 14px; }
+th { background: rgba(90,75,209,0.08); color: var(--color-purple);
+  font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  font-size: 12px; padding: 14px 16px; text-align: left;
+  border-bottom: 2px solid rgba(90,75,209,0.20); }
+td { padding: 14px 16px; color: var(--color-text);
+  border-bottom: 1px solid rgba(90,75,209,0.10); font-size: 14px; }
+tr:hover td { background: rgba(90,75,209,0.05); }
+.ok { color: var(--color-success); font-weight: 700; }
+.warn { color: var(--color-warning); font-weight: 700; }
+.badge-ok { background: rgba(42,157,46,0.12); color: var(--color-success);
+  border: 1px solid rgba(42,157,46,0.30); padding: 4px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; }
+.badge-warn { background: rgba(224,136,0,0.12); color: var(--color-warning);
+  border: 1px solid rgba(224,136,0,0.30); padding: 4px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; }
+.note { background: rgba(90,75,209,0.06); border-left: 4px solid var(--color-purple);
+  padding: 20px 24px; margin: 16px 0; border-radius: 0 var(--radius-lg) var(--radius-lg) 0; }
+.note strong { color: var(--color-purple); }
+pre { background: #14102A; color: #E8E8F0; border: 1px solid rgba(90,75,209,0.30);
+  padding: 16px 20px; border-radius: 12px; overflow-x: auto;
+  font-family: 'SF Mono', Consolas, monospace; font-size: 13px; line-height: 1.6; margin: 12px 0; }
+video { width: 100%; border-radius: 12px; margin: 8px 0; }
+footer { margin-top: 80px; padding: 32px 0; text-align: center;
+  color: var(--color-text-muted); font-size: 13px; border-top: 1px solid rgba(90,75,209,0.15); }
+@media (max-width: 768px) { .hero { padding: 40px 24px; } .hero h1 { font-size: 32px; } .num { font-size: 36px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <span class="badge">2026-08-16 · 内容工厂管理 · 程序化视频评测</span>
+    <h1>程序化视频评测（P2 遗留 · 收口）</h1>
+    <div class="sub">
+      固定案例：15 秒数据解说（渐变背景 + 标题动画 + 图表 + MiniMax-TTS 旁白 + 字幕），1920×1080 @ 30fps，450 帧。候选：HyperFrames 0.7.109 / Remotion 4.0.512 / FFmpeg 8.1.2。
+    </div>
+  </div>
+
+  <h2>关键数字</h2>
+  <div class="stat-grid">
+    <div class="stat"><div class="label">HyperFrames 渲染</div><div class="num">13.6s</div><div class="desc">450 帧 draft 质量，静态帧去重省 39%</div></div>
+    <div class="stat"><div class="label">Remotion 渲染</div><div class="num">~2min</div><div class="desc">450 帧含 bundle，需先解决 Chrome 下载</div></div>
+    <div class="stat"><div class="label">FFmpeg 竖版</div><div class="num">1.2s</div><div class="desc">1080×1920 竖版转码成功</div></div>
+    <div class="stat"><div class="label">程序化视频链</div><div class="num">✅ 可用</div><div class="desc">三候选全过，本机可跑</div></div>
+  </div>
+
+  <div class="card">
+    <h2>1. 候选渲染结果</h2>
+    <table>
+      <thead><tr><th>候选</th><th>版本</th><th>渲染</th><th>输出</th><th>判定</th></tr></thead>
+      <tbody>
+        <tr><td><strong>HyperFrames</strong></td><td>0.7.109</td><td>13.6s（draft）</td><td>h264+aac · 15.0s · 1.0MB</td><td><span class="badge-ok">✅ 最快</span></td></tr>
+        <tr><td><strong>Remotion</strong></td><td>4.0.512</td><td>~2min（含 bundle）</td><td>h264+aac · 15.02s · 0.95MB</td><td><span class="badge-ok">✅ 可用</span></td></tr>
+        <tr><td><strong>FFmpeg</strong></td><td>8.1.2</td><td>竖版 1.2s / GIF 0.2s / loudnorm 0.5s</td><td>1080×1920 / 174KB gif / -16 LUFS</td><td><span class="badge-ok">✅ 封装全通</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3>成片可看（同一固定案例）</h3>
+    <h4>HyperFrames 成片（含 MiniMax 旁白）</h4>
+    <video controls src="../../results/programmatic_video_20260816/bench_hf_audio.mp4"></video>
+    <h4>Remotion 成片（含 MiniMax 旁白）</h4>
+    <video controls src="../../results/programmatic_video_20260816/bench_remotion.mp4"></video>
+  </div>
+
+  <div class="card">
+    <h2>2. 踩坑记录（写 skill 备查）</h2>
+    <table>
+      <thead><tr><th>坑</th><th>根因</th><th>解决</th></tr></thead>
+      <tbody>
+        <tr><td>npm install 卡死</td><td>走死代理 7892 ECONNREFUSED</td><td>unset 代理 + NO_PROXY=* 重装</td></tr>
+        <tr><td>clip 元素动画报错</td><td>框架管理 visibility，不能动画 clip</td><td>内层包非 clip wrapper</td></tr>
+        <tr><td>scene 退出残留</td><td>缺 visibility:hidden hard kill</td><td>tl.set(..., {visibility:"hidden"}, 结束点)</td></tr>
+        <tr><td>Remotion Chrome 下载卡死</td><td>remotion.dev 走代理失败</td><td>复用 HyperFrames Chrome：--browser-executable</td></tr>
+        <tr><td>create-video 无依赖</td><td>脚手架不自动装</td><td>手动 npm install（363 包 5min）</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    <strong>结论</strong>：程序化视频链（HyperFrames/Remotion + MiniMax-TTS + FFmpeg）本机验证可用。<strong>HyperFrames 推荐为主力</strong>（渲染最快 + 自带 check 质量门禁 + seek-safe 规范），Remotion 适合模板化 React 卡片场景，FFmpeg 负责封装/竖版/响度。旁白用刚定案的 MiniMax-TTS（13.6s 合成即用）。<br><br>
+    <strong>遗留</strong>：① LTX-Video 生成式镜头 P2 未测（需下载权重，本机 32GB 门槛待验证）；② HyperFrames 对比度 WCAG 检查需人工调（check 会报 caption 3.67:1 但渲染不受阻）。
+  </div>
+
+  <footer>内容工厂管理 · 程序化视频评测 · 阿伟生成 · 2026-08-16</footer>
+</div>
+</body>
+</html>

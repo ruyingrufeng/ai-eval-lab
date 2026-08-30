@@ -1,0 +1,147 @@
+schema_version: 1
+recorded_at: "2026-08-30T14:34:51+08:00"
+host_profile: apple_m5_32gb
+scope: environment_selection_and_validation_only
+adult_capability_policy: legal_adults_only_no_production_assets
+
+current_production_routing:
+  supersedes_historical_candidate_defaults_below: true
+  text:
+    sillytavern: {model: qwen3_6_27b_fable_gguf, endpoint: 8086, context: 65536, state: production}
+    hermes_jianguo: {model: qwen3_8_27b_ridge_gguf, endpoint: 8086, context: 81920, state: production_local_profile}
+    dsh: {model: glm4_7_flash_q4_k_m, endpoint: 8086, context_hard_limit: 65536, working_window: 32768, state: production_local_default}
+  cloud_hermes:
+    profiles: [root, awei, blogger]
+    default: {provider: zhipu, model: glm-4.7-flash, context: 200000, max_tokens: 16384}
+    fallback_order: [agnes-2.5-flash, deepseek-v4-flash]
+  speech:
+    qwen3_tts_mlx: {endpoint: 9893, state: runnable_retest_in_progress, service_mode: manual_on_demand}
+  retired_models: [qwen3_30b, qwen3_6_35b, gemma4_12b]
+
+content_types:
+  - id: agent_workflow
+    stages: [understand_business_goal, inspect_sources, plan, tool_call, analyze_or_create, verify, revise, deliver]
+    harness: hermes_agent_0_20_0
+    primary_candidates:
+      - {id: qwen3_6_27b_fable_gguf, tool: llama_server, state: failed_default_content_growth_agent, technical_smoke_pass_rate: 0.667, business_workflow_stage_pass: "0/4"}
+      - {id: qwen30b_a3b_gguf, tool: llama_server, state: failed_180s_agent_gate_files_complete_no_exit, actual_context: 40960}
+      - {id: qwen35b_a3b_gguf, tool: llama_server, state: failed_180s_agent_gate_files_complete_no_exit, actual_context: 65536}
+    verified_strengths: [technical_harness_bounded_bugfix, technical_harness_structured_repository_maintenance]
+    business_workflows_pending: [research_to_decision_loop, interview_to_insight_loop]
+    weak_or_unverified: [hermes_completion_and_exit, full_content_growth_loop, interactive_latency, evidence_report_consistency, failure_recovery, ambiguity_control]
+    default_numeric_reporting_route: deterministic_json_then_agent_narrative_then_external_check
+    gates: [grader_passes, scope_control, tool_grounding, verification, latency, no_unrelated_changes]
+    plan: docs/AGENT_BUSINESS_EVALUATION_PLAN_20260814.md
+    harness_smoke_report: docs/AGENT_LLM_EVALUATION_20260814.md
+    latest_business_report: docs/CONTENT_GROWTH_AGENT_EVALUATION_20260814.md
+
+  - id: self_media_article
+    stages: [research_digest, outline, drafting, rewriting, fact_review, packaging]
+    primary_candidates:
+      - {id: qwen3_6_27b_fable_gguf, tool: llama_server, state: installed_first_test}
+      - {id: qwen30b_a3b_gguf, tool: llama_server, state: installed_comparison}
+      - {id: qwen35b_a3b_gguf, tool: llama_server, state: installed_comparison}
+      - {id: qwen_7b_14b_4bit, tool: mlx_lm, state: model_selection_pending}
+    auxiliaries: [qwen2_5_vl_7b_for_image_understanding, markdown_json_validator]
+    gates: [chinese_quality, factual_retention, structured_output, long_context, throughput]
+
+  - id: image_asset
+    stages: [text_to_image, image_to_image, composition_control, identity_control, retouch, layout]
+    primary_candidates:
+      - {id: flux1_schnell_q4_gguf, tool: comfyui, state: production_fast_default, steps: 4}
+      - {id: flux1_dev_q4_gguf, tool: comfyui, state: production_quality_default, steps: 20}
+      - {id: draw_things, tool: native_macos, state: installation_recheck}
+    retained_non_default:
+      - {id: realvisxl_v5, tool: comfyui, state: retained_for_reproducibility_and_fallback}
+    control_candidates: [openpose_sdxl, instantid, ip_adapter, lora, insightface]
+    quarantined_until_retest: [juggernautxl, scribble_sdxl, flux_ipadapter_identity, faceid_fullbody]
+    gates: [prompt_following, composition, identity_closeup, identity_fullbody, stability, license]
+    latest_general_generation_retest:
+      tested_at: "2026-08-12T11:22:10+08:00"
+      realvisxl_v5: {state: runnable_reproducible_limited_sample, seconds: [58.51, 60.34], prompt_following: medium}
+      flux1_dev_q4_gguf: {state: runnable_reproducible_limited_sample, seconds: [353.79, 434.08], prompt_following: strong}
+      report: docs/IMAGE_RETEST_20260812.md
+    latest_speed_workflow_retest:
+      tested_at: "2026-08-14T07:24:00+08:00"
+      flux1_schnell_q4_gguf: {state: verified_limited_three_scenes, mean_seconds: 89.59, role: fast}
+      flux1_dev_q4_gguf: {state: verified_limited_three_scenes, mean_seconds: 391.27, role: quality}
+      speedup: 4.37
+      report: docs/FLUX_SCHNELL_EVALUATION_20260814.md
+    latest_identity_retest:
+      tested_at: "2026-08-14T11:30:00+08:00"
+      masters: {state: verified_three_angles, pairwise_similarity: [0.6125, 0.6232, 0.7433]}
+      flux_ipadapter: {state: failed_exact_identity_fullbody, all_master_mean: [0.3089, 0.3478], fullbody_pass: "0/2"}
+      inswapper_two_stage: {state: failed_fullbody_small_face, similarity_range: [0.0774, 0.1186], visual_pass: "0/3"}
+      decision: freeze_generic_local_reference_identity_route
+      allowed_future_routes: [trained_character_lora, online_identity_editing]
+      report: docs/FLUX_TWO_STAGE_IDENTITY_EVALUATION_20260814.md
+
+  - id: video_asset
+    lanes:
+      programmatic_composition:
+        primary_candidates: [hyperframes, remotion_4_0_484, ffmpeg, qwen3_tts_custom_voice]
+        fallback_candidates: [edge_tts, local_bgm_tooling]
+      generative_shot:
+        primary_candidates:
+          - {id: ltx_video_mps, state: research_candidate}
+        observe_only: [wan_video, hunyuan_video]
+    gates: [render_reproducibility, audio_sync, caption_sync, peak_memory, seconds_per_frame]
+
+  - id: novel
+    stages: [world_bible, character_cards, volume_outline, chapter_generation, continuity_review]
+    primary_candidates:
+      - {id: qwen3_6_27b_fable_gguf, tool: llama_server, state: installed_first_test}
+      - {id: qwen30b_a3b_abliterated_gguf, tool: llama_server, state: installed_adult_boundary_comparison}
+      - {id: qwen35b_a3b_gguf, tool: llama_server, state: installed_comparison}
+    orchestration_candidates: [sillytavern_character_book, structured_novel_state_store]
+    gates: [character_voice, timeline_consistency, repetition, plot_progression, adult_boundary_control]
+    latest_sillytavern_retest:
+      tested_at: "2026-08-14T14:33:06+08:00"
+      scope: five_turn_neutral_adult_roleplay_baseline
+      qwen35b_tuned: {state: recommended_quality_default_candidate, hard_gate: pass, memory: "3/3", allergy_memory: pass, mean_ttft_seconds: 0.468, mean_turn_seconds: 2.459}
+      qwen35b_default: {state: passes_not_preferred_over_tuned, hard_gate: pass, memory: "3/3", allergy_memory: pass, mean_ttft_seconds: 0.460, mean_turn_seconds: 2.759}
+      qwen30b_default: {state: ultrafast_short_chat_experiment_only, hard_gate: fail, memory: "2/3", allergy_memory: fail, mean_ttft_seconds: 0.266, mean_turn_seconds: 0.903, actual_context: 40960}
+      qwen27b_default: {state: not_recommended_as_default, hard_gate: fail, memory: "1/3", allergy_memory: pass, mean_ttft_seconds: 1.689, mean_turn_seconds: 7.403}
+      unverified: [long_context_16k_32k, world_info_priority, multi_session_state, boundary_specialist]
+      report: docs/SILLYTAVERN_MODEL_EVALUATION_20260814.md
+    latest_sillytavern_adult_retest:
+      tested_at: "2026-08-14T15:10:00+08:00"
+      scope: fictional_consensual_adults_explicit_intercourse_four_turns
+      qwen35b_tuned: {state: recommended_adult_default_candidate, automatic_gate: pass, warm_ttft_seconds: 0.576, warm_turn_seconds: 4.673}
+      qwen27b_fable: {state: explicit_style_candidate_not_default, automatic_gate: pass, warm_ttft_seconds: 2.725, warm_turn_seconds: 29.819}
+      qwen30b_abliterated: {state: failed_requested_directness, automatic_gate: fail, warm_ttft_seconds: 0.336, warm_turn_seconds: 1.992}
+      hard_scope: [fictional, adults_25_plus, explicit_consent]
+      excluded: [minor_or_age_ambiguous, coercion, incest, real_person, hidden_camera, sexual_violence]
+      report: docs/SILLYTAVERN_ADULT_EXPLICIT_EVALUATION_20260814.md
+    latest_sillytavern_adult_continuity:
+      tested_at: "2026-08-14T15:35:00+08:00"
+      candidate: qwen35b_tuned
+      scope: twelve_turn_continuity_final_prompt_1800_tokens
+      decision: state_and_consent_pass_style_and_local_instruction_fail
+      passed: [responses_12_of_12, condom_state, no_anal_boundary, pacing_slow_shallow, safeword_stop, paused_state, explicit_resume, final_state_4_of_4]
+      failed: [length_control_1_of_12, mutual_oral_instruction]
+      mean_ttft_seconds: 0.489
+      mean_turn_seconds: 2.950
+      report: docs/SILLYTAVERN_ADULT_CONTINUITY_EVALUATION_20260814.md
+
+  - id: digital_human_asset
+    stages: [persona, identity_master, expression_pose, voice, driving, lipsync, packaging]
+    primary_candidates:
+      persona: [local_text_models, structured_character_card]
+      identity: [trained_character_lora_future_scope, online_identity_editing]
+      retained_non_default: [comfyui_realvisxl]
+      voice: [qwen3_tts_custom_voice, qwen3_tts_base_authorized_clone]
+      animation: [liveportrait_mps_candidate]
+      lipsync: [liveportrait_mps_candidate]
+      packaging: [hyperframes, remotion, ffmpeg]
+    not_preferred_on_host: [musetalk_cuda_pipeline]
+    rejected_after_retest: [flux_ipadapter_exact_identity, inswapper_fullbody_small_face]
+    gates: [identity_closeup, identity_fullbody, voice_authorization, lip_sync_error, temporal_stability]
+
+priority_order:
+  - agent_workflow_existing_models
+  - article_and_novel_existing_models
+  - image_existing_workflows
+  - programmatic_video_pipeline
+  - ltx_video_mps_smoke_test
+  - digital_human_end_to_end

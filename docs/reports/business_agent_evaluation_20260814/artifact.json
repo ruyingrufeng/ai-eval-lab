@@ -1,0 +1,222 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "业务 Agent 评测：自主管理仍不可用，外部编排已跑通",
+    "description": "用非技术语言说明27B、30B与35B能否承担自动化业务工作，以及27B外部编排双槽复测结果。",
+    "generatedAt": "2026-08-14T22:30:00+08:00",
+    "cards": [],
+    "charts": [
+      {
+        "id": "gate_elapsed_chart",
+        "title": "要求3份文件，模型实际完成了多少",
+        "subtitle": "30B和35B写完3份文件，但都没有自动提交；27B运行10分钟仍只完成2份。",
+        "type": "bar",
+        "dataset": "agent_attempts",
+        "sourceId": "agent_evidence",
+        "valueFormat": "number",
+        "unit": "份",
+        "layout": "full",
+        "encodings": {
+          "x": {"field": "attempt", "type": "nominal", "label": "模型与运行"},
+          "y": {"field": "files_completed", "type": "quantitative", "label": "完成文件数"},
+          "tooltip": [
+            {"field": "model", "type": "nominal", "label": "模型"},
+            {"field": "required_files", "type": "quantitative", "label": "要求文件"},
+            {"field": "elapsed_seconds", "type": "quantitative", "label": "耗时（秒）"},
+            {"field": "normal_exit", "type": "nominal", "label": "是否自动交付"},
+            {"field": "strict_gate", "type": "nominal", "label": "最终结果"}
+          ]
+        }
+      }
+    ],
+    "tables": [
+      {
+        "id": "gate_table",
+        "title": "三个模型现在能不能用",
+        "subtitle": "“可用”不仅要写出文件，还必须在限定时间内主动提交完整结果。",
+        "dataset": "agent_attempts",
+        "sourceId": "agent_evidence",
+        "defaultSort": {"field": "attempt", "direction": "asc"},
+        "layout": "full",
+        "columns": [
+          {"field": "attempt", "label": "模型与运行", "type": "text"},
+          {"field": "simple_result", "label": "发生了什么", "type": "text"},
+          {"field": "automatic_delivery", "label": "自动交付", "type": "text"},
+          {"field": "decision", "label": "怎么处理", "type": "text"}
+        ]
+      },
+      {
+        "id": "stage_table",
+        "title": "完整业务工作实际测到了哪一步",
+        "subtitle": "第一步没有模型成功自动交付，因此后面的写作、数据分析和计划没有继续浪费时间。",
+        "dataset": "workflow_stages",
+        "sourceId": "workflow_definition",
+        "defaultSort": {"field": "order", "direction": "asc"},
+        "layout": "full",
+        "columns": [
+          {"field": "order", "label": "阶段", "format": "number"},
+          {"field": "stage", "label": "业务阶段", "type": "text"},
+          {"field": "status", "label": "当前证据", "type": "text"},
+          {"field": "meaning", "label": "含义", "type": "text"}
+        ]
+      },
+      {
+        "id": "dual_slot_table",
+        "title": "27B外部编排双槽复测",
+        "subtitle": "业务三步与两类对话同时运行；资源每5秒采样一次。",
+        "dataset": "dual_slot_results",
+        "sourceId": "controlled_comparison",
+        "defaultSort": {"field": "order", "direction": "asc"},
+        "layout": "full",
+        "columns": [
+          {"field": "order", "label": "序号", "format": "number"},
+          {"field": "area", "label": "检查项", "type": "text"},
+          {"field": "observed", "label": "实测", "type": "text"},
+          {"field": "status", "label": "结果", "type": "text"},
+          {"field": "meaning", "label": "说明", "type": "text"}
+        ]
+      }
+    ],
+    "sources": [
+      {"id": "agent_evidence", "label": "内容增长 Agent 运行结果", "path": "docs/CONTENT_GROWTH_AGENT_EVALUATION_20260814.md"},
+      {"id": "workflow_definition", "label": "内容增长闭环基准", "path": "benchmarks/agent_business_first_batch.yaml"},
+      {"id": "dual_slot_evidence", "label": "27B双槽并发复测", "path": "results/text/27b-dual-slot-20260814/summary.json"},
+      {"id": "controlled_comparison", "label": "27B与35B受控业务对照", "path": "docs/reports/controlled_business_model_comparison_20260814/artifact.json"}
+    ],
+    "blocks": [
+      {"id": "title", "type": "markdown", "body": "# 业务 Agent 评测：自主管理仍不可用，外部编排已跑通"},
+      {
+        "id": "executive_summary",
+        "type": "markdown",
+        "body": "## Executive Summary｜结论摘要\n\n- **没有模型能自行管理完整业务流程。** 27B、30B和35B在原Hermes工具循环中都没有正常交付。\n- **外部系统接管步骤后，两条生产路由都已跑通。** 27B双槽和35B单槽均完成事实表、内容策略和提纲。\n- **35B成为重要任务默认。** 相同三步只用37.65秒，27B并发业务线约419.79秒；两者质量门禁都过，35B生产路由观测约快11.1倍。\n- **27B保留双槽容量价值。** 它能同时跑业务与6轮对话，资源和隔离通过，但普通回复过短。\n- **完整自主管理继续停用。** 35B负责重要方案与最终稿，27B只在必须同时保留两个64K会话时常驻。"
+      },
+      {
+        "id": "plain_language_setup",
+        "type": "markdown",
+        "body": "## 先说人话：这次到底测了什么\n\n我们给模型9条固定资料，要求它像一名业务助理一样完成3份文件：事实表、内容策略和文章提纲。合格标准也很简单：**资料不能写错、3份文件必须齐全、做完以后要主动提交。**\n\n35B和30B像是“文件已经写完，但一直不点提交，最后系统超时”；27B则是“做了10分钟，仍少一份文件”。所以三者目前都不能无人值守地工作。"
+      },
+      {
+        "id": "file_completion_finding",
+        "type": "markdown",
+        "body": "## 35B已经接近可用，30B和27B没有继续投入价值\n\n图中3份代表本轮要求的全部文件。35B和30B都达到了3份，但只有35B的内容完整度较好；27B两次都停在2份。**完成文件数只是第一步，四次运行最终都没有自动交付，因此仍全部判失败。**"
+      },
+      {"id": "latency_chart_block", "type": "chart", "chartId": "gate_elapsed_chart"},
+      {"id": "gate_table_block", "type": "table", "tableId": "gate_table"},
+      {
+        "id": "model_interpretation",
+        "type": "markdown",
+        "body": "## 为什么35B写完了仍然不能算通过\n\n业务Agent不是普通聊天模型。它不仅要写内容，还要知道什么时候工作已经完成，并把结果正式交回来。35B目前具备较好的写作和资料理解能力，却缺少可靠的“收尾动作”。\n\n这就像员工已经把文件放在电脑里，却一直重复检查和点击，直到下班也没有发给你。**文件可以人工捞出来，不等于流程能够自动运行。**"
+      },
+      {
+        "id": "coverage_finding",
+        "type": "markdown",
+        "body": "## 这次只测到第一步，不能误解成35B不会写文章\n\n完整工作原本还有文章写作与修改、运营数据分析、下一轮内容计划。因为第一步没有模型成功自动交付，后面三步按止损规则没有运行。\n\n所以本报告只说明：**当前自动工作方式不可用。** 它不代表35B不会写文章，也不代表35B不会分析数据。"
+      },
+      {"id": "stage_table_block", "type": "table", "tableId": "stage_table"},
+      {
+        "id": "dual_slot_finding",
+        "type": "markdown",
+        "body": "## 系统接管流程后，27B第一阶段已能稳定交付\n\n复测不再让模型自己决定何时继续或结束，而是由外部系统依次要求事实表、内容策略和提纲，每步完成后立即校验。27B三步全部通过，并在另一个64K槽位同时完成普通3轮和成人3轮对话。\n\n这说明原失败主要是工具循环和收尾方式，不是模型完全无法理解资料。代价是速度仍慢：业务三步合计约420秒。因此27B适合后台并行常驻，不能据此称为高质量交互Agent。"
+      },
+      {"id": "dual_slot_table_block", "type": "table", "tableId": "dual_slot_table"},
+      {
+        "id": "recommended_next",
+        "type": "markdown",
+        "body": "## 当前路由：35B做重要任务，27B提供双槽容量\n\n1. 35B单槽64K负责重要方案、最终稿和需要快速完成的受控业务任务。\n2. 27B双64K只在必须同时保留后台业务与SillyTavern会话时常驻。\n3. 两条路由都由系统拆步、检查和结束，不恢复完整Hermes工具循环。\n4. 30B继续退出主候选；图片生成前卸载大型语言模型。\n5. 下一阶段进入文章写作与改稿，优先验证35B能否保持速度和事实约束。"
+      },
+      {
+        "id": "further_questions",
+        "type": "markdown",
+        "body": "## 下一轮只需要回答三个问题\n\n- 35B在文章写作与改稿阶段能否保持当前速度与事实约束？\n- 35B的策略优势能否在多案例匿名评审中稳定复现？\n- 27B在16K以上真实上下文中还能否维持双槽隔离与延迟？"
+      },
+      {
+        "id": "caveats",
+        "type": "markdown",
+        "body": "## 这份结论的边界\n\n本轮仍只测试完整业务工作的第一步，样本是同一个固定案例。外部编排27B复测持续约7分钟，两个槽位实际上下文远低于64K上限，不能外推为16K、32K或64K长上下文已通过。报告区分两件事：完整自主管理仍不可用；受控分步流程已经可运行。普通对话3/3过短，27B没有取代35B质量档。"
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-08-14T22:30:00+08:00",
+    "status": "ready",
+    "datasets": {
+      "agent_attempts": [
+        {"order": 1, "attempt": "27B · 首次", "model": "27B Fable", "run_type": "首次", "elapsed_seconds": 600.022, "timeout_limit_seconds": 600, "required_files": 3, "files_completed": 2, "files": "2/3", "facts_retained": 9, "facts": "人工复核9/9", "normal_exit": "否", "strict_gate": "失败", "interpretation": "缺少提纲", "simple_result": "10分钟后仍缺1份文件", "automatic_delivery": "没有", "decision": "不再测试完整Agent"},
+        {"order": 2, "attempt": "27B · 恢复", "model": "27B Fable", "run_type": "恢复", "elapsed_seconds": 600.026, "timeout_limit_seconds": 600, "required_files": 3, "files_completed": 2, "files": "2/3", "facts_retained": 9, "facts": "人工复核9/9", "normal_exit": "否", "strict_gate": "失败", "interpretation": "仍缺提纲并重写已有文件", "simple_result": "再给10分钟仍没有补齐", "automatic_delivery": "没有", "decision": "仅保留普通写作实验"},
+        {"order": 3, "attempt": "30B · 测试", "model": "30B", "run_type": "闸门", "elapsed_seconds": 180.010, "timeout_limit_seconds": 180, "required_files": 3, "files_completed": 3, "files": "3/3", "facts_retained": 9, "facts": "grader 9/9", "normal_exit": "否", "strict_gate": "失败", "interpretation": "文件齐全但工具循环；提纲较浅", "simple_result": "3份文件写完，但一直不提交", "automatic_delivery": "没有", "decision": "淘汰"},
+        {"order": 4, "attempt": "35B · 测试", "model": "35B", "run_type": "闸门", "elapsed_seconds": 180.007, "timeout_limit_seconds": 180, "required_files": 3, "files_completed": 3, "files": "3/3", "facts_retained": 9, "facts": "grader 9/9", "normal_exit": "否", "strict_gate": "失败", "interpretation": "内容最好但工具循环", "simple_result": "3份文件写完且质量最好，但不提交", "automatic_delivery": "没有", "decision": "修好流程后优先复测"}
+      ],
+      "workflow_stages": [
+        {"order": 1, "stage": "读资料并制定策略", "status": "没有模型自动交付", "meaning": "35B内容最好，但流程没有正常结束"},
+        {"order": 2, "stage": "写文章并按意见修改", "status": "还没测试", "meaning": "第一步失败后停止"},
+        {"order": 3, "stage": "分析运营数据", "status": "还没测试", "meaning": "目前不能判断模型水平"},
+        {"order": 4, "stage": "制定下一轮计划", "status": "还没测试", "meaning": "目前没有完整闭环证据"}
+      ],
+      "dual_slot_results": [
+        {"order": 1, "area": "业务三步", "observed": "3/3通过；9/9事实", "status": "通过", "meaning": "外部编排解决工具循环与收尾"},
+        {"order": 2, "area": "并发对话", "observed": "普通3/3；成人3/3", "status": "通过", "meaning": "六轮均有响应"},
+        {"order": 3, "area": "上下文隔离", "observed": "零串线", "status": "通过", "meaning": "两个64K槽位未互相污染"},
+        {"order": 4, "area": "资源", "observed": "最低15%；swap −40 MiB", "status": "通过", "meaning": "未进入红色内存压力"},
+        {"order": 5, "area": "普通对话长度", "observed": "0/3达到60字", "status": "质量限制", "meaning": "并发稳定不等于质量默认"},
+        {"order": 6, "area": "35B单槽对照", "observed": "3/3通过；37.65秒", "status": "通过", "meaning": "重要任务默认，观测约快11.1倍"}
+      ]
+    },
+    "accessIssues": []
+  },
+  "sources": [
+    {
+      "id": "agent_evidence",
+      "label": "内容增长 Agent 运行结果",
+      "path": "docs/CONTENT_GROWTH_AGENT_EVALUATION_20260814.md",
+      "query": {
+        "engine": "sqlite",
+        "sql": "SELECT * FROM agent_attempts ORDER BY \"order\"",
+        "description": "汇总27B首次/恢复与30B/35B第一阶段闸门的已复核运行结果。",
+        "executed_at": "2026-08-14T13:48:04+08:00",
+        "tables_used": ["snapshot.agent_attempts"],
+        "filters": ["只纳入内容增长闭环第一阶段有效运行", "严格通过必须文件齐全、事实正确、限时内正常退出"],
+        "metric_definitions": ["elapsed_seconds为Agent进程可观测墙钟时间；files_completed为超时前工作目录中存在的必需文件数；facts_retained为来源9项事实的保留数。"]
+      }
+    },
+    {
+      "id": "workflow_definition",
+      "label": "内容增长闭环基准",
+      "path": "benchmarks/agent_business_first_batch.yaml",
+      "query": {
+        "engine": "sqlite",
+        "sql": "SELECT * FROM workflow_stages ORDER BY \"order\"",
+        "description": "读取完整内容增长闭环的四个阶段及当前覆盖状态。",
+        "tables_used": ["snapshot.workflow_stages"],
+        "executed_at": "2026-08-14T16:20:00+08:00"
+      }
+    },
+    {
+      "id": "dual_slot_evidence",
+      "label": "27B双槽并发复测",
+      "path": "results/text/27b-dual-slot-20260814/summary.json",
+      "query": {
+        "engine": "sqlite",
+        "sql": "SELECT * FROM dual_slot_results ORDER BY \"order\"",
+        "description": "汇总外部编排业务三步、并发对话、上下文隔离与资源门禁。",
+        "tables_used": ["snapshot.dual_slot_results"],
+        "executed_at": "2026-08-14T22:30:00+08:00",
+        "filters": ["27B总上下文131072", "parallel=2", "每槽65536"]
+      }
+    },
+    {
+      "id": "controlled_comparison",
+      "label": "27B与35B受控业务对照",
+      "path": "docs/reports/controlled_business_model_comparison_20260814/artifact.json",
+      "query": {
+        "engine": "sqlite",
+        "sql": "SELECT * FROM dual_slot_results ORDER BY \"order\"",
+        "description": "合并27B双槽并发门禁与35B单槽同任务对照。",
+        "tables_used": ["snapshot.dual_slot_results"],
+        "executed_at": "2026-08-14T22:45:00+08:00"
+      }
+    }
+  ]
+}

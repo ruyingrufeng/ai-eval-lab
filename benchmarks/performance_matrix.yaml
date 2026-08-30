@@ -1,0 +1,96 @@
+schema_version: 1
+recorded_at: "2026-08-12T11:44:01+08:00"
+host_profile: apple_m5_32gb
+
+levels:
+  - id: C0
+    kind: single_task
+    concurrency: 1
+  - id: C1
+    kind: same_service_queue
+    concurrency: 2
+  - id: C2
+    kind: same_service_queue
+    concurrency: 4
+  - id: X1
+    kind: coexistence
+    workloads: [image, llm]
+  - id: X2
+    kind: coexistence
+    workloads: [image, tts]
+  - id: X3
+    kind: coexistence
+    workloads: [image, video_render]
+  - id: X4
+    kind: coexistence
+    workloads: [llm, tts, ffmpeg]
+
+required_metrics:
+  timing: [queue_wait_seconds, execution_seconds, end_to_end_seconds, throughput, p50, p95, max]
+  system_memory: [memory_free_percent, active_pages, wired_pages, compressor_pages, swap_delta_mib, pageout_delta]
+  process: [rss_kib, cpu_percent]
+  stability: [success_rate, timeout_rate, crash_count, service_unresponsive_count, recovery_seconds]
+  interference: [single_task_baseline_seconds, coexistence_seconds, interference_ratio]
+  thermal: [run_order, elapsed_sustained_load_seconds, slowdown_rate, macos_thermal_warning]
+
+stop_conditions:
+  - severe_memory_pressure
+  - rapid_swap_growth
+  - system_unresponsive
+  - repeated_metal_error
+  - unrecoverable_service_failure
+
+current_results:
+  image_realvisxl_v5:
+    level: C0
+    status: partial_resource_evidence
+    runs: 2
+    end_to_end_seconds: [58.51, 60.34]
+    concurrency_claim: not_tested
+    note: process_rss_only_system_resource_sampling_missing
+  image_flux1_dev_q4:
+    level: C0
+    status: partial_resource_evidence
+    runs: 2
+    end_to_end_seconds: [353.79, 434.08]
+    slowdown_rate_percent: 22.7
+    concurrency_claim: not_tested
+    note: process_rss_only_system_resource_sampling_missing
+  image_realvisxl_v5_c1:
+    level: C1
+    status: passed_serial_queue
+    concurrency_submitted: 2
+    execution_seconds: [56.051, 53.403]
+    second_queue_wait_seconds: 56.203
+    wall_seconds: 109.612
+    throughput_jobs_per_minute: 1.0948
+    memory_free_percent_min: 54
+    swap_delta_mib: 0
+    pageout_delta: 77
+    gpu_parallelism: false
+    direct_use_rate: 0_of_2_user_calibrated
+  image_flux1_dev_q4_c1:
+    level: C1
+    status: passed_serial_queue
+    concurrency_submitted: 2
+    execution_seconds: [338.292, 418.758]
+    second_queue_wait_seconds: 338.455
+    wall_seconds: 757.215
+    throughput_jobs_per_minute: 0.1585
+    memory_free_percent_min: 52
+    swap_delta_mib: -24
+    pageout_delta: 769
+    second_run_slowdown_percent: 23.8
+    gpu_parallelism: false
+  llm_qwen3_6_27b_fable_c0:
+    level: C0
+    status: resource_stop_condition_triggered
+    request_seconds: 23.745
+    generation_tokens_per_second: 6.793
+    memory_free_percent_min: 8
+    swap_delta_mib: 1566.19
+    pageout_delta: 151
+  coexistence_image_plus_qwen27b:
+    level: X1
+    status: blocked_by_resource_preflight
+    reason: llm_alone_reached_severe_memory_pressure

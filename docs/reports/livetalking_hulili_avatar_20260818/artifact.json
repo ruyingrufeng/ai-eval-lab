@@ -1,0 +1,57 @@
+{
+  "evaluation_id": "livetalking_hulili_avatar_20260818",
+  "date": "2026-08-18",
+  "category": "digital_human_realtime",
+  "stage": "verified",
+  "goal": "完成 LiveTalking 胡丽丽专属 avatar 生成 + MiniMax-TTS 适配器接入",
+  "phase_1_hulili_avatar": {
+    "approach": "ffmpeg 把胡丽丽静态图合成 5 秒视频（512x512@25fps 重复帧），喂给 LiveTalking /api/avatar/task",
+    "command_chain": [
+      "ffmpeg -loop 1 -i oriental_final_v1.jpg.png -t 5 -r 25 -pix_fmt yuv420p -vf scale=512:512 hulili_video_5s.mp4",
+      "curl -X POST http://127.0.0.1:8010/api/avatar/task -d '{\"model\":\"wav2lip\",\"avatar_id\":\"hulili_v1\",\"video_path\":\".../hulili_video_5s.mp4\",\"img_size\":256}'",
+      "轮询 GET /api/avatar/task/<id> 直到 status=completed"
+    ],
+    "task_id": "c117cf90-f902-4490-a5f3-40f536d53e51",
+    "duration_sec": 54.5,
+    "frames_processed": 125,
+    "output": {
+      "avatar_id": "hulili_v1",
+      "avatar_dir": "~/voice-tools/LiveTalking/data/avatars/hulili_v1/",
+      "files": ["coords.pkl", "full_imgs/125 帧", "face_imgs/125 帧人脸裁剪"]
+    },
+    "service_restart": "python app.py --transport webrtc --model wav2lip --avatar_id hulili_v1 --listenport 8010（✅ 服务在 8010 跑通）"
+  },
+  "phase_2_MiniMax_tts_adapter": {
+    "approach": "写一个 LiveTalking TTS 插件（tts/MiniMax.py），通过 mmx CLI 生成完整音频后按 20ms chunk 推流",
+    "why_mmx_cli_not_streaming": "MiniMax 官方 API 不暴露 Python 流式 SDK，mmx CLI 是最快路径。代价：每次合成等完整音频返回（<2s），但接口契约与 LiveTalking 兼容",
+    "interface_compliance": {
+      "txt_to_audio(msg)": "✅ 实现",
+      "16kHz mono float32 output": "✅ resampy 转码",
+      "20ms chunk (320 samples)": "✅ 按 self.chunk 推流",
+      "start/end status event": "✅ 首帧 start、末帧 end",
+      "register via @register decorator": "✅ 'tts MiniMax'"
+    },
+    "test": "24 字中文 → mmx → 7.40s 音频 → 370 帧（每帧 20ms）→ 末帧 status=end ✅",
+    "service_launch": "python app.py --tts MiniMax --REF_FILE 'Chinese (Mandarin)_Gentle_Senior' --avatar_id hulili_v1（✅ 服务在 8010 跑通）"
+  },
+  "current_stack": {
+    "avatar": "hulili_v1（胡丽丽专属）",
+    "tts": "MiniMax（mmx CLI 调用）",
+    "model": "wav2lip（流式渲染，Mac MPS）",
+    "transport": "webrtc",
+    "endpoint": "http://127.0.0.1:8010",
+    "ui": "/index.html (web 前端)",
+    "status": "✅ all components verified individually, real-time flow 待 WebRTC 客户端接入验证"
+  },
+  "remaining_steps_for_chatbot": [
+    "浏览器开 http://127.0.0.1:8010/index.html，点'开始连接'，输入文字测试胡丽丽说话流",
+    "或写个 Python WebRTC 客户端脚本（绕过浏览器）",
+    "接本地 LLM（llama-server / OpenAI 兼容网关），让胡丽丽回答用户提问",
+    "可选：装 funasr + modelscope 启用 ASR，支持语音打断"
+  ],
+  "next_steps_for_app_layer": [
+    "胡丽丽源图可换更好看的（Documents/HuLiLi/ 有 hulili_v1/v2/v3_swapped.png 多张可选）",
+    "MiniMax 声音克隆（08-17 遗留）→ 替换温柔学姐音色，用胡丽丽真实音色",
+    "胡丽丽专属开场白模板（数字伴侣场景）"
+  ]
+}

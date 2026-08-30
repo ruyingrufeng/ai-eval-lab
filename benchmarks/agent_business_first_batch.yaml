@@ -1,0 +1,79 @@
+schema_version: 2
+recorded_at: "2026-08-14T13:00:00+08:00"
+workflow_id: content_growth_loop
+time_budget_minutes: 60
+model: qwen3_6_27b_fable_gguf
+harness: hermes_agent
+stage_timeout_seconds: 600
+
+shared_case:
+  account: "澄湾城市生活"
+  platform: "城市生活类微信公众号"
+  audience: "本地通勤者、周末游客、带老人或儿童出行的家庭"
+  business_goal: "用可信实用的服务内容提高文章完成阅读和后续关注，不以夸张标题换短期点击。"
+
+source_facts:
+  - "澄湾市夜游公交于9月5日开始试运营，试运营期8周。"
+  - "线路为N1和N2两条。"
+  - "运营时间为每周五、周六19:00至24:00。"
+  - "单程票价2元。"
+  - "持同一乘车码，60分钟内在N1与N2之间换乘不重复计费。"
+  - "覆盖火车站、老街、滨水艺术中心三个主要区域。"
+  - "车辆为低地板车型，设置轮椅停放区。"
+  - "乘客可在官方小程序查看车辆位置和车厢拥挤度。"
+  - "运营方将在试运营第四周根据客流和意见调整班次。"
+
+editor_feedback:
+  - "删除空泛的城市夜色抒情开头，前两段直接回答什么时候、去哪、多少钱。"
+  - "突出这是8周试运营，不得写成永久服务。"
+  - "增加家庭与行动不便乘客需要的无障碍和拥挤度信息。"
+  - "结尾改成出发前检查清单。"
+
+operations_metric_definitions:
+  completion_rate: "completions / views_3s"
+  engagement_rate: "(likes + comments + shares) / impressions"
+  follow_conversion_rate: "follows / views_3s"
+
+operations_records:
+  - {post_id: A, topic: "周末市集", impressions: 10000, views_3s: 7000, completions: 3500, likes: 400, comments: 80, shares: 120, follows: 60}
+  - {post_id: B, topic: "公共交通攻略", impressions: 8000, views_3s: 6000, completions: 4200, likes: 600, comments: 100, shares: 160, follows: 90}
+  - {post_id: C, topic: "城市夜景故事", impressions: 12000, views_3s: 7200, completions: 2160, likes: 300, comments: 50, shares: 90, follows: 30}
+  - {post_id: D, topic: "亲子无障碍出行", impressions: 6000, views_3s: 4800, completions: 3360, likes: 480, comments: 120, shares: 180, follows: 110}
+
+expected_aggregate:
+  impressions: 36000
+  views_3s: 25000
+  completions: 13220
+  completion_rate: 0.5288
+  engagement_rate: 0.0744444444
+  follow_conversion_rate: 0.0116
+  weakest_completion_post: C
+  best_follow_conversion_post: D
+
+stages:
+  - id: understand_and_plan
+    outputs: [fact_register.json, content_strategy.md, outline.md]
+    gates: [all_source_facts_retained, no_invented_fact, audience_and_goal_explicit]
+
+  - id: write_and_revise
+    outputs: [draft_v1.md, draft_v2.md, revision_log.json]
+    gates: [draft_v2_900_to_1300_chinese_characters, editor_feedback_addressed, v1_and_v2_differ, trial_status_correct]
+
+  - id: analyze_operations
+    outputs: [metrics.json, operations_review.md]
+    gates: [aggregate_numbers_match, per_post_rates_reproducible, facts_and_hypotheses_separated, no_unsupported_causal_claim]
+
+  - id: close_the_loop
+    outputs: [next_cycle_plan.json, executive_summary.md]
+    requirements:
+      next_posts: 4
+      every_experiment_fields: [hypothesis, content_change, primary_metric, duration, stop_condition]
+    gates: [plan_uses_article_and_operations_evidence, four_experiments_complete, no_invented_performance_prediction]
+
+workflow_outputs:
+  machine_readable: [fact_register.json, revision_log.json, metrics.json, next_cycle_plan.json]
+  human_readable: [content_strategy.md, outline.md, draft_v1.md, draft_v2.md, operations_review.md, executive_summary.md]
+
+reporting:
+  cross_workflow_total_score: false
+  fields: [workflow_pass, stage_results, first_attempt_pass, revision_pass, elapsed_seconds, api_calls, tokens, context_loss, best_use_method, failure_boundary]

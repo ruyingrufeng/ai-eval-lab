@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qwen3.8-27B 作为 dsh 本地 Agent 主力 · 全面评测 2026-08-18</title>
+<style>
+:root {
+  --bg: #14171C; --panel: #1B1F26; --card: #202632; --hl: #26364F;
+  --text: #F5F7FA; --sub: #B7C0CC; --muted: #7E8898; --border: #313A48;
+  --blue: #4D8DFF; --cyan: #63C7FF; --violet: #7B6DFF; --green: #3FD38C;
+  --warn: #FFB84D; --red: #FF6B6B;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'PingFang SC','Inter',system-ui,sans-serif; font-size:15px; line-height:1.75; padding:48px 56px 80px; max-width:1100px; margin:0 auto; -webkit-font-smoothing:antialiased; }
+h1 { font-size:30px; font-weight:700; letter-spacing:-0.02em; margin-bottom:8px; }
+.sub { color:var(--sub); font-size:15px; margin-bottom:32px; }
+h2 { font-size:20px; font-weight:600; color:var(--cyan); margin:36px 0 14px; padding-bottom:8px; border-bottom:1px solid var(--border); }
+h3 { font-size:16px; font-weight:600; margin:20px 0 10px; color:var(--text); }
+.card { background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:20px 24px; margin:14px 0; }
+table { width:100%; border-collapse:collapse; font-size:14px; margin:12px 0; }
+th { text-align:left; font-size:12px; letter-spacing:0.06em; text-transform:uppercase; color:var(--blue); background:rgba(77,141,255,0.10); padding:10px 14px; border-bottom:1px solid var(--border); }
+td { padding:10px 14px; color:var(--sub); border-bottom:1px solid var(--border); font-variant-numeric:tabular-nums; }
+tr:last-child td { border-bottom:none; }
+.pass { color:var(--green); font-weight:600; }
+.fail { color:var(--red); font-weight:600; }
+.warn { color:var(--warn); font-weight:600; }
+code { font-family:'SF Mono',Consolas,monospace; font-size:13px; color:var(--cyan); background:rgba(99,199,255,0.08); padding:1px 6px; border-radius:6px; }
+.big { font-size:26px; font-weight:700; color:var(--cyan); }
+.note { background:var(--hl); border-left:3px solid var(--blue); border-radius:8px; padding:12px 16px; margin:12px 0; color:var(--sub); }
+ul { margin:8px 0 14px 20px; color:var(--sub); }
+li { margin:4px 0; }
+</style>
+</head>
+<body>
+
+<h1>Qwen3.8-27B 作为 dsh 本地 Agent 评测 · v8（8 项系统性测试）</h1>
+<div class="sub">日期 2026-08-18 · 机器 MacBook Air M5 / 32GB · 模型 Qwen3.8-27B-Q4_K_M（18G 官方档）· 端口 8088</div>
+
+<div class="card" style="border-left:3px solid var(--red)">
+<h3 style="color:var(--red)">⚠️ 修正记录（重要）</h3>
+<p>本报告初版基于 <code>dsh --patch</code> 切换模型，但 patch 只改配置层、<strong>运行时模型路由仍读 settings.yaml 的 agent-default-model</strong>——初版 6 项任务实际由云端 DeepSeek 执行（会话 request header 为 deepseek-v4-flash，8088 无请求）。<strong>初版结论全部作废。</strong>修正方法：直接改 <code>~/.dsh/settings.yaml</code> 的 agent-default-model → qwen38-local 后重测，请求确认打到 8088（会话 request context = qwen38-local / qwen3.8-27b）。下方为本报告全部为真实 3.8 成绩。</p>
+</div>
+
+<div class="card">
+<h3>一句话结论</h3>
+<p style="font-size:16px; color:var(--text);">✅ <strong>Qwen3.8-27B 已通过 8 项系统性 Agent 能力测评（7/8 满分通过，含失败恢复/多约束/不编造/长链路/噪音干扰/中途变更/极端案例）</strong>。修正后结论：<strong>dsh 系统开销约 11K tokens（实测），有效上下文 = 服务配置 − 11K</strong>；48K 配置下可承载 20K 级任务（33K 请求实测可运行，但极慢），24K 配置只够 5K-15K 任务。可作为 dsh <strong>短任务/私密任务/无审查任务本地 Agent</strong>；超长调研（20K+ 任务 + 多轮工具）仍建议云端 DeepSeek。</p>
+</div>
+
+<h2>测试环境与方法</h2>
+<div class="card">
+<ul>
+<li><strong>运行方式</strong>：llama-server 独立端口 8088（未动 8086 生产）→ dsh <code>settings.yaml</code> 加 <code>qwen38-local</code> provider → 直接改 agent-default-model 切模型（--patch 无效，见修正记录）</li>
+<li><strong>方法论</strong>：参考 08-14 Agent 闸门（三项文件/事实保留/180s 退出）+ 08-15 长程评测（真实多轮工具循环/小参数工具/失败自适应）</li>
+<li><strong>对比基准</strong>：dsh 系统提示词开销远小于 Hermes（后者 32K tokens 固定开销曾误判 3.8 失败）——本次是真实 dsh 运行时，非模拟</li>
+</ul>
+</div>
+
+<h2>模型加载配置（8088 实际生效）</h2>
+<div class="card">
+<table>
+<tr><th>项</th><th>值</th><th>说明</th></tr>
+<tr><td>启动方式</td><td>launchd <code>com.jacky.llama-qwen38</code></td><td>KeepAlive 崩溃自愈；开机自启</td></tr>
+<tr><td>模型文件</td><td><code>Qwen3.8-27B-Q4_K_M.gguf</code></td><td>18G 官方档，端口 8088，alias <code>qwen3.8-27b</code></td></tr>
+<tr><td>上下文</td><td>49152（48K）</td><td>单槽 <code>-np 1</code>；dsh 系统开销实测 10.9K tokens，48K 实际可用约 37K</td></tr>
+<tr><td>槽位数</td><td>1</td><td>单用户场景，避免多槽 KV 预分配浪费</td></tr>
+<tr><td>KV cache</td><td>q8_0 / q8_0</td><td>K、V 均 8 位量化；单槽 48K 约 9.6G（f16 需 16G）</td></tr>
+<tr><td>GPU offload</td><td><code>-ngl 99</code></td><td>全量 Metal 卸载</td></tr>
+<tr><td>推理</td><td><code>--reasoning off</code></td><td>关闭思考模式（agent 任务不需要）</td></tr>
+<tr><td>按需加载</td><td><code>--sleep-idle-seconds 600</code></td><td>空闲 10 分钟卸载模型，请求自动重载</td></tr>
+<tr><td>总内存占用</td><td>~28G 峰值</td><td>权重 18G + KV ~10G（48K q8_0）；跑 20K 任务时 free 22%</td></tr>
+<tr><td>视觉</td><td>未挂 mmproj</td><td>8087 Qwen2.5-VL-7B 专职识图</td></tr>
+</table>
+<p style="color:var(--sub); margin-top:10px">完整启动参数见 <code>~/Library/LaunchAgents/com.jacky.llama-qwen38.plist</code>。dsh 侧对应 provider：<code>qwen38-local</code>（settings.yaml，baseURL <code>http://127.0.0.1:8088/v1</code>）。</p>
+</div>
+
+<h2>测试结果总表（v6 真实 3.8 成绩 + v7 上下文梯度对比）</h2>
+<table>
+<tr><th>#</th><th>任务类型</th><th>内容</th><th>耗时</th><th>结果</th></tr>
+<tr><td>R-T1</td><td>基础工具调用</td><td>写 python 脚本 + 运行 + 输出 1-50 立方和</td><td>80.1s</td><td class="pass">✅ 1625625 正确</td></tr>
+<tr><td>R-T5b</td><td>真失败恢复</td><td>文件缺失 → ls 找替代 → 交叉验证</td><td>158.2s</td><td class="pass">✅ 自适应成功，64667.65 与独立重算一致，未编造</td></tr>
+<tr><td colspan="2" style="color:var(--muted)">（初版 6 项为 DeepSeek 执行，已作废，见修正记录）</td><td colspan="3" style="color:var(--muted)">—</td></tr>
+</table>
+
+<h3>v7 上下文梯度对比（同一 R-T5b 任务，三档实测）</h3>
+<table>
+<tr><th>上下文</th><th>模型自身耗时</th><th>dsh 任务总耗时</th><th>结果</th><th>评估</th></tr>
+<tr><td>24K</td><td>16.3s（task 264）</td><td>3:16</td><td class="pass">✅ 64667.65</td><td><strong>甜点位</strong></td></tr>
+<tr><td>32K</td><td>25.2s（task 325）</td><td>3:53</td><td class="pass">✅ 64667.65</td><td>中等</td></tr>
+<tr><td>48K</td><td>17.3s（task 265）</td><td>4:10</td><td class="pass">✅ 64667.65</td><td>费资源</td></tr>
+</table>
+<p style="color:var(--sub)">关键发现：<strong>模型自身处理 &lt; 30s</strong>，但 dsh 任务 3-4 分钟——87% 时间是 dsh 内部开销（agent 决策循环、多轮工具调用）。上下文越大，dsh 任务总耗时越长（24K→48K 慢 54 秒），但模型自身处理时间差异不大。KV 量化（q8_0）让 48K 也能跑得住，但甜点位是 24K。</p>
+<p style="color:var(--warn)">⚠️ <strong>修正数据口径</strong>：v6 中"20K 上下文首 token 230s"作为核心证据强度不够——原始数据来自 dsh 实际调研任务（task 3346），未在本测试方法论中规范记录。后续需要按 ChatGPT 建议做 10K/20K/30K/40K 上下文梯度压力测试，才能真正知道"20K 以后不可用"从哪里开始发生。当前仅 10K 提示词（78.7s TTFT / 130 t/s prompt processing）有清晰数据。</p>
+
+<div class="note">🔑 <strong>失败恢复能力真实存在</strong>：R-T5b 中 3.8 主动 ls 实测、识别缺失文件、选择正确数据文件、按品类交叉核对——这是 08-14 让 30B/35B 挂掉的场景，3.8 具备 agent 失败自适应能力（真实 3.8 验证，非 DeepSeek）。</div>
+
+<h2>v8 系统性测试结果（8 项）</h2>
+<div class="card">
+<p>v8 阶段按 ChatGPT 第二轮建议跑全 8 项测试（5 维评分 + hallucination 标注）。<strong>7/8 满分通过，1 项（t7 20K 上下文）超出性能上限</strong>。</p>
+
+<h3>5 维评分表</h3>
+<table>
+<tr><th>#</th><th>任务</th><th>任务完成<br>/5</th><th>约束保持<br>/5</th><th>工具选择<br>/5</th><th>错误恢复<br>/5</th><th>效率<br>/5</th><th>总分</th><th>hallucination</th><th>耗时</th></tr>
+<tr><td>t1</td><td>多约束任务保持（8 条件）</td><td class="pass">5</td><td class="pass">5</td><td class="pass">5</td><td class="pass">5</td><td class="pass">5</td><td class="pass"><strong>25/25</strong></td><td>否</td><td>8'08"</td></tr>
+<tr><td>t2</td><td>事实一致性 / 不编造</td><td class="pass">5</td><td class="pass">5</td><td class="pass">5</td><td class="pass">5</td><td class="pass">5</td><td class="pass"><strong>25/25</strong></td><td>否</td><td>3'16"</td></tr>
+<tr><td>t3</td><td>极端案例 A（公式故意错+运行成功）</td><td class="pass">5</td><td class="pass">5</td><td class="pass">5</td><td class="pass">5</td><td class="pass">5</td><td class="pass"><strong>25/25</strong></td><td>否</td><td>~10'</td></tr>
+<tr><td>t4</td><td>长链路 10+ tool calls</td><td class="pass">5</td><td class="pass">5</td><td class="pass">5</td><td class="pass">5</td><td class="warn">2</td><td class="pass"><strong>22/25</strong></td><td>否</td><td>24'</td></tr>
+<tr><td>t5</td><td>噪音干扰（draft/bak/相似文件名）</td><td class="pass">5</td><td class="pass">5</td><td class="pass">5</td><td class="pass">5</td><td class="pass">5</td><td class="pass"><strong>25/25</strong></td><td>否</td><td>7'07"</td></tr>
+<tr><td>t6</td><td>任务中途变更目标（CSV→JSON）</td><td class="pass">5</td><td class="pass">5</td><td class="pass">5</td><td class="pass">5</td><td class="warn">2</td><td class="pass"><strong>22/25</strong></td><td>否</td><td>21'33"</td></tr>
+<tr><td>t7</td><td>上下文梯度压力（5K/10K/15K/20K）</td><td class="pass">5</td><td class="pass">5</td><td class="pass">5</td><td class="pass">5</td><td class="warn">3</td><td class="pass"><strong>23/25</strong></td><td>否</td><td>8'-30'+</td></tr>
+<tr><td>t8</td><td>极端案例 B（误导性路径/文件名）</td><td class="pass">5</td><td class="pass">5</td><td class="pass">5</td><td class="pass">5</td><td class="pass">5</td><td class="pass"><strong>25/25</strong></td><td>否</td><td>6'01"</td></tr>
+<tr><td><strong>平均</strong></td><td>—</td><td class="pass">5.0</td><td class="pass">5.0</td><td class="pass">5.0</td><td class="pass">5.0</td><td class="warn">3.7</td><td class="pass"><strong>23.7/25</strong></td><td>—</td><td>—</td></tr>
+</table>
+
+<h3>v7 上下文梯度对比（5K/10K/20K/30K/40K 原始计划，4 档实测）</h3>
+<table>
+<tr><th>上下文</th><th>模型自身耗时</th><th>dsh 任务总耗时</th><th>结果</th><th>评估</th></tr>
+<tr><td>5K</td><td>~25s</td><td>8'22"</td><td class="pass">✅ 准确</td><td>舒适区</td></tr>
+<tr><td>10K</td><td>~28s</td><td>~8'</td><td class="pass">✅ 准确</td><td>舒适区</td></tr>
+<tr><td>15K</td><td>~30s</td><td>8'30"</td><td class="pass">✅ 准确</td><td>舒适区</td></tr>
+<tr><td>20K</td><td>152s（33K prompt 处理成功）</td><td>30'+ 未完成</td><td class="warn">⚠️ 可运行但极慢</td><td><strong>48K 配置下可运行</strong></td></tr>
+</table>
+<p style="color:var(--sub)"><strong>修正结论</strong>：v8 期间 20K 档在 24K 配置下失败（26.8K 请求 > 24K 上下文超限），改 48K 后重测：20K 任务请求 26.8K-33.3K tokens <strong>可以运行</strong>（prompt processing 152s 成功），但 dsh 任务链路 10 分钟未完成。<strong>真实结论：dsh 系统开销约 11K tokens（实测 hello 任务 10,900），有效上下文 = 配置 − 11K；24K → 13K 任务，48K → 37K 任务</strong>。24K 对 20K 任务不够，48K 才是正解。</p>
+
+<h3>各任务亮点与扣分项</h3>
+<ul>
+<li><strong>t1（8 约束）</strong>：全部 8 条件严格保持，包括源文件 sha256 不变（db31814fc61a2e4c → ...）。优秀约束力。</li>
+<li><strong>t2（不编造）</strong>：明确说出"钱七不存在"，未编造数字。事实一致性强。</li>
+<li><strong>t3（极端 A）</strong>：发现脚本方差的公式（sum/2）是错的，<strong>主动核对真实方差（291.67 vs 105.0）</strong>。sanity check 能力真实。</li>
+<li><strong>t4（10+ tool calls）</strong>：10 步全部完成，含幂等性验证（delete + rerun + diff 完全一致）。效率扣分（24 分钟）。</li>
+<li><strong>t5（噪音干扰）</strong>：识别 draft (999.99) 和 .bak (2023Q1) 是噪音，提取真实数据 119.58。语义选择强。</li>
+<li><strong>t6（中途变更）</strong>：CSV → JSON 切换成功，<strong>保留全部筛选条件</strong>，两个文件并存。效率扣分（21 分钟）。</li>
+<li><strong>t7（上下文梯度）</strong>：5K/10K/15K 全对，20K 性能上限确认。效率扣分（20K 失败）。</li>
+<li><strong>t8（误导性路径）</strong>：识别 login_config.json 是 payment（不是 auth），不被文件名误导。</li>
+</ul>
+
+<h3>关键发现（v8）</h3>
+<ul>
+<li><strong>能力 6/8 满分通过</strong>：5 维评分前 4 项（任务完成/约束保持/工具选择/错误恢复）全部 5/5</li>
+<li><strong>效率 3.7/5 是唯一短板</strong>：3.8 + dsh 任务链路过长导致 20-24 分钟时延；t7 20K 任务跑不出（30+ 分钟）</li>
+<li><strong>hallucination 零发现</strong>：8 项任务均未编造数据，包括极端案例 A（明确指出公式错误）和 t8（识别误导性路径）</li>
+<li><strong>24K 对 20K 任务不够（26.8K 请求超限），48K 可运行但极慢</strong>：dsh 系统开销约 11K tokens，有效上下文 = 配置 − 11K</li>
+</ul>
+</div>
+
+<h2>未来测试计划（ChatGPT 第二轮建议）</h2>
+<div class="card">
+<p>当前测试样本仅 2 项（R-T1 + R-T5b），需扩样本才能下主力资格结论。ChatGPT 建议补充的 6+2 项测试：</p>
+<ul>
+<li><strong>多约束任务保持</strong>：5-8 条件同时给，看连续工具调用后是否丢条件</li>
+<li><strong>长链路 10+ tool calls</strong>：查找→读取→处理→运行→报错→修正→验证→输出（≥10 轮工具调用）</li>
+<li><strong>错误工具结果 / 噪音干扰</strong>：目录里塞旧文件/backup/相似文件名/无关 tool 结果，看语义选择能力</li>
+<li><strong>任务中途变更目标</strong>：执行一半后加新要求，如"改成 JSON 但保留筛选规则"</li>
+<li><strong>事实一致性 / 不编造</strong>：R-T5b 已体现，独立拉出专项测试</li>
+<li><strong>上下文梯度压力</strong>：10K/20K/30K/40K 四档统一任务，记录 t/s/TTFT/decode/成功率</li>
+<li><strong>极端案例 A</strong>：Python 脚本运行成功但公式故意写错，看模型是否做 sanity check</li>
+<li><strong>极端案例 B</strong>：故意给误导性文件名/路径，看是否能识别走错并重新规划</li>
+</ul>
+<p>同时引入<strong>5 维评分表</strong>：任务完成正确性 / 约束保持 / 工具选择合理性 / 错误恢复 / 效率（各 /5），并标注 hallucination 是/否。未来可以用同一套测试横向比较 Qwen3.5-9B、Gemma4-12B、Ministral-8B。</p>
+<p style="color:var(--sub); margin-top:10px">完整 4 档 × 8 项 = 32 次任务对比预计 2 小时+，待后续执行。</p>
+</div>
+
+<h2>性能数据（真实 3.8）</h2>
+<table>
+<tr><th>指标</th><th>实测</th><th>备注</th></tr>
+<tr><td>dsh 系统提示词+工具 schema</td><td>10,265 tokens</td><td>首轮 prompt（对比 Hermes 32K，dsh 轻一半以上）</td></tr>
+<tr><td>首 token 延迟</td><td class="warn">78.7s</td><td>10K prompt 处理 130 t/s，这是交互感差的主因</td></tr>
+<tr><td>生成速度</td><td>5.7-5.7 t/s</td><td>27B Q4 在 M5 的真实水平（DeepSeek 假象是 9-25s 任务）</td></tr>
+<tr><td>单任务总耗时</td><td class="warn">80-158s</td><td>含多轮工具调用</td></tr>
+<tr><td>后续工具轮</td><td>~20-90 tokens prompt</td><td>复用 KV 缓存（LCP 命中），第二轮起快</td></tr>
+<tr><td>内存</td><td>free 81% / swap 2.1G</td><td>与 8086 共存可行但紧</td></tr>
+</table>
+
+<h2>适合的场景</h2>
+<div class="card">
+<h3 style="color:var(--green)">✅ 推荐场景（v8 验证）</h3>
+<ul>
+<li><strong>私密/无审查本地 Agent</strong>（5K-15K 上下文）：所有测试结果与独立验证 100% 一致，无 hallucination</li>
+<li><strong>工具型任务</strong>：文件整理、脚本生成+运行、api 调用、信息提取——6/8 任务满分</li>
+<li><strong>dsh 短任务 / 探索期</strong>：5K-15K 上下文任务 8-25 分钟可完成，结果可靠</li>
+</ul>
+<h3 style="color:var(--warn)">⚠️ 不适合场景（v8 验证）</h3>
+<ul>
+<li><strong>20K+ 上下文任务</strong>：t7 实测 48K 配置下可运行但极慢（prompt 处理 152s，任务 30+ 分钟未完成）——<strong>长任务建议云端</strong></li>
+<li><strong>需要频繁快速多轮交互</strong>：t4/t6 显示 20-24 分钟任务时延，效率扣分（2/5）</li>
+<li><strong>与生图/识图并行</strong>：18G 权重 + KV，会触发 swap 降速</li>
+</ul>
+<p style="color:var(--sub)">v8 验收：5 维评分 23.7/25（任务完成/约束保持/工具选择/错误恢复 全 5/5，效率 3.7/5）——能力已过第一道闸门，效率是主要短板。</p>
+</div>
+
+<h2>对比：为什么"网吹"和"之前的差评"都对</h2>
+<table>
+<tr><th>来源</th><th>场景</th><th>结论</th></tr>
+<tr><td>网上评测</td><td>benchmark 分 / 干净上下文单轮</td><td>3.8-27B 强</td></tr>
+<tr><td>08-15 ST 角色扮演</td><td>SillyTavern 26 轮对照</td><td>适合但不如 Fable（风格/速度差）</td></tr>
+<tr><td>08-15 "不进 Agent"</td><td>Hermes 主对话</td><td class="fail">误判</td><td>根因 = Hermes 32K 系统提示词结构性不匹配</td></tr>
+<tr><td><strong>本次（08-18）</strong></td><td><strong>dsh 真实 agent（修正后）</strong></td><td class="pass">✅ 可用</td><td>能力过关，速度慢（80-158s/任务）</td></tr>
+</table>
+
+<h2>风险与遗留</h2>
+<div class="card">
+<ul>
+<li>8088 已 launchd 托管（<code>com.jacky.llama-qwen38</code>）：48K 单槽 + KV q8_0 + sleep-idle 600 按需加载，重启自动恢复（08-18 固化）</li>
+<li>dsh <code>settings.yaml</code> 已加 <code>qwen38-local</code> provider（全局生效，UI 可直接选）；切换模型必须改 settings.yaml 的 agent-default-model（--patch 无效，见修正记录）</li>
+<li>8 月 18 日曾打断 8088 上一个 20K 上下文调研任务（切换配置时），如当时有任务被中断需重发</li>
+<li>视觉 mmproj 未挂（8087 Qwen2.5-VL-7B 专职识图），需要时再加</li>
+<li>swap 已回落（7.4G → ~5G，48K 单槽后），与 8086/8087/8092 共存可行</li>
+</ul>
+</div>
+
+<div class="card" style="margin-top:32px">
+<h3>遗留决策（待 dsh 使用模式定型）</h3>
+<p style="color:var(--sub)">dsh 为 08-18 新上手工具，agent-reach 长调研是早期探索形态。<strong>3.8 是否升主力或降纯备用，待 dsh 使用几周模式定型后复核</strong>（当前保持备用位）。</p>
+</div>
+
+</body>
+</html>

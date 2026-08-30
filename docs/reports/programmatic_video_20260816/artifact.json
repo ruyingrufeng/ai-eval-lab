@@ -1,0 +1,10 @@
+{
+  "evaluation_id": "programmatic_video_20260816",
+  "date": "2026-08-16",
+  "category": "programmatic_video",
+  "stage": "verified",
+  "report": "report.html",
+  "verdict": "HyperFrames/Remotion + TTS + FFmpeg 在固定 15 秒案例中可用；HyperFrames 为主力，Remotion 用于 React 模板，FFmpeg 负责封装。",
+  "scope": "1920x1080, 30fps, 450 frames fixed benchmark",
+  "source_material": "benchmarks/video_eval/"
+}

@@ -1,0 +1,25 @@
+model:
+  provider: local-agent35b64
+  default: qwen3.6-35b-agent64
+
+providers:
+  local-agent35b64:
+    api: http://127.0.0.1:8090/v1
+    default_model: qwen3.6-35b-agent64
+    discover_models: false
+    models:
+      qwen3.6-35b-agent64:
+        context_length: 65536
+        max_tokens: 8192
+    name: Local Qwen3.6 35B Agent 64K Compatibility
+
+toolsets: [terminal, file]
+
+agent:
+  max_turns: 40
+  gateway_timeout: 900
+  reasoning_effort: none
+
+display:
+  streaming: false
+  tool_progress: off

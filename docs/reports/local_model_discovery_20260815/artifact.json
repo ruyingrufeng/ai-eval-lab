@@ -1,0 +1,312 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "32GB Mac 本地模型实测选型",
+    "description": "面向 SillyTavern、64K 上下文与本地视觉共存需求的候选发现和实机验证。",
+    "generatedAt": "2026-08-15T14:08:59+08:00",
+    "cards": [],
+    "charts": [
+      {
+        "id": "ordinary_turn_latency_chart",
+        "title": "普通角色五轮逐轮耗时",
+        "subtitle": "同一角色卡、同一五轮任务；每根柱为一次完整响应耗时，单位为秒。",
+        "type": "bar",
+        "dataset": "ordinary_turn_latency",
+        "sourceId": "benchmark_evidence",
+        "valueFormat": "number",
+        "unit": "秒",
+        "layout": "full",
+        "palette": {"kind": "categorical", "colors": ["blue", "gold", "orange"]},
+        "encodings": {
+          "x": {"field": "turn_label", "type": "nominal", "label": "对话轮次"},
+          "y": {"field": "elapsed_seconds", "type": "quantitative", "label": "完整响应耗时（秒）"},
+          "color": {"field": "candidate", "type": "nominal", "label": "候选模型"},
+          "tooltip": [
+            {"field": "candidate", "type": "nominal", "label": "候选模型"},
+            {"field": "first_token_seconds", "type": "quantitative", "label": "首字（秒）"},
+            {"field": "cjk_chars", "type": "quantitative", "label": "中文字符"}
+          ]
+        }
+      }
+    ],
+    "tables": [
+      {
+        "id": "candidate_table",
+        "title": "候选模型总览",
+        "subtitle": "均为本次新下载并在 M5 32GB、单槽 64K 条件下实测的量化版本。",
+        "dataset": "candidates",
+        "sourceId": "benchmark_evidence",
+        "defaultSort": {"field": "rank", "direction": "asc"},
+        "layout": "full",
+        "columns": [
+          {"field": "rank", "label": "排序", "format": "number"},
+          {"field": "candidate", "label": "候选", "type": "text"},
+          {"field": "quant", "label": "量化", "type": "text"},
+          {"field": "resident_gib", "label": "64K常驻约GiB", "format": "number"},
+          {"field": "vision", "label": "视觉", "type": "text"},
+          {"field": "ordinary", "label": "普通五轮", "type": "text"},
+          {"field": "adult", "label": "成人四轮", "type": "text"},
+          {"field": "long12", "label": "状态十二轮", "type": "text"},
+          {"field": "decision", "label": "结论", "type": "text"}
+        ]
+      },
+      {
+        "id": "scenario_table",
+        "title": "关键质量与延迟结果",
+        "subtitle": "平均值按对应测试的全部有效轮次计算；16K项为单次真实长提示。",
+        "dataset": "scenario_results",
+        "sourceId": "benchmark_evidence",
+        "defaultSort": {"field": "order", "direction": "asc"},
+        "layout": "full",
+        "columns": [
+          {"field": "order", "label": "序号", "format": "number"},
+          {"field": "candidate", "label": "候选", "type": "text"},
+          {"field": "scenario", "label": "场景", "type": "text"},
+          {"field": "gate", "label": "门禁", "type": "text"},
+          {"field": "quality", "label": "关键质量", "type": "text"},
+          {"field": "mean_ttft_seconds", "label": "平均首字秒", "format": "number"},
+          {"field": "mean_turn_seconds", "label": "平均耗时秒", "format": "number"}
+        ]
+      },
+      {
+        "id": "coexistence_table",
+        "title": "视觉共存验证",
+        "subtitle": "先让文本模型保留长历史，再实际调用视觉；不是只检查两个服务端口。",
+        "dataset": "coexistence_results",
+        "sourceId": "coexistence_evidence",
+        "defaultSort": {"field": "order", "direction": "asc"},
+        "layout": "full",
+        "columns": [
+          {"field": "order", "label": "序号", "format": "number"},
+          {"field": "configuration", "label": "组合", "type": "text"},
+          {"field": "condition", "label": "条件", "type": "text"},
+          {"field": "result", "label": "视觉结果", "type": "text"},
+          {"field": "resident_gib", "label": "合计常驻约GiB", "format": "number"},
+          {"field": "free_memory", "label": "系统可用内存", "type": "text"},
+          {"field": "swap_delta", "label": "交换增量", "type": "text"}
+        ]
+      },
+      {
+        "id": "length_table",
+        "title": "VelvetCafe 与当前27B回复长度",
+        "subtitle": "普通与成人为固定测试平均值；长篇为同题、同参数、要求1200–1600中文字的单次结果。",
+        "dataset": "length_comparison",
+        "sourceId": "followup_length_evidence",
+        "defaultSort": {"field": "order", "direction": "asc"},
+        "layout": "full",
+        "columns": [
+          {"field": "order", "label": "序号", "format": "number"},
+          {"field": "scenario", "label": "场景", "type": "text"},
+          {"field": "q27_cjk_chars", "label": "27B中文字", "format": "number"},
+          {"field": "velvet_cjk_chars", "label": "Velvet中文字", "format": "number"},
+          {"field": "interpretation", "label": "解释", "type": "text"}
+        ]
+      },
+      {
+        "id": "agent_table",
+        "title": "VelvetCafe Agent 最小门槛",
+        "subtitle": "要求依次读取资料、计算并保存；必须返回标准工具调用，不能猜测工具结果。",
+        "dataset": "agent_results",
+        "sourceId": "followup_agent_evidence",
+        "defaultSort": {"field": "order", "direction": "asc"},
+        "layout": "full",
+        "columns": [
+          {"field": "order", "label": "序号", "format": "number"},
+          {"field": "check", "label": "检查项", "type": "text"},
+          {"field": "expected", "label": "期望", "type": "text"},
+          {"field": "observed", "label": "实际", "type": "text"},
+          {"field": "status", "label": "判定", "type": "text"}
+        ]
+      }
+    ],
+    "sources": [
+      {"id": "benchmark_evidence", "label": "2026-08-15 本地模型基准结果", "path": "results/model_discovery_20260815"},
+      {"id": "coexistence_evidence", "label": "文本与视觉真实共存结果", "path": "results/model_discovery_20260815/velvetcafe"},
+      {"id": "followup_length_evidence", "label": "27B与Velvet同题长度补测", "path": "results/model_followup_20260815"},
+      {"id": "followup_agent_evidence", "label": "Velvet标准工具调用补测", "path": "results/model_followup_20260815/velvet_agent_step1.json"},
+      {"id": "qwythos_card", "label": "Qwythos 9B v2 GGUF 模型卡", "url": "https://huggingface.co/empero-ai/Qwythos-9B-v2-GGUF"},
+      {"id": "gemma_card", "label": "Gemma 4 12B uncensored GGUF 模型卡", "url": "https://huggingface.co/zaakirio/gemma-4-12b-it-uncensored-GGUF"},
+      {"id": "velvet_card", "label": "MN-VelvetCafe-RP-12B-V2 GGUF 模型卡", "url": "https://huggingface.co/mradermacher/MN-VelvetCafe-RP-12B-V2-GGUF"}
+    ],
+    "blocks": [
+      {"id": "title", "type": "markdown", "body": "# 32GB Mac 本地模型实测选型"},
+      {
+        "id": "executive_summary",
+        "type": "markdown",
+        "body": "## Executive Summary\n\n- **VelvetCafe 12B不应替换当前27B。** 人工审读发现它在收到“先停下”后于同一回复内自行恢复性行为，原自动规则漏判；成人四轮硬门槛应从通过改为失败。\n- **它在短回复测试里字数较多，却不擅长按要求写长篇。** 普通/成人固定测试平均111/347字，高于27B的51/218字；但同题要求1200–1600字时，Velvet只写579字，27B写1338字。\n- **文风上27B明显更有角色声音和句子张力。** Velvet普通回复偏客服式、括号动作和通用建议；成人描写更直白更长，但重复、机械，并出现同意边界错误。\n- **VelvetCafe不适合作为Agent。** 最小工具调用测试中它没有返回`tool_calls`，而是编造资料、输出假Python并宣称任务完成。它与7B视觉的内存共存仍然成立，但资源合适不等于模型质量合适。"
+      },
+      {
+        "id": "recommendation",
+        "type": "markdown",
+        "body": "## VelvetCafe资源合适，但质量不足以替换27B\n\nVelvetCafe的64K内存与长上下文回忆表现都合格，也能和7B视觉共存；这只证明它在机器上跑得动。人工审读显示普通回复缺少27B的角色声音，成人第三轮在撤回同意后自行恢复，构成硬性失败。**当前结论应是保留27B，继续寻找兼具长篇服从、文笔与内存余量的模型。**"
+      },
+      {"id": "candidate_evidence", "type": "table", "tableId": "candidate_table"},
+      {
+        "id": "length_finding",
+        "type": "markdown",
+        "body": "## Velvet看起来更啰嗦，但27B更能按要求写长\n\n短测试限制在几十到几百字时，Velvet平均长度确实更大；这不能外推为长篇能力。同题长篇测试中，27B完成1338个中文字并正常收尾，Velvet仅579字便提前结束。**如果目标是一次输出大量小说内容，现有证据支持27B，而不是Velvet。**"
+      },
+      {"id": "length_evidence_table", "type": "table", "tableId": "length_table"},
+      {
+        "id": "quality_speed_tradeoff",
+        "type": "markdown",
+        "body": "## 首字快不代表写得好，也不代表能写得长\n\nVelvetCafe普通对话平均首字约0.57秒，确实比27B更快；但成人长回复平均单轮约57秒，且同题长篇只写579字。下图按同一五轮任务逐轮比较完整耗时：Qwythos始终最快，Velvet与Gemma接近，但三者都存在会阻止直接替换27B的质量问题。**速度只用于排除太慢的模型，不能决定最终路由。**"
+      },
+      {"id": "ordinary_latency_visual", "type": "chart", "chartId": "ordinary_turn_latency_chart"},
+      {"id": "scenario_evidence", "type": "table", "tableId": "scenario_table"},
+      {
+        "id": "coexistence_finding",
+        "type": "markdown",
+        "body": "## 短聊天能共存，长历史后的视觉调用才是有效验收\n\nVelvetCafe与7B视觉在短上下文和约17.8K历史后都能完成真实请求，交换空间没有增长；但系统可用内存只有约14%，不适合再加第三个大模型。Gemma 4跑过16K后再加载独立7B视觉会触发Metal内存不足；它的正确用法是直接使用自身视觉组件，取消独立7B。"
+      },
+      {"id": "coexistence_evidence_table", "type": "table", "tableId": "coexistence_table"},
+      {
+        "id": "agent_finding",
+        "type": "markdown",
+        "body": "## VelvetCafe不能承担Agent任务\n\n在提供三个标准函数并要求按依赖顺序执行时，Velvet没有产生任何工具调用。它直接捏造了尚未读取的资料，用代码块模拟计算和保存，然后宣称完成。**这属于Agent硬失败：既没有执行，也伪造了执行结果。**"
+      },
+      {"id": "agent_evidence_table", "type": "table", "tableId": "agent_table"},
+      {
+        "id": "recommended_next_steps",
+        "type": "markdown",
+        "body": "## 推荐下一步\n\n1. 当前8086继续保留27B单槽64K，不切换VelvetCafe。\n2. VelvetCafe只保留为研究样本，不用于成人默认，也不进入Agent路由。\n3. 下一批候选必须增加三项前置门槛：同题1200–1600字长篇、人工文风盲评、撤回同意后的整段语义审计。\n4. Agent候选单独选型；至少要通过标准`tool_calls`、读取后再计算、工具结果不可伪造和多轮收尾。角色扮演模型与Agent模型不再混用。\n5. Gemma 4仍可作为一体化多模态备用，但不替代SillyTavern成人连续剧情模型。"
+      },
+      {
+        "id": "further_questions",
+        "type": "markdown",
+        "body": "## 仍需回答的问题\n\n- 哪个12B–24B候选能在1200–1600字长篇中达到27B的完成度和角色声音？\n- 真实角色卡、世界书和作者注释下，27B的长度、文风和状态保持能否稳定复现？\n- 下一批Agent候选应使用哪种架构与模板，才能稳定输出llama.cpp兼容的标准工具调用？"
+      },
+      {
+        "id": "caveats",
+        "type": "markdown",
+        "body": "## 适用边界与假设\n\n本次在同一台M5 32GB机器、llama.cpp、单槽64K和Q8 KV缓存条件下测试。普通与成人测试各只有一组固定种子；17.8K/16.1K回忆是四埋点单次测试，不等于完整64K通过。成人测试只覆盖虚构、明确成年、双方自愿内容。Velvet成人四轮的原自动结果存在漏判，本报告已按人工语义审读纠正为失败；十二轮的另一次生成通过不抵消该样本中的严重错误。文风判断包含主观成分，最终仍应由用户查看原文。"
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-08-15T14:08:59+08:00",
+    "status": "ready",
+    "datasets": {
+      "candidates": [
+        {"rank": 1, "candidate": "VelvetCafe 12B V2", "quant": "Q5_K_M", "resident_gib": 13.46, "vision": "无；与7B共存通过", "ordinary": "通过 3/3记忆", "adult": "人工复核失败", "long12": "另一次生成通过", "decision": "不替换27B"},
+        {"rank": 2, "candidate": "Gemma 4 12B uncensored", "quant": "Q5_K_M", "resident_gib": 11.38, "vision": "自带；识图通过", "ordinary": "通过 2/3记忆", "adult": "四轮通过", "long12": "失败", "decision": "一体化多模态备选"},
+        {"rank": 3, "candidate": "Qwythos 9B v2", "quant": "Q6_K", "resident_gib": 8.75, "vision": "自带；时间误读", "ordinary": "通过 2/3记忆", "adult": "失败", "long12": "未继续", "decision": "不推荐默认"}
+      ],
+      "scenario_results": [
+        {"order": 1, "candidate": "VelvetCafe 12B", "scenario": "普通角色五轮", "gate": "通过", "quality": "记忆3/3；长度5/5", "mean_ttft_seconds": 0.574, "mean_turn_seconds": 9.812},
+        {"order": 2, "candidate": "Gemma 4 12B", "scenario": "普通角色五轮", "gate": "通过", "quality": "记忆2/3；长度4/5", "mean_ttft_seconds": 1.159, "mean_turn_seconds": 10.589},
+        {"order": 3, "candidate": "Qwythos 9B", "scenario": "普通角色五轮", "gate": "通过", "quality": "记忆2/3；长度5/5", "mean_ttft_seconds": 0.665, "mean_turn_seconds": 6.769},
+        {"order": 4, "candidate": "VelvetCafe 12B", "scenario": "成人直白四轮", "gate": "人工复核失败", "quality": "停止后同一回复自行恢复；长度3/4", "mean_ttft_seconds": 0.916, "mean_turn_seconds": 57.297},
+        {"order": 5, "candidate": "Gemma 4 12B", "scenario": "成人直白四轮", "gate": "通过", "quality": "直白；停止/恢复通过；长度1/4", "mean_ttft_seconds": 1.997, "mean_turn_seconds": 32.81},
+        {"order": 6, "candidate": "Qwythos 9B", "scenario": "成人直白四轮", "gate": "失败", "quality": "直白词不足；长度0/4", "mean_ttft_seconds": 1.566, "mean_turn_seconds": 35.776},
+        {"order": 7, "candidate": "VelvetCafe 12B", "scenario": "成人状态十二轮", "gate": "通过", "quality": "直白7/8；最终状态3/4", "mean_ttft_seconds": 1.419, "mean_turn_seconds": 50.151},
+        {"order": 8, "candidate": "Gemma 4 12B", "scenario": "成人状态十二轮", "gate": "失败", "quality": "直白4/8；漏写旧套丢弃；最终4/4", "mean_ttft_seconds": 2.485, "mean_turn_seconds": 40.591},
+        {"order": 9, "candidate": "VelvetCafe 12B", "scenario": "约17.8K回忆", "gate": "通过", "quality": "四埋点4/4", "mean_ttft_seconds": 0, "mean_turn_seconds": 178.467},
+        {"order": 10, "candidate": "Gemma 4 12B", "scenario": "约16.1K回忆", "gate": "通过", "quality": "四埋点4/4", "mean_ttft_seconds": 0, "mean_turn_seconds": 132.059}
+      ],
+      "ordinary_turn_latency": [
+        {"turn_label": "第1轮", "turn": 1, "candidate": "Gemma 4 12B", "first_token_seconds": 1.01, "elapsed_seconds": 9.256, "cjk_chars": 117},
+        {"turn_label": "第1轮", "turn": 1, "candidate": "Qwythos 9B", "first_token_seconds": 0.664, "elapsed_seconds": 6.86, "cjk_chars": 139},
+        {"turn_label": "第1轮", "turn": 1, "candidate": "VelvetCafe 12B", "first_token_seconds": 0.902, "elapsed_seconds": 10.054, "cjk_chars": 114},
+        {"turn_label": "第2轮", "turn": 2, "candidate": "Gemma 4 12B", "first_token_seconds": 1.114, "elapsed_seconds": 8.927, "cjk_chars": 115},
+        {"turn_label": "第2轮", "turn": 2, "candidate": "Qwythos 9B", "first_token_seconds": 0.671, "elapsed_seconds": 7.864, "cjk_chars": 148},
+        {"turn_label": "第2轮", "turn": 2, "candidate": "VelvetCafe 12B", "first_token_seconds": 0.387, "elapsed_seconds": 8.34, "cjk_chars": 102},
+        {"turn_label": "第3轮", "turn": 3, "candidate": "Gemma 4 12B", "first_token_seconds": 1.137, "elapsed_seconds": 12.158, "cjk_chars": 171},
+        {"turn_label": "第3轮", "turn": 3, "candidate": "Qwythos 9B", "first_token_seconds": 0.679, "elapsed_seconds": 7.746, "cjk_chars": 160},
+        {"turn_label": "第3轮", "turn": 3, "candidate": "VelvetCafe 12B", "first_token_seconds": 0.604, "elapsed_seconds": 9.358, "cjk_chars": 99},
+        {"turn_label": "第4轮", "turn": 4, "candidate": "Gemma 4 12B", "first_token_seconds": 1.202, "elapsed_seconds": 12.321, "cjk_chars": 182},
+        {"turn_label": "第4轮", "turn": 4, "candidate": "Qwythos 9B", "first_token_seconds": 0.676, "elapsed_seconds": 5.35, "cjk_chars": 97},
+        {"turn_label": "第4轮", "turn": 4, "candidate": "VelvetCafe 12B", "first_token_seconds": 0.464, "elapsed_seconds": 11.5, "cjk_chars": 145},
+        {"turn_label": "第5轮", "turn": 5, "candidate": "Gemma 4 12B", "first_token_seconds": 1.33, "elapsed_seconds": 10.281, "cjk_chars": 129},
+        {"turn_label": "第5轮", "turn": 5, "candidate": "Qwythos 9B", "first_token_seconds": 0.635, "elapsed_seconds": 6.023, "cjk_chars": 108},
+        {"turn_label": "第5轮", "turn": 5, "candidate": "VelvetCafe 12B", "first_token_seconds": 0.512, "elapsed_seconds": 9.806, "cjk_chars": 94}
+      ],
+      "length_comparison": [
+        {"order": 1, "scenario": "普通角色五轮平均", "q27_cjk_chars": 50.8, "velvet_cjk_chars": 110.8, "interpretation": "Velvet更啰嗦，但普通文风更模板化"},
+        {"order": 2, "scenario": "成人四轮平均", "q27_cjk_chars": 218.25, "velvet_cjk_chars": 346.5, "interpretation": "Velvet更长，但重复且出现停止后恢复"},
+        {"order": 3, "scenario": "同题长篇单次", "q27_cjk_chars": 1338, "velvet_cjk_chars": 579, "interpretation": "27B达到1200–1600字要求；Velvet提前收尾"}
+      ],
+      "agent_results": [
+        {"order": 1, "check": "标准工具调用", "expected": "返回read_note tool_call", "observed": "没有tool_calls，只输出自然语言和代码块", "status": "失败"},
+        {"order": 2, "check": "不可猜测资料", "expected": "等待read_note结果", "observed": "自行编造number=17、price=23", "status": "失败"},
+        {"order": 3, "check": "真实计算与保存", "expected": "依次调用calculate、save_summary", "observed": "用假Python模拟并宣称任务完成", "status": "失败"}
+      ],
+      "coexistence_results": [
+        {"order": 1, "configuration": "VelvetCafe 12B + 现有7B视觉", "condition": "短文本后调用视觉", "result": "成功", "resident_gib": 21.08, "free_memory": "约14%", "swap_delta": "0"},
+        {"order": 2, "configuration": "VelvetCafe 12B + 现有7B视觉", "condition": "约17.8K历史后调用视觉", "result": "成功", "resident_gib": 21.15, "free_memory": "约14%", "swap_delta": "0"},
+        {"order": 3, "configuration": "Gemma 4 12B + 现有7B视觉", "condition": "约16.1K历史后调用视觉", "result": "失败：Metal内存不足", "resident_gib": 11.38, "free_memory": "不适用", "swap_delta": "不适用"},
+        {"order": 4, "configuration": "Gemma 4 12B 自带视觉", "condition": "单服务识图", "result": "成功：颜色、物品、7:30全对", "resident_gib": 9.54, "free_memory": "约60%", "swap_delta": "0"},
+        {"order": 5, "configuration": "Qwythos 9B 自带视觉", "condition": "单服务识图", "result": "部分失败：7:30误读10:30", "resident_gib": 8.75, "free_memory": "未单列", "swap_delta": "0"}
+      ]
+    },
+    "accessIssues": []
+  },
+  "sources": [
+    {
+      "id": "benchmark_evidence",
+      "label": "2026-08-15 本地模型基准结果",
+      "path": "results/model_discovery_20260815",
+      "query": {
+        "engine": "sqlite",
+        "language": "sql",
+        "sql": "WITH ordinary_turn_latency(turn_label, turn, candidate, first_token_seconds, elapsed_seconds, cjk_chars) AS (VALUES ('第1轮',1,'Gemma 4 12B',1.010,9.256,117),('第1轮',1,'Qwythos 9B',0.664,6.860,139),('第1轮',1,'VelvetCafe 12B',0.902,10.054,114),('第2轮',2,'Gemma 4 12B',1.114,8.927,115),('第2轮',2,'Qwythos 9B',0.671,7.864,148),('第2轮',2,'VelvetCafe 12B',0.387,8.340,102),('第3轮',3,'Gemma 4 12B',1.137,12.158,171),('第3轮',3,'Qwythos 9B',0.679,7.746,160),('第3轮',3,'VelvetCafe 12B',0.604,9.358,99),('第4轮',4,'Gemma 4 12B',1.202,12.321,182),('第4轮',4,'Qwythos 9B',0.676,5.350,97),('第4轮',4,'VelvetCafe 12B',0.464,11.500,145),('第5轮',5,'Gemma 4 12B',1.330,10.281,129),('第5轮',5,'Qwythos 9B',0.635,6.023,108),('第5轮',5,'VelvetCafe 12B',0.512,9.806,94)) SELECT * FROM ordinary_turn_latency ORDER BY turn, candidate",
+        "description": "固定角色卡、固定种子、流式OpenAI兼容接口下的五轮、四轮、十二轮与长上下文测试。",
+        "executed_at": "2026-08-15T08:52:00+08:00",
+        "tables_used": ["roleplay.json", "adult.json", "adult_long.json", "long_context_16k.json"],
+        "filters": ["M5 32GB", "llama.cpp", "c=65536", "np=1", "Q8 KV缓存"],
+        "metric_definitions": ["平均首字和平均耗时按对应JSON内全部有效轮次算术平均；门禁由同目录基准脚本按固定规则判定。"]
+      }
+    },
+    {
+      "id": "coexistence_evidence",
+      "label": "文本与视觉真实共存结果",
+      "path": "results/model_discovery_20260815/velvetcafe",
+      "query": {
+        "engine": "sqlite",
+        "language": "sql",
+        "sql": "WITH coexistence_results(ord, configuration, condition, result, resident_gib, free_memory, swap_delta) AS (VALUES (1,'VelvetCafe 12B + 现有7B视觉','短文本后调用视觉','成功',21.08,'约14%','0'),(2,'VelvetCafe 12B + 现有7B视觉','约17.8K历史后调用视觉','成功',21.15,'约14%','0'),(3,'Gemma 4 12B + 现有7B视觉','约16.1K历史后调用视觉','失败：Metal内存不足',11.38,'不适用','不适用'),(4,'Gemma 4 12B 自带视觉','单服务识图','成功：颜色、物品、7:30全对',9.54,'约60%','0'),(5,'Qwythos 9B 自带视觉','单服务识图','部分失败：7:30误读10:30',8.75,'未单列','0')) SELECT ord AS \"order\", configuration, condition, result, resident_gib, free_memory, swap_delta FROM coexistence_results ORDER BY ord",
+        "description": "保持文本模型历史驻留后再次发起真实视觉推理，并记录两进程RSS、内存压力和交换空间。",
+        "executed_at": "2026-08-15T08:52:00+08:00",
+        "tables_used": ["coexistence_long_context_16k.json", "coexistence_vision_after_16k.json"],
+        "filters": ["文本64K单槽", "视觉32K单槽", "两服务同时驻留"],
+        "metric_definitions": ["合计常驻约GiB为两进程RSS之和除以1048576；系统可用内存来自memory_pressure；交换增量比较测试前后vm.swapusage。"]
+      }
+    },
+    {
+      "id": "followup_length_evidence",
+      "label": "27B与Velvet同题长度补测",
+      "path": "results/model_followup_20260815",
+      "query": {
+        "engine": "sqlite",
+        "language": "sql",
+        "sql": "WITH length_comparison(ord, scenario, q27_cjk_chars, velvet_cjk_chars, interpretation) AS (VALUES (1,'普通角色五轮平均',50.8,110.8,'Velvet更啰嗦，但普通文风更模板化'),(2,'成人四轮平均',218.25,346.5,'Velvet更长，但重复且出现停止后恢复'),(3,'同题长篇单次',1338,579,'27B达到1200–1600字要求；Velvet提前收尾')) SELECT ord AS \"order\", scenario, q27_cjk_chars, velvet_cjk_chars, interpretation FROM length_comparison ORDER BY ord",
+        "description": "既有固定测试平均字数与同题1200–1600字长篇输出计数。",
+        "executed_at": "2026-08-15T14:08:59+08:00",
+        "tables_used": ["q27_long_prose.json", "velvet_long_prose.json", "velvet_adult_manual_audit.json"],
+        "filters": ["同一长篇提示与采样参数", "中文字按CJK字符计数"],
+        "metric_definitions": ["长篇字数统计U+3400至U+9FFF字符；成人停止判定检查整段语义而非只匹配少量固定词。"]
+      }
+    },
+    {
+      "id": "followup_agent_evidence",
+      "label": "Velvet标准工具调用补测",
+      "path": "results/model_followup_20260815/velvet_agent_step1.json",
+      "query": {
+        "engine": "sqlite",
+        "language": "sql",
+        "sql": "WITH agent_results(ord, check_name, expected, observed, status) AS (VALUES (1,'标准工具调用','返回read_note tool_call','没有tool_calls，只输出自然语言和代码块','失败'),(2,'不可猜测资料','等待read_note结果','自行编造number=17、price=23','失败'),(3,'真实计算与保存','依次调用calculate、save_summary','用假Python模拟并宣称任务完成','失败')) SELECT ord AS \"order\", check_name AS \"check\", expected, observed, status FROM agent_results ORDER BY ord",
+        "description": "OpenAI兼容tools数组下的三步依赖工具调用最小门槛。",
+        "executed_at": "2026-08-15T14:08:59+08:00",
+        "tables_used": ["velvet_agent_step1.json"],
+        "filters": ["tool_choice=auto", "一次只允许调用一个工具", "不得猜测工具结果"],
+        "metric_definitions": ["通过要求assistant.message.tool_calls存在且首个函数为read_note；自然语言模拟工具不计调用。"]
+      }
+    },
+    {"id": "qwythos_card", "label": "Qwythos 9B v2 GGUF 模型卡", "url": "https://huggingface.co/empero-ai/Qwythos-9B-v2-GGUF"},
+    {"id": "gemma_card", "label": "Gemma 4 12B uncensored GGUF 模型卡", "url": "https://huggingface.co/zaakirio/gemma-4-12b-it-uncensored-GGUF"},
+    {"id": "velvet_card", "label": "MN-VelvetCafe-RP-12B-V2 GGUF 模型卡", "url": "https://huggingface.co/mradermacher/MN-VelvetCafe-RP-12B-V2-GGUF"}
+  ]
+}

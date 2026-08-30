@@ -1,0 +1,94 @@
+schema_version: 3
+recorded_at: "2026-08-14T13:00:00+08:00"
+purpose: "用少量端到端业务工作流评测语言模型，避免把交付格式和辅助工具拆成大量零散场景。"
+
+evaluation_unit: end_to_end_workflow
+no_single_cross_workflow_score: true
+
+core_workflows:
+  - id: content_growth_loop
+    priority: P0
+    goal: "从资料与运营数据出发，完成内容策划、写作、复盘和下一轮优化。"
+    stages:
+      - source_and_audience_understanding
+      - topic_and_content_strategy
+      - self_media_writing_and_revision
+      - operations_data_analysis
+      - next_cycle_experiment_plan
+    covers: [self_media_writing, self_media_operations_analysis, lightweight_product_and_competitor_insight]
+    deliverables: [fact_register, content_strategy, article, metrics_json, operations_review, next_cycle_plan]
+    hard_gates: [no_invented_fact, key_numbers_reproducible, facts_and_hypotheses_separated]
+
+  - id: research_to_decision_loop
+    priority: P0
+    goal: "把行业、竞品和产品资料转成决策洞察、业务方案与管理层交付物。"
+    stages:
+      - research_question_decomposition
+      - evidence_collection_or_fixed_pack_analysis
+      - industry_competitor_product_synthesis
+      - option_and_tradeoff_design
+      - business_proposal
+      - executive_delivery
+    covers: [industry_research, competitor_insight, product_research, business_proposal]
+    deliverables: [source_register, comparison_matrix, insight_report, proposal, executive_summary]
+    optional_delivery_formats: [pptx, docx, pdf, web_report]
+    hard_gates: [key_claims_traceable, facts_and_hypotheses_separated, assumptions_explicit, no_invented_roi]
+
+  - id: interview_to_insight_loop
+    priority: P1
+    goal: "把合成或脱敏访谈材料转成主题、证据、风险提示和后续行动。"
+    stages:
+      - deidentification_check
+      - transcript_structuring
+      - theme_coding
+      - evidence_quote_mapping
+      - uncertainty_and_risk_review
+      - followup_and_report
+    covers: [psychological_interview_analysis, qualitative_user_research]
+    deliverables: [interview_summary, theme_codebook, evidence_map, risk_flags, followup_questions, report]
+    hard_gates: [no_identity_leakage, no_false_quote, no_diagnosis_from_insufficient_evidence, crisis_signal_not_missed]
+    note: "只评测辅助分析与整理，不评测模型替代专业心理咨询或临床诊断。"
+
+shared_capabilities:
+  - source_grounding_and_citation
+  - structured_and_numeric_analysis
+  - writing_and_synthesis
+  - tool_selection_and_orchestration
+  - context_and_state_retention
+  - critique_revision_and_recovery
+  - uncertainty_and_safety_control
+
+delivery_layer:
+  principle: "交付形式不是独立业务场景，在主工作流内按需抽测。"
+  formats:
+    - {id: markdown_report, validation: [structure, values_consistent, evidence_links]}
+    - {id: pptx, validation: [opens, no_overflow, chart_values_match, narrative_flow]}
+    - {id: web_page, validation: [builds, renders, responsive, core_interaction]}
+    - {id: docx_or_pdf, validation: [opens, layout_valid, values_consistent]}
+
+technical_execution_layer:
+  principle: "代码不是与业务割裂的主场景，优先评测它能否支撑业务工作流。"
+  tasks:
+    - deterministic_metric_calculation
+    - data_cleaning_and_conversion
+    - chart_or_report_generation
+    - web_report_implementation
+    - workflow_debugging
+  hard_gates: [tests_or_checks_pass, no_grader_tampering, no_unrelated_deletion]
+
+evaluation_dimensions:
+  business_quality: [goal_fit, insight_depth, actionability, audience_fit]
+  evidence_quality: [fact_retention, citation_traceability, numeric_accuracy, uncertainty_control]
+  agent_quality: [tool_use, step_completion, context_retention, revision, recovery, scope_control]
+  artifact_quality: [validity, readability, visual_integrity, cross_format_consistency]
+  performance: [first_attempt_pass, revision_pass, elapsed_seconds, api_calls, tokens]
+
+harness_pilot_completed:
+  status: tool_chain_smoke_only
+  cases: [bugfix_cross_file, structured_repo_maintenance, evidence_report]
+  report: docs/AGENT_LLM_EVALUATION_20260814.md
+
+execution_order:
+  - content_growth_loop
+  - research_to_decision_loop
+  - interview_to_insight_loop

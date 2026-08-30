@@ -1,0 +1,9 @@
+{
+  "evaluation_id": "tts_asr_bench_20260816",
+  "date": "2026-08-16",
+  "category": "tts_asr",
+  "stage": "verified_with_later_route_supersession",
+  "report": "report.html",
+  "verdict": "当时的基准选择 SenseVoice-Small 作为 ASR、edge-tts 作为长文 TTS；Qwen3-TTS 的旧结论已由 2026-08-30 MLX worker 分段路线继续复测。",
+  "raw_results": "results/tts_asr_bench_20260816/"
+}

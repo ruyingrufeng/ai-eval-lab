@@ -1,0 +1,56 @@
+{
+  "evaluation_id": "digital_human_hulili_20260818",
+  "date": "2026-08-18",
+  "category": "digital_human",
+  "stage": "verified",
+  "goal": "用真实人脸图（胡丽丽 1024x1024）跑 SadTalker + LivePortrait 双路数字人 demo",
+  "source_image": "/Users/jacky/Documents/HuLiLi/oriental_final_v1.jpg.png (1024x1024, PNG, 1MB)",
+  "pipeline": {
+    "stage_1_tts": {
+      "tool": "MiniMax-TTS",
+      "voice": "Chinese (Mandarin)_Gentle_Senior (温柔学姐)",
+      "text_chars": 87,
+      "audio_duration_sec": 12.67
+    },
+    "stage_2_sadtalker": {
+      "size": 256,
+      "render_time_sec": 207,
+      "video_duration_sec": 12.6,
+      "resolution": "256x256 @ 25fps",
+      "frame_inspection": "五官准确、嘴型连贯、无伪影，皮肤纹理 256 分辨率稍糊"
+    },
+    "stage_3_liveportrait": {
+      "driving_video": "LivePortrait/examples/driving/d0.mp4 (歪头+笑 3.12s)",
+      "render_time_sec": 64,
+      "video_duration_sec": 3.12,
+      "resolution": "720x1280 @ 25fps",
+      "frame_inspection": "表情自然（五官精准，因驱动视频歪头笑姿态被 1:1 复刻，输出明显偏头咧嘴）"
+    },
+    "stage_4_merge": {
+      "tool": "ffmpeg copy+aac",
+      "output": "hulili_e2e_with_audio.mp4 (256x256 + 中文音频 12.6s)"
+    }
+  },
+  "artifacts": {
+    "sadtalker_raw": "results/digital_human_hulili_20260818/2026_08_18_09.42.23.mp4",
+    "sadtalker_with_audio": "results/digital_human_hulili_20260818/hulili_e2e_with_audio.mp4",
+    "liveportrait_raw": "results/digital_human_hulili_20260818/liveportrait/oriental_final_v1.jpg--d0.mp4",
+    "liveportrait_concat": "results/digital_human_hulili_20260818/liveportrait/oriental_final_v1.jpg--d0_concat.mp4"
+  },
+  "verdict": {
+    "sadtalker": "verified，胡丽丽源图嘴型同步完整可生产。256 分辨率下皮肤纹理稍糊",
+    "liveportrait": "verified，胡丽丽源图表情迁移自然、五官精准。驱动视频姿态 1:1 复刻，源图姿态需与驱动视频匹配",
+    "business_use": "胡丽丽源图两链路都跑通，业务级数字人 demo 可立即落地"
+  },
+  "comparison_with_s9": {
+    "s9_demo": "LivePortrait examples s9.jpg（偏头状态）与 d0.mp4 姿态接近，输出自然",
+    "hulili_demo": "胡丽丽 1024x1024 正面中性图与 d0.mp4 歪头笑姿态差距大，输出明显偏头咧嘴",
+    "lesson": "LivePortrait 驱动视频选择是业务级关键。源图正面中性时，应配正面中性驱动视频"
+  },
+  "next_steps": [
+    "SadTalker 512 跑胡丽丽验证活人感（预计 ~13min 渲染）",
+    "找/录多姿态 LivePortrait 驱动视频库（正面、侧脸、微笑、严肃）",
+    "用胡丽丽授权音频做真人克隆（先确认素材库授权情况）",
+    "Wav2Lip MPS 冒烟（轻量备胎，可能比 SadTalker 更适合长音频）"
+  ]
+}

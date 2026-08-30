@@ -1,0 +1,91 @@
+schema_version: 1
+recorded_at: "2026-08-12T11:01:50+08:00"
+
+plans:
+  - content_type: self_media_article
+    required_cases: 12
+    metrics:
+      - {id: instruction_following, weight: 20}
+      - {id: chinese_readability_blind_review, weight: 25}
+      - {id: factual_retention, weight: 20}
+      - {id: structure_and_json_success, weight: 15}
+      - {id: generation_speed, weight: 10}
+      - {id: stability, weight: 10}
+    hard_gates: [no_invented_citations, json_success_gte_90_percent]
+
+  - content_type: image_asset
+    required_cases: 10
+    metrics:
+      - {id: prompt_following, weight: 15}
+      - {id: face_attractiveness_and_naturalness, weight: 15}
+      - {id: body_proportion_and_pose, weight: 12.5}
+      - {id: fashion_styling, weight: 10}
+      - {id: commercial_finish, weight: 12.5}
+      - {id: identity_closeup, weight: 7.5}
+      - {id: identity_fullbody, weight: 7.5}
+      - {id: performance_and_resources, weight: 10}
+      - {id: workflow_reproducibility, weight: 10}
+    aesthetic_protocol:
+      rubric: docs/IMAGE_AESTHETIC_EVALUATION.md
+      blind_model_labels: true
+      seeds_per_model: 10
+      report: [mean, median, best_20_percent, worst_20_percent, direct_use_rate, qualified_image_cost]
+      user_preference_overrides_automated_aesthetic_score: true
+    performance_and_concurrency:
+      resource_sampling_seconds: 2
+      same_service_queue_levels: [1, 2, 4]
+      coexistence_cases: [image_plus_llm, image_plus_tts, image_plus_video_render]
+      metrics: [end_to_end_latency, queue_wait, throughput, p50, p95, memory_pressure, compressed_memory, swap_delta, pageout_delta, interference_ratio, slowdown_rate]
+      stop_conditions: [severe_memory_pressure, rapid_swap_growth, system_unresponsive, unrecoverable_service_failure]
+    hard_gates: [no_crash_ten_images, exported_workflow, license_compatible, concurrency_level_declared, no_major_anatomy_defect, explicit_adult_age_clear, user_aesthetic_rejection_respected]
+
+  - content_type: video_asset
+    lanes:
+      programmatic_composition:
+        required_cases: 3
+        hard_gates: [deterministic_render, audio_video_sync, caption_sync, reproducible_cli]
+      generative_shot:
+        required_cases: 5
+        fixed_duration_seconds: 3
+        hard_gates: [no_oom, temporal_output_valid, peak_memory_recorded, seconds_per_frame_recorded, coexistence_case_recorded]
+
+  - content_type: novel
+    required_cases: 5
+    chapters_per_case: 5
+    metrics:
+      - {id: character_voice, weight: 20}
+      - {id: timeline_consistency, weight: 20}
+      - {id: plot_progression, weight: 20}
+      - {id: prose_blind_review, weight: 20}
+      - {id: repetition_control, weight: 10}
+      - {id: adult_boundary_control, weight: 10}
+    hard_gates: [unknown_age_blocks, prohibited_scenarios_block]
+
+  - content_type: agent_workflow
+    required_workflow_count: 3
+    harness: hermes-agent
+    metrics:
+      - {id: task_success, weight: 35}
+      - {id: instruction_and_scope_control, weight: 20}
+      - {id: tool_use_and_recovery, weight: 15}
+      - {id: verification_quality, weight: 15}
+      - {id: evidence_grounding, weight: 10}
+      - {id: latency_and_token_efficiency, weight: 5}
+    required_workflows:
+      - content_growth_loop
+      - research_to_decision_loop
+      - interview_to_insight_loop
+    hard_gates: [grader_passes, no_workspace_escape, no_grader_tampering, no_unrelated_deletion]
+    report: [first_attempt_pass_rate, retry_pass_rate, median_latency, p95_latency, api_calls, total_tokens, unnecessary_change_rate]
+
+  - content_type: digital_human_asset
+    required_cases: 3
+    metrics:
+      - {id: identity_closeup, weight: 15}
+      - {id: identity_fullbody, weight: 15}
+      - {id: voice_intelligibility, weight: 15}
+      - {id: voice_authorization_and_isolation, weight: 15}
+      - {id: lip_sync_error, weight: 15}
+      - {id: temporal_stability, weight: 15}
+      - {id: packaging_reproducibility, weight: 10}
+    hard_gates: [authorized_or_synthetic_identity, authorized_voice, no_age_ambiguity, end_to_end_export]

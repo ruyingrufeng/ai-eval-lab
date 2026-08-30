@@ -1,0 +1,9 @@
+{
+  "evaluation_id": "tts_emotion_bench_20260816",
+  "date": "2026-08-16",
+  "category": "tts_emotion",
+  "stage": "verified",
+  "report": "report.html",
+  "verdict": "MiniMax 情感与稳定性综合最佳；Fish Speech 长文可用但存在局部异常；ChatTTS 长文不可用。",
+  "raw_results": "results/tts_emotion_bench_20260816/"
+}

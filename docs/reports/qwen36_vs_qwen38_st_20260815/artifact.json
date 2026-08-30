@@ -1,0 +1,10 @@
+{
+  "evaluation_id": "qwen36_vs_qwen38_st_20260815",
+  "date": "2026-08-15",
+  "category": "sillytavern_model_comparison",
+  "stage": "verified",
+  "report": "report.html",
+  "verdict": "Qwen3.8-27B 适合 SillyTavern 且可输出长文，但未证明比 Qwen3.6-27B Fable 更适合作为默认模型。",
+  "samples": "52 paired turns",
+  "raw_results": "results/qwen36_vs_qwen38_st_20260815/"
+}

@@ -1,0 +1,10 @@
+{
+  "evaluation_id": "st_longsession_20260816",
+  "date": "2026-08-16",
+  "category": "sillytavern_long_session",
+  "stage": "verified",
+  "report": "report.html",
+  "model": "qwen3.6-27b-fable",
+  "verdict": "25/25 轮正常 stop；上下文压力 5/5、跨会话状态 3/3 通过。",
+  "raw_results": "results/st_longsession_20260816/"
+}

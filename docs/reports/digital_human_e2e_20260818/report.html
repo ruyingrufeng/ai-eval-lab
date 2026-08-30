@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>数字人端到端联调评测 · 2026-08-18</title>
+<style>
+  :root{--bg:#0f1115;--card:#1a1d24;--text:#e6e8eb;--muted:#8a8f98;--accent:#a78bfa;--accent2:#f472b6;--border:#2a2f38;--ok:#34d399;--warn:#fbbf24;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","SF Pro SC",sans-serif;background:var(--bg);color:var(--text);line-height:1.65;padding:32px 20px;}
+  .wrap{max-width:920px;margin:0 auto}
+  h1{font-size:28px;margin:0 0 8px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .meta{color:var(--muted);font-size:14px;margin-bottom:32px}
+  h2{font-size:20px;margin:32px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border);color:var(--accent)}
+  h3{font-size:16px;margin:20px 0 10px;color:var(--accent2)}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin:14px 0}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin:14px 0}
+  .tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:12px;font-weight:500;margin-right:6px}
+  .ok{background:rgba(52,211,153,.15);color:var(--ok)}
+  .warn{background:rgba(251,191,36,.15);color:var(--warn)}
+  .bad{background:rgba(248,113,113,.15);color:#f87171}
+  code{background:#0a0c10;padding:2px 6px;border-radius:4px;font-family:"SF Mono",monospace;font-size:13px;color:var(--accent)}
+  pre{background:#0a0c10;padding:14px;border-radius:8px;overflow-x:auto;font-size:12.5px;line-height:1.5;border:1px solid var(--border)}
+  pre code{background:transparent;padding:0;color:var(--text)}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+  th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--border)}
+  th{color:var(--accent);font-weight:500;background:rgba(167,139,250,.05)}
+  ul{padding-left:20px}
+  li{margin:4px 0}
+  .verdict{font-size:15px;padding:16px 20px;border-left:3px solid var(--accent);background:linear-gradient(90deg,rgba(167,139,250,.08),transparent);border-radius:0 8px 8px 0}
+  video{width:100%;max-width:480px;border-radius:8px;border:1px solid var(--border);display:block;margin:12px 0}
+  .stage{display:flex;align-items:center;gap:10px;margin:6px 0;padding:8px 12px;background:#0a0c10;border-radius:8px;font-size:14px}
+  .stage-num{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;flex-shrink:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>数字人端到端联调评测</h1>
+<div class="meta">2026-08-18 · 杰哥"先 1"决策落地 · 阿伟</div>
+
+<div class="card">
+<h3>目标</h3>
+<p>把昨天（08-17）单点 verified 的 SadTalker（嘴型）+ LivePortrait（表情）+ 08-16 定案的 MiniMax-TTS 串成完整链路，出第一段业务级"像真人对话"数字人 demo。</p>
+</div>
+
+<h2>链路总览</h2>
+
+<div class="card">
+<div class="stage"><span class="stage-num">1</span><strong>MiniMax-TTS</strong> · 温柔学姐 · 87 字中文 → 12.67s 音频（32kHz）</div>
+<div class="stage"><span class="stage-num">2</span><strong>SadTalker 256</strong> · 静态人脸图 + 音频 → 12.6s 嘴型同步视频（256x256@25fps，~3:22 渲染）</div>
+<div class="stage"><span class="stage-num">3</span><strong>LivePortrait</strong> · 静态人脸图 + 驱动视频 → 3.12s 表情迁移视频（720x1280@25fps，~1:04 渲染）</div>
+<div class="stage"><span class="stage-num">4</span><strong>ffmpeg</strong> · 合并 SadTalker 视频 + TTS 音频 → 12.5s 成片（音频/视频时长完美对齐）</div>
+</div>
+
+<h2>阶段数据</h2>
+
+<div class="card">
+<table>
+<tr><th>阶段</th><th>工具</th><th>输入</th><th>输出</th><th>耗时</th></tr>
+<tr><td>TTS</td><td>MiniMax-TTS</td><td>87 字文本</td><td>12.67s wav (32kHz)</td><td>&lt; 1s</td></tr>
+<tr><td>嘴型</td><td>SadTalker 256</td><td>s9.jpg + wav</td><td>256x256 12.6s mp4</td><td>3:22</td></tr>
+<tr><td>表情</td><td>LivePortrait</td><td>s9.jpg + d0.mp4</td><td>720x1280 3.12s mp4</td><td>1:04</td></tr>
+<tr><td>合并</td><td>ffmpeg copy+aac</td><td>mp4 + wav</td><td>12.5s mp4 (含音频)</td><td>&lt; 0.1s</td></tr>
+</table>
+</div>
+
+<h2>产物预览</h2>
+
+<div class="card">
+<h3>SadTalker 嘴型同步 + MiniMax 中文音频</h3>
+<video controls preload="metadata">
+  <source src="../../../results/digital_human_e2e_20260818/e2e_sadtalker_audio.mp4" type="video/mp4">
+</video>
+<p style="color:var(--muted);font-size:13px">完整 12.5s 数字人片段：MiniMax 温柔学姐中文 + 256x256 嘴型同步。音频/视频时长对齐（12.67s/12.6s），是端到端最简闭环。</p>
+</div>
+
+<div class="card">
+<h3>LivePortrait 表情迁移参考</h3>
+<video controls preload="metadata">
+  <source src="../../../results/digital_human_e2e_20260818/liveportrait/s9--d0_concat.mp4" type="video/mp4">
+</video>
+<p style="color:var(--muted);font-size:13px">720x1280 表情驱动 + concat 对比版。3.12s，仅展示表情层，未带音频（输入是驱动视频而非音频）。</p>
+</div>
+
+<h2>判定</h2>
+
+<div class="card">
+<p><span class="tag ok">verified</span> <strong>SadTalker 单链路</strong>：音频→嘴型同步完整可生产，12s 内音频 ~3:22 渲染，256 模式内存友好（~1.5GB）</p>
+<p><span class="tag ok">verified</span> <strong>LivePortrait 单链路</strong>：静态图→表情迁移清晰，1:04 跑 3s 视频</p>
+<p><span class="tag warn">架构问题</span> <strong>SadTalker + LivePortrait 串联 = 当前不直接成立</strong>。两个工具输入形态不同（音频 vs 驱动视频），业务"既会说话又有表情"需要混合链路或等待端到端音频→表情模型</p>
+</div>
+
+<h2>业务定位（阿伟建议）</h2>
+
+<div class="card">
+<ul>
+<li><strong>数字人讲解/播客片段（音频驱动嘴型）</strong> → 直接用 SadTalker 256，production-ready</li>
+<li><strong>头像替换/驱动片段特写（视频驱动表情）</strong> → 直接用 LivePortrait，production-ready</li>
+<li><strong>"既会动又有表情"</strong> → 当前没有一键方案。两条路：
+  <ul>
+    <li>路 A：SadTalker 出嘴型 → 抽帧 → LivePortrait 二次精修（成本高，工作量待验证）</li>
+    <li>路 B：等 EchoMimic（Mac 当前 blocked，等 MPS fp16 支持）/ 或 Wav2Lip（轻量备胎待测）</li>
+  </ul>
+</li>
+</ul>
+</div>
+
+<h2>关键命令</h2>
+
+<div class="card">
+<pre><code># 1. MiniMax-TTS（温柔学姐）
+mmx speech synthesize \
+  --text "$(cat sample.txt)" \
+  --voice "Chinese (Mandarin)_Gentle_Senior" \
+  --out tts_dh_demo.wav
+
+# 2. SadTalker 256（嘴型）
+source ~/voice-tools/venv-sadtalker/bin/activate
+cd ~/voice-tools/SadTalker
+PYTORCH_ENABLE_MPS_FALLBACK=1 PYTORCH_MPS_HIGH_WATERMARK_RATIO=0.0 \
+python inference.py \
+  --source_image <人脸图.jpg> \
+  --driven_audio <tts.wav> \
+  --size 256 --batch_size 2 --pose_style 0 \
+  --result_dir <输出目录>
+
+# 3. LivePortrait（表情）
+source ~/voice-tools/venv-liveportrait/bin/activate
+cd ~/voice-tools/LivePortrait
+PYTORCH_ENABLE_MPS_FALLBACK=1 \
+python inference.py \
+  -s <人脸图.jpg> -d <驱动视频.mp4> -o <输出目录>
+
+# 4. ffmpeg 合并
+ffmpeg -i sadtalker.mp4 -i tts.wav -c:v copy -c:a aac -shortest e2e.mp4</code></pre>
+</div>
+
+<h2>下一步候选</h2>
+
+<div class="card">
+<ul>
+<li>🟢 用 iCloud 素材库真实人脸图（<code>~/Library/Mobile Documents/com~apple~CloudDocs/AI Agent/素材/</code>）替换 s9.jpg 出更真实的业务 demo</li>
+<li>🟢 对比 SadTalker 256 vs 512（08-17 杰哥反馈 512 才有"活人感"）</li>
+<li>🟡 测 Wav2Lip（MPS ✅ 轻量备胎）作为 SadTalker 的轻量替代</li>
+<li>🔴 EchoMimic 接续（11 patch 后 diffusers UNet 仍有 fp16 雷，预期还掉 ≥2h）</li>
+</ul>
+</div>
+
+</div>
+</body>
+</html>

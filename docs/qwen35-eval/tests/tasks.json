@@ -1,0 +1,77 @@
+{
+  "t1": {
+    "name": "T1 基础工具闭环",
+    "workdir": "tests/t1",
+    "max_steps": 20,
+    "prompt": "在当前目录创建一个 Python 脚本，计算 1 到 100 所有整数的平方和，运行它并读取结果，最后告诉我这个数值。脚本文件要保留。",
+    "expected": "338350"
+  },
+  "t2": {
+    "name": "T2 多约束任务保持",
+    "workdir": "tests/t2",
+    "max_steps": 30,
+    "prompt": "读取 sales_data.csv，按以下约束处理：1) 只统计 2024 年的记录；2) 排除 category 为 clothing 的记录；3) amount 为空的记录不参与计算；4) 按金额降序排列；5) 只保留前 10 条；6) 结果输出为 JSON 文件保存到当前目录；7) 原始 CSV 文件不能修改。完成后告诉我筛选出的前 10 条记录的总金额。"
+  },
+  "t3": {
+    "name": "T3 事实一致性/不编造",
+    "workdir": "tests/t3",
+    "max_steps": 20,
+    "prompt": "读取 employees.csv，找出员工“钱七”的年度销售额，并分析他的销售表现。"
+  },
+  "t4": {
+    "name": "T4 工具成功但结果错误",
+    "workdir": "tests/t4",
+    "max_steps": 25,
+    "prompt": "目录里有 data.json（一组数据）和 variance_calc.py（计算平均值和方差的脚本）。请检查这份数据的平均值和方差计算是否正确，如果有问题就修复，并给出验证后的正确结果。"
+  },
+  "t5": {
+    "name": "T5 噪音文件干扰",
+    "workdir": "tests/t5",
+    "max_steps": 30,
+    "prompt": "这个目录里存放了多个销售数据文件（正式数据、草稿、备份、旧版本等混在一起）。请找出当前正式有效的销售数据，并计算平均订单金额。告诉我你依据什么选择了这个文件。"
+  },
+  "t6": {
+    "name": "T6 误导性文件名",
+    "workdir": "tests/t6",
+    "max_steps": 20,
+    "prompt": "找到认证系统的配置文件，告诉我系统使用的认证方式。"
+  },
+  "t7": {
+    "name": "T7 失败恢复",
+    "workdir": "tests/t7",
+    "max_steps": 20,
+    "prompt": "请读取 sales_2025_final.csv，计算销售总额。"
+  },
+  "t8": {
+    "name": "T8 任务中途改变目标",
+    "workdir": "tests/t8",
+    "max_steps": 30,
+    "prompt": "清洗 orders.csv：过滤掉无效记录（金额为空、金额为负、状态为 cancelled 或 refunded 的记录），把清洗后的结果输出为 CSV 文件。",
+    "middle_prompt": "输出格式改成 JSON，但之前的所有筛选条件保持不变。",
+    "middle_at": 3
+  },
+  "t9": {
+    "name": "T9 隐式约束长期保持",
+    "workdir": "tests/t9",
+    "max_steps": 35,
+    "prompt": "整个任务只允许分析 2025 年的数据。目录里有销售数据文件，请按顺序完成：1) 找到 2025 年的数据文件；2) 清洗无效行；3) 按 category 分类统计；4) 写一个 python 脚本计算各类别总金额并运行；5) 分析结果；6) 把最终报告写入 result_report.txt。"
+  },
+  "t10": {
+    "name": "T10 10+ Tool Calls 长链路",
+    "workdir": "tests/t10",
+    "max_steps": 40,
+    "prompt": "分析 transactions.csv：找出数据中的脏数据（金额为 N/A 或 note 标记为 duplicate 的记录），统计每个 category 的有效净金额，生成清洗后的 clean_transactions.csv，并用独立的方法验证结果的正确性。最后报告每个 category 的总金额。"
+  },
+  "t11": {
+    "name": "T11 模糊意图理解",
+    "workdir": "tests/t11",
+    "max_steps": 30,
+    "prompt": "帮我看看这个目录里的销售数据，找出今年真正有效的数据，分析一下销售情况有没有明显异常。不要修改原始文件。"
+  },
+  "t12": {
+    "name": "T12 冲突条件理解",
+    "workdir": "tests/t12",
+    "max_steps": 25,
+    "prompt": "不允许修改任何原始数据文件。把清洗后的数据保存到原目录（当前目录）。数据文件是 raw_sales.csv，请清洗掉无效记录后保存。"
+  }
+}

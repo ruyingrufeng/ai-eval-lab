@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Qwen3.6-27B 与 Qwen3.8-27B SillyTavern 对照</title>
+<style>body{margin:0;background:#f4f1eb;color:#24211d;font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.wrap{max-width:1080px;margin:auto;padding:32px 20px 64px}header,.card{background:#fff;border:1px solid #ddd5ca;border-radius:16px;padding:24px;margin:0 0 18px;box-shadow:0 8px 24px #3b302512}h1{font-size:30px;line-height:1.25;margin:0 0 10px}h2{font-size:21px;margin:0 0 12px}.verdict{font-size:18px;border-left:5px solid #997348;padding-left:16px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.metric{background:#f8f5ef;border-radius:12px;padding:16px}.metric b{display:block;font-size:24px;color:#6d4d2f}.table{overflow:auto}table{width:100%;border-collapse:collapse;min-width:720px}th,td{text-align:left;padding:10px 12px;border-bottom:1px solid #e8e1d7}th{background:#f6f1e9}blockquote{margin:12px 0;padding:10px 16px;background:#f8f5ef;border-left:4px solid #9a7552}.good{color:#25643d}.warn{color:#985b18}code{background:#eee8df;padding:2px 5px;border-radius:5px}@media(max-width:700px){.grid{grid-template-columns:1fr}h1{font-size:25px}.wrap{padding:18px 12px}}</style></head>
+<body><main class="wrap"><header><h1>Qwen3.6-27B Fable vs Qwen3.8-27B</h1><p>SillyTavern 同条件 52 轮对照 · 2026-08-15</p><p class="verdict"><strong>修正结论：</strong>Qwen3.8-27B 适合 SillyTavern，也能一次输出 1500–2000 中文字；但尚未证明比当前 Fable 更适合作为默认模型。</p></header>
+<section class="grid"><div class="metric">长篇平均字数<b>1658 / 1604</b>3.6 / 3.8，基本同级</div><div class="metric">角色轮平均字数<b>148 / 205</b>3.8 长约 38%</div><div class="metric">角色轮平均耗时<b>31s / 56s</b>3.8 慢约 1.81 倍</div></section>
+<section class="card"><h2>核心数字</h2><div class="table"><table><thead><tr><th>项目</th><th>3.6 Fable</th><th>3.8 官方</th><th>判断</th></tr></thead><tbody>
+<tr><td>三篇长文</td><td>1655 / 1449 / 1869</td><td>1965 / 1378 / 1470</td><td>都能长写；3.6 更稳定</td></tr>
+<tr><td>300 / 800 / 1500 字刻度</td><td>259 / 1066 / 1844</td><td>331 / 536 / 1513</td><td>3.8 有响应，但中档摆动</td></tr>
+<tr><td>角色十轮平均</td><td>148 字，10/10 命中范围</td><td>205 字，7/10 命中范围</td><td>3.8 更长，3.6 更守长度</td></tr>
+<tr><td>世界书六轮平均</td><td>197 字</td><td>271 字</td><td>两者均有设定漂移</td></tr>
+<tr><td>成人四轮平均</td><td>218 字</td><td>316 字</td><td>3.8 长约 45%</td></tr>
+<tr><td>长篇平均耗时</td><td>247 秒</td><td>354 秒</td><td>3.8 慢约 1.43 倍</td></tr>
+</tbody></table></div></section>
+<section class="card"><h2>长度结论</h2><p class="good"><strong>此前“3.8 写不长”的判断被推翻。</strong>它本轮同题写到 1965 字，1500 字刻度题写到 1513 字。</p><p>真正的问题是波动：同一都市奇幻题已有 854 与 1965 两个样本；800 字题默认写 536，强长度提示后写 1048。更适合用段落数和情节点控制，而不是硬字数。</p></section>
+<section class="card"><h2>文笔与角色声音</h2><p><strong>Fable：</strong>更克制、对白更有记忆点、人物关系与因果更清楚。渡轮篇整体明显优于 3.8。</p><blockquote>“你就这么急着把我的灵魂称重标价？”</blockquote><p><strong>3.8：</strong>更愿展开动作和环境，立场并不软；但常用括号舞台动作、通用强情绪句式和突然的大段背景解释，人物关系偶有混乱。</p><blockquote>“我是老板，不是你的谈判筹码。至于拆不拆，我说了算，而我的答案是：不。”</blockquote></section>
+<section class="card"><h2>角色卡与世界书</h2><ul><li>两者都坚持反对拆电影院，并记住最终提醒三项。</li><li>3.8 正确纠正银币而非金币；3.6 一度错改成铜钱。</li><li>3.6 出现一次用户动作接管；3.8 本轮没有。</li><li>两者都有门锁、身体限制或债务状态连续性错误。</li><li>两者都会编造共同经历；3.8 更容易戏剧化扩写未给定的家族与世界设定。</li></ul></section>
+<section class="card"><h2>成人场景</h2><p>两者均无拒绝，长度均通过，撤回同意后均停止。3.6 更直接、紧凑，立即完全退出；3.8 更长但偏说明式，并在下一轮重复了已经完成的退出动作。两者均有各自的动作连续性瑕疵。</p></section>
+<section class="card"><h2>部署与最终建议</h2><ol><li><strong>8086 继续保留 3.6 Fable 单槽 64K。</strong></li><li>撤回“3.8 不适合 ST”，改成“适合 ST、暂不替换 Fable”。</li><li>3.8 可按需用于更长普通/成人回复、世界书实验和一体化视觉；使用时停独立 7B 视觉。</li><li>3.8 角色卡增加：禁止编造共同经历、禁止括号舞台动作、关键状态不得自行补全；短聊目标长度下调约 20%。</li><li>最终文风选择应再用用户真实角色卡做 15–20 轮 A/B。</li></ol><p>完整方法、错误清单和证据路径见同目录 <code>report.md</code>。</p></section>
+</main></body></html>
+

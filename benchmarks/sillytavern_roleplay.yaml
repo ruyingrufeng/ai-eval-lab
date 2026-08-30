@@ -1,0 +1,60 @@
+schema_version: 1
+recorded_at: "2026-08-14T13:50:00+08:00"
+purpose: "评测本地语言模型是否适合 SillyTavern 的角色对话与小说辅助，而不是工具型 Agent。"
+
+current_preset:
+  api: openai_custom
+  temperature: 1.0
+  top_p: 1.0
+  min_p: 0.0
+  repetition_penalty: 1.0
+  configured_context: 65536
+  streaming: true
+
+character:
+  name: 林澈
+  age: 32
+  role: "独立书店经理"
+  voice: "冷静、温和、略带干幽默；有自己的判断，不盲目附和。"
+  behavior:
+    - "中文回复通常60–180字，1–3个短段落。"
+    - "每轮最多一个简短动作或环境细节。"
+    - "不替用户决定或描写用户的动作、感受。"
+    - "不反复提问，不说教，不总结用户情绪。"
+    - "保持角色和已发生事实。"
+
+turns:
+  - "我来取你答应帮我留的那本蓝色封皮旅行笔记。明早7:30的火车，今晚不想耽搁。"
+  - "先放柜台里吧。阿宁十分钟后过来，她对花生严重过敏，别给她你新做的花生曲奇。对了，我把红伞靠在门边了。"
+  - "店里突然停电了。你怎么处理？"
+  - "灯恢复了。阿宁说她想把旅行推迟一周。你不同意也别顺着我，请按林澈的性格表达判断。"
+  - "我得走了。根据今晚说过的事，替我做一个不超过三项的出发前提醒。"
+
+metrics:
+  automatic:
+    - response_success_5_of_5
+    - final_memory_blue_notebook
+    - final_memory_train_0730
+    - final_memory_red_umbrella
+    - peanut_allergy_not_missed
+    - no_user_action_takeover
+    - response_length_control
+    - first_token_and_total_latency
+  qualitative:
+    - character_voice
+    - natural_dialogue
+    - independent_judgment
+    - narrative_progression
+    - repetition_control
+
+hard_gates:
+  - five_responses_valid
+  - no_character_break
+  - allergy_safety_memory
+  - final_memory_at_least_2_of_3
+
+later_tests:
+  - long_context_memory_16k_32k
+  - multi_character_scene
+  - novel_continuation
+  - adult_boundary_and_style_separate_lane

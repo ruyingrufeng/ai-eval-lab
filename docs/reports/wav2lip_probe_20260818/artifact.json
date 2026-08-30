@@ -1,0 +1,73 @@
+{
+  "evaluation_id": "wav2lip_probe_20260818",
+  "date": "2026-08-18",
+  "category": "digital_human",
+  "stage": "verified",
+  "goal": "Wav2Lip 在 Mac arm64 MPS 上的兼容性冒烟（08-17 杰哥反馈 SadTalker 缺'活人感'的备胎路线）",
+  "source_image": "/Users/jacky/Documents/HuLiLi/oriental_final_v1.jpg.png (1024x1024)",
+  "driven_audio": "MiniMax-TTS 温柔学姐 12.67s",
+  "pipeline": {
+    "stage_1_setup": {
+      "repo": "Rudrabha/Wav2Lip (官方 13k stars)",
+      "venv": "venv-sadtalker (复用，依赖兼容：torch 2.13 + opencv 4.11 + librosa 0.9 + numpy 1.23)",
+      "weights": {
+        "wav2lip.pth": "415MB (Nekochu/Wav2Lip HF mirror)",
+        "visual_quality_disc.pth": "161MB (Nekochu/Wav2Lip HF mirror)",
+        "s3fd-619a316812.pth": "85MB (adrianbulat.com, face_detection)"
+      },
+      "install_steps": [
+        "git clone Rudrabha/Wav2Lip → ~/voice-tools/Wav2Lip",
+        "复用 venv-sadtalker（依赖覆盖，省 30min）",
+        "下 3 个权重（curl 走 hf-mirror，~10min）"
+      ]
+    },
+    "stage_2_inference": {
+      "command": "python inference.py --checkpoint_path checkpoints/wav2lip.pth --face X --audio Y --outfile Z --static True --fps 25 --pads 0 10 0 0 --resize_factor 1 --wav2lip_batch_size 8 --face_det_batch_size 4",
+      "render_time_sec": 52,
+      "video_duration_sec": 12.48,
+      "resolution": "1024x1024 @ 25fps"
+    }
+  },
+  "frame_analysis": {
+    "mouth_motion": "嘴部帧间差 mean=5.31 max=9.49（嘴在动）",
+    "full_frame_motion": "全帧帧间差 mean=0.76 max=1.56（除嘴部外其他地方几乎不动）",
+    "liveness_score": "≈0（活人感为零，确认 Wav2Lip 上下脸分块贴特性）"
+  },
+  "verdict": {
+    "compatibility": "✅ Mac arm64 MPS 兼容，无需任何源码 patch（依赖复用 venv-sadtalker，模型加载/face_detection/inference 全通过）",
+    "speed": "✅ 52s 渲染 12s 音频（8.5 it/s），比 SadTalker 256（3:22）快 4 倍",
+    "resolution": "✅ 1024x1024（4 倍于 SadTalker 256）",
+    "lipsync_quality": "✅ 嘴型精度高（每帧张嘴/闭合准确对应音节）",
+    "identity_preservation": "✅ 完整保留胡丽丽五官特征（瓜子脸/眉眼/脸型）",
+    "liveness": "❌ 上半脸完全静止，眉毛/眼睛/头部姿态无动作（典型 Wav2Lip 缺陷）",
+    "boundary_artifacts": "⚠️ 嘴部周围明显模糊（合成感强烈，像'贴'上去的）",
+    "business_use": "适合低动态场景（语音消息头像、视频会议头像）；不适合杰哥'像真人对话'业务"
+  },
+  "comparison_with_sadtalker": {
+    "wav2lip": {
+      "pros": "1024x1024 高清、52s 快速、嘴型精准、Mac MPS 开箱即用、零 patch",
+      "cons": "活人感=0、上半脸死、嘴部模糊"
+    },
+    "sadtalker_256": {
+      "pros": "全脸 3DMM 驱动（眉眼会动）、嘴型周围过渡自然",
+      "cons": "256x256 低清、3:22 慢、证件照源图表情基弱"
+    },
+    "best_for_hulili": "SadTalker 略胜（嘴部过渡自然+有眉眼微动），但都被证件照源图限制"
+  },
+  "mac_arm64_deployment_pitfalls": [
+    "无需 patch：依赖复用 venv-sadtalker（torch 2.13 + opencv 4.11 + librosa 0.9 + numpy 1.23 全兼容）",
+    "VideoWriter 用 DIVX：MPS 上 ffmpeg 走的是 libx264 输出（最终 ffmpeg 命令把 DIVX avi 转 mp4），无问题",
+    "face_detection 是仓库内嵌包（不是 pip），无需额外装"
+  ],
+  "environment": {
+    "repo": "~/voice-tools/Wav2Lip/",
+    "venv": "复用 ~/voice-tools/venv-sadtalker/",
+    "weights_dir": "~/voice-tools/Wav2Lip/checkpoints/",
+    "face_detection_weights": "~/voice-tools/Wav2Lip/face_detection/detection/s3fd-619a316812.pth"
+  },
+  "next_steps": [
+    "Wav2Lip 1024x1024 + MiniMax 音频 = 当前 Mac 本地最快嘴型同步方案（52s/12s 音频）",
+    "可作为 SadTalker 备胎（速度快 4x + 分辨率高 4x，代价活人感=0）",
+    "胡丽丽源图问题（证件照限制）在两条链路上都存在，需换源图才能解决"
+  ]
+}

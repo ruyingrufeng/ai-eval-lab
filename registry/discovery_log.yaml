@@ -1,0 +1,17 @@
+schema_version: 1
+created_at: "2026-08-12T11:11:02+08:00"
+timezone: Asia/Shanghai
+cadence:
+  quick_check: weekly
+  deep_review: every_four_quick_checks
+  trigger_review: on_material_change
+automation:
+  name: 内容工具模型周检
+  schedule: weekly_monday_10_00_asia_shanghai
+  mode: read_only_discovery_and_candidate_registration
+  forbidden_actions: [automatic_large_model_download, install, upgrade, delete, service_reconfiguration]
+record_policy:
+  required_times: [discovered_at, source_published_at, last_checked_at]
+  unknown_value: unknown
+  sources_priority: [official_repository, official_documentation, official_model_card, official_license, research_paper]
+checks: []

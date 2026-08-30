@@ -1,0 +1,31 @@
+.DS_Store
+results/*
+!results/.gitkeep
+.venv/
+venv/
+node_modules/
+**/node_modules/
+**/__pycache__/
+*.pyc
+models/
+*.safetensors
+*.gguf
+*.ckpt
+*.pt
+*.pth
+*.onnx
+private-tests/
+authorized-assets/
+
+# 本仓库只保存基础设施与评测定义，不保存具体内容成品或发布草稿。
+drafts/
+docs/articles/
+
+# 历史 Hermes 隔离评测目录中的运行态缓存、数据库和日志。
+benchmarks/hermes-agent*/cache/
+benchmarks/hermes-agent*/logs/
+benchmarks/hermes-agent*/state.db*
+benchmarks/hermes-agent*/verification_evidence.db
+
+# 误放在 docs 下的原始运行结果只保留在本机；正式证据入口是 docs/reports/。
+docs/**/results/

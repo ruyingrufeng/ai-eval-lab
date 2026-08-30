@@ -1,0 +1,92 @@
+schema_version: 1
+scanned_at: 2026-08-30
+scan_type: verified_inventory
+
+service_snapshot:
+  observed_at: "2026-08-30T14:34:51+08:00"
+  llama_server_8086: {status: running, loaded_model: qwen3.8-27b-ridge}
+  hermes_webui_8787: {status: running}
+  qwen3_tts_mlx_9893: {status: running_retest_in_progress, mode: manual_on_demand}
+  qwen_vl_8087: {status: configured_not_running, mode: on_demand}
+  comfyui_8188: {status: installed_not_running, mode: on_demand}
+  retired_endpoints:
+    - {endpoint: "http://127.0.0.1:9883", reason: launchd_target_missing}
+    - {endpoint: "http://127.0.0.1:9890", reason: bridge_not_present_current_webui_uses_8787}
+
+current_text_routing:
+  endpoint: "http://127.0.0.1:8086/v1"
+  loading: models_preset_single_model_on_demand
+  routes:
+    - {model: qwen3.6-27b-fable, context: 65536, consumer: sillytavern}
+    - {model: qwen3.8-27b-ridge, context: 81920, consumer: hermes_jianguo}
+    - {model: glm4.7-flash, context: 65536, consumer: dsh, dsh_working_window: 32768}
+
+tools:
+  - id: llama.cpp
+    version: 9830
+    status: running
+    path: /opt/homebrew/bin/llama-server
+    endpoints: ['http://127.0.0.1:8086']
+    configured_on_demand_endpoints: ['http://127.0.0.1:8087']
+  - id: mlx-lm
+    version: 0.31.3
+    status: installable
+    path: /Users/jacky/Documents/ChatGPT/内容工厂管理/.venv/mlx-lm
+  - id: comfyui-source
+    version: v0.31.0-11-g34744cd-dirty
+    status: installed_with_known_errors
+    path: /Users/jacky/ComfyUI
+  - id: qwen3-tts-local
+    version: Qwen3-TTS-1.7B-CustomVoice-MLX
+    status: running_retest_in_progress
+    path: /Users/jacky/voice-tools/qwen3tts_server.py
+    endpoint: 'http://127.0.0.1:9893'
+    service_mode: manual_on_demand
+  - id: faster-whisper
+    version: 1.2.1
+    status: installed_unverified
+  - id: openai-whisper
+    version: '20250625'
+    status: installed_unverified
+  - id: sillytavern
+    version: 1.18.0-dirty
+    status: running
+    path: /Users/jacky/SillyTavern
+  - id: hermes-agent
+    version: 0.18.2
+    status: running
+    path: /Users/jacky/.hermes
+  - id: hermes-webui
+    status: running
+    path: /Users/jacky/hermes-webui
+    endpoint: 'http://127.0.0.1:8787'
+  - id: dsh
+    status: running
+    path: /Users/jacky/voice-tools/dsh-start.sh
+    default_route: glm4.7-flash-local
+  - id: open-webui
+    version: 0.9.6
+    status: installed_not_running
+  - id: comfy-desktop
+    version: '1.0.28'
+    status: stale_cask_record
+  - id: draw-things
+    version: 1.20260518.2-081b08fe
+    status: stale_cask_record
+
+model_roots:
+  - path: /Users/jacky/llm-models
+    kind: gguf_text_and_vlm
+    size_kib: 104546824
+  - path: /Users/jacky/ComfyUI/models
+    kind: image_and_control
+    size_kib: 61718804
+  - path: /Users/jacky/Documents/Codex/2026-06-25/kan/work/models/text
+    kind: mlx_text
+    size_kib: 30135008
+  - path: /Users/jacky/voice-tools
+    kind: speech_tools_and_models
+    size_kib: 13886548
+  - path: /Users/jacky/.cache/huggingface
+    kind: shared_model_cache
+    size_kib: 4566308

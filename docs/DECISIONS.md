@@ -796,3 +796,11 @@
 - **资源止损**：五轮前后 swap 增约 485 MB；20K 后 swap 已用 14,891.44 MB / 15,360 MB，只剩约 468.56 MB。未继续恢复 grep/glob，避免资源压力污染工具扩展结论。
 - **定案**：`verified_bounded` 继续有效，但最大验证边界仍为 16,485 槽位 tokens；20K、搜索、bash 与开放式任务不推荐。Qwen Ridge 继续作为通用 dsh 默认。
 - **报告**：`docs/reports/glm47_dsh_stability_boundary_20260831/report.html`；原始结果 `results/glm47_dsh_stability_20260831/`。
+
+## 2026-08-31：本地 GLM-4.7-Flash 退役并删除权重
+
+- **退役原因**：四工具短任务虽稳定，但可靠总槽位仅约 16.5K，15K 载荷已需约 150 秒，20K 目标在 21,472 槽位 tokens 失败；不满足真实多轮、多工具 Agent 的上下文需求。
+- **权重处理**：唯一权重 `~/llm-models/GLM-4.7-Flash-Q4_K_M.gguf` 约 17GB，确认 GGUF 文件头并量化占用后，移入废纸篓 `~/.Trash/GLM-4.7-Flash-Q4_K_M.gguf.retired-20260831_233534`。
+- **运行配置清理**：从 `~/.config/llama-server/models.ini` 删除活动 preset，从 `~/.dsh/settings.yaml` 删除本地 provider，dsh preset 默认改为 `qwen-local-serial`；GLM 专用 preset 目录一并移入废纸篓。
+- **服务核验**：8086 重启后健康，仅列出 `qwen3.6-27b-fable` 与 `qwen3.8-27b-ridge`，没有 GLM 子进程或文件映射。dsh 默认保持 Ridge。
+- **可恢复性**：配置备份位于 `~/.config/llama-server/backups/glm47-retire-20260831_233534/`；清空废纸篓前权重仍可恢复。历史基准、脚本与报告保留，不再作为当前推荐路线。

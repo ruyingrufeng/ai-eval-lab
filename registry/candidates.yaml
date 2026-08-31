@@ -9,12 +9,13 @@ current_recommended_stack:
   text:
     - {id: qwen3.6-27b-fable, status: verified, role: sillytavern}
     - {id: qwen3.8-27b-ridge, status: verified, role: hermes_jianguo_local}
-    - {id: glm4.7-flash, status: verified, role: dsh_bounded_file_tasks_with_patch_and_schema, stability: 15_of_15, max_verified_slot_tokens: 16485, failed_tested_slot_tokens: 21472, report: docs/reports/glm47_dsh_stability_boundary_20260831/report.html}
   image:
     - {id: flux-1-schnell-q4, status: verified, role: fast}
     - {id: flux-1-dev-q4, status: verified, role: quality}
   speech: []
   retired_models: [qwen3-30b, qwen3.6-35b, gemma4-12b]
+  retired_local_models:
+    - {id: glm4.7-flash-local, status: rejected, reason: agent_effective_context_insufficient, weight_state: moved_to_trash, retired_at: 2026-08-31, report: docs/reports/glm47_dsh_stability_boundary_20260831/report.html}
 
 runnable_not_recommended:
   speech:

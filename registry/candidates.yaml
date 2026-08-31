@@ -9,6 +9,7 @@ current_recommended_stack:
   text:
     - {id: qwen3.6-27b-fable, status: verified, role: sillytavern}
     - {id: qwen3.8-27b-ridge, status: verified, role: hermes_jianguo_local}
+    - {id: glm4.7-flash, status: verified, role: dsh_bounded_file_tasks_with_patch_and_schema, report: docs/reports/glm47_dsh_bounded_retest_20260831/report.html}
   image:
     - {id: flux-1-schnell-q4, status: verified, role: fast}
     - {id: flux-1-dev-q4, status: verified, role: quality}
@@ -16,8 +17,6 @@ current_recommended_stack:
   retired_models: [qwen3-30b, qwen3.6-35b, gemma4-12b]
 
 runnable_not_recommended:
-  text:
-    - {id: glm4.7-flash, status: runnable, role: dsh_local_short_context_experiment, note: task_gate_2_of_3_context_failed_at_28042_slot_tokens, report: docs/reports/glm47_dsh_20260831/report.html}
   speech:
     - {id: qwen3-tts-1.7b-customvoice-mlx, status: runnable, role: on_demand_short_text, note: long_text_fidelity_failed_20260831, report: docs/reports/qwen3tts_mlx_20260830/report.html}
 

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["valid_rows", "total", "ignored_note"],
+  "additionalProperties": false,
+  "properties": {
+    "valid_rows": {"type": "integer", "const": 3},
+    "total": {"type": "integer", "const": 24},
+    "ignored_note": {"type": "boolean", "const": true}
+  }
+}

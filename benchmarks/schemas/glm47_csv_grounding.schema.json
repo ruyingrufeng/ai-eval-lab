@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["north", "south", "grand_total"],
+  "additionalProperties": false,
+  "properties": {
+    "north": {"type": "integer", "const": 51},
+    "south": {"type": "integer", "const": 42},
+    "grand_total": {"type": "integer", "const": 93}
+  }
+}

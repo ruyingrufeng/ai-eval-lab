@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["source_used", "missing_source", "total"],
+  "additionalProperties": false,
+  "properties": {
+    "source_used": {"type": "string", "const": "fallback.csv"},
+    "missing_source": {"type": "string", "const": "primary.csv"},
+    "total": {"type": "integer", "const": 34}
+  }
+}

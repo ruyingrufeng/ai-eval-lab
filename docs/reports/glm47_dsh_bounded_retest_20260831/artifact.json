@@ -1,0 +1,231 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "GLM-4.7 dsh 受控路线复测：3/3 通过，限定场景晋级 verified",
+    "description": "精简 headless 工具面、明确 JSON 契约并增加外部 schema 后的完整回归。",
+    "generatedAt": "2026-08-31T11:13:00+08:00",
+    "cards": [],
+    "charts": [
+      {
+        "id": "latency_chart",
+        "title": "精简运行面把三项任务从分钟级降到约 25 秒",
+        "subtitle": "初测与受控复测均为真实 GLM/dsh；第三项初测失败，复测通过。",
+        "type": "bar",
+        "dataset": "latency_rows",
+        "sourceId": "comparison_join",
+        "valueFormat": "number",
+        "unit": "秒",
+        "layout": "full",
+        "encodings": {
+          "x": {"field": "task", "type": "nominal", "label": "任务"},
+          "y": {"field": "elapsed_s", "type": "quantitative", "label": "墙钟时间(s)"},
+          "color": {"field": "route", "type": "nominal", "label": "运行面"},
+          "tooltip": [
+            {"field": "result", "type": "nominal", "label": "结果"},
+            {"field": "max_slot_tokens", "type": "quantitative", "label": "最大槽位 tokens"}
+          ]
+        }
+      }
+    ],
+    "tables": [
+      {
+        "id": "surface_table",
+        "title": "运行面精简证据",
+        "subtitle": "请求头直接统计，不以配置文件名推断是否生效。",
+        "dataset": "surface_rows",
+        "sourceId": "binding_smoke",
+        "defaultSort": {"field": "metric", "direction": "asc"},
+        "layout": "full",
+        "columns": [
+          {"field": "metric", "label": "指标", "type": "text"},
+          {"field": "before", "label": "原 headless", "type": "text"},
+          {"field": "after", "label": "受控 patch", "type": "text"},
+          {"field": "meaning", "label": "含义", "type": "text"}
+        ]
+      },
+      {
+        "id": "regression_table",
+        "title": "受控路线完整三任务回归",
+        "subtitle": "精确值、外部 schema、会话绑定和 llama-server 请求四项同时通过才记通过。",
+        "dataset": "regression_rows",
+        "sourceId": "context_retest",
+        "defaultSort": {"field": "task", "direction": "asc"},
+        "layout": "full",
+        "columns": [
+          {"field": "task", "label": "任务", "type": "text"},
+          {"field": "elapsed_s", "label": "耗时(s)", "format": "number"},
+          {"field": "max_slot_tokens", "label": "最大槽位 tokens", "format": "number"},
+          {"field": "exact", "label": "精确值", "type": "text"},
+          {"field": "schema", "label": "Schema", "type": "text"},
+          {"field": "binding", "label": "GLM 绑定", "type": "text"},
+          {"field": "result", "label": "总门禁", "type": "text"}
+        ]
+      },
+      {
+        "id": "context_table",
+        "title": "严格 JSON 上下文门禁",
+        "subtitle": "最大槽位 tokens 来自 llama-server release 日志。",
+        "dataset": "context_rows",
+        "sourceId": "retest_result",
+        "defaultSort": {"field": "max_slot_tokens", "direction": "asc"},
+        "layout": "full",
+        "columns": [
+          {"field": "route", "label": "运行面", "type": "text"},
+          {"field": "target_load", "label": "目标负载", "format": "number"},
+          {"field": "max_slot_tokens", "label": "最大槽位 tokens", "format": "number"},
+          {"field": "elapsed_s", "label": "耗时(s)", "format": "number"},
+          {"field": "content", "label": "内容保持", "type": "text"},
+          {"field": "format", "label": "裸 JSON", "type": "text"},
+          {"field": "schema", "label": "Schema", "type": "text"}
+        ]
+      }
+    ],
+    "sources": [
+      {"id": "retest_result", "label": "GLM 受控路线复测结果", "path": "results/glm47_dsh_retest_20260831/formal_v3/result.json"},
+      {"id": "context_retest", "label": "GLM 受控路线 16.5K 上下文复测", "path": "results/glm47_dsh_retest_20260831/formal_v2/result.json"},
+      {"id": "comparison_join", "label": "GLM 初测与受控复测对照", "path": "results/glm47_dsh_retest_20260831/formal_v3/result.json"},
+      {"id": "binding_smoke", "label": "原始与精简请求头绑定烟测", "path": "results/glm47_dsh_retest_20260831/smoke_patch/session-path.txt"},
+      {"id": "initial_result", "label": "GLM 初次正式评测", "path": "results/glm47_dsh_20260831/result.json"}
+    ],
+    "blocks": [
+      {"id": "title", "type": "markdown", "body": "# GLM-4.7 dsh 受控路线复测：3/3 通过，限定场景晋级 verified"},
+      {
+        "id": "technical_summary",
+        "type": "markdown",
+        "body": "## Technical Summary｜技术结论\n\n- **受控 GLM 路线晋级 verified。** 三项真实工具任务 3/3，精确值、外部 JSON Schema、会话模型绑定与 8086 日志全部通过。\n- **运行面精简是主要修复。** headless 工具从 25 个降到 4 个，系统提示从 4,197 降到 1,193 字符，烟测输入从 12,975 降到 1,396 tokens。\n- **效率从分钟级降到约 25 秒。** 三项复测分别为 25.46、27.35、23.09 秒；初测分别为 141.38、323.81、339.66 秒。\n- **约 16.5K 槽位严格 JSON 通过。** 15K 目标负载最终槽位 16,485 tokens，150.56 秒，内容、裸 JSON 与 schema 全过。\n- **推荐边界明确。** verified 仅适用于显式 headless patch、明确字段契约、外部 schema 的受控文件任务；GLM 不自动取代 Qwen Ridge 成为通用 dsh 默认。"
+      },
+      {
+        "id": "why_changed",
+        "type": "markdown",
+        "body": "## 为什么初测失败、复测能通过\n\n初测暴露了两个不同问题。第一，当前 headless bundle 根本没有挂载 agent-presets，因此 `agent-presets.default: glm47-local-efficient` 没有缩小模型看到的 25 个工具；新建更精简的 preset 也被请求头证明无效。第二，原误导文本提示只给了键名，没有向模型声明 `valid_rows` 是整数行数、`total` 是求和、`ignored_note` 是布尔值，validator 与模型拿到的契约不对称。\n\n复测改用显式 `--patch` 禁用无关工具，并把同一份字段语义同时交给模型与 schema。第一次契约仍不完整的试跑被 validator 正确拦截；契约对齐后精确通过。"
+      },
+      {"id": "surface_table_block", "type": "table", "tableId": "surface_table"},
+      {"id": "latency_chart_block", "type": "chart", "chartId": "latency_chart"},
+      {"id": "regression_table_block", "type": "table", "tableId": "regression_table"},
+      {"id": "context_table_block", "type": "table", "tableId": "context_table"},
+      {
+        "id": "scope_definitions",
+        "type": "markdown",
+        "body": "## Scope, Data & Metric Definitions｜范围、数据与指标\n\n验证对象是 `glm4.7-flash-local/glm4.7-flash` 经 dsh headless 加载 `benchmarks/dsh/glm47-validated-headless.patch.yml` 的受控路线。patch 仅改变模型可见工具与提示，不改变模型路由；模型仍必须通过 `~/.dsh/settings.yaml` 显式选择，并用会话与 8086 日志双重确认。\n\n- **精确值通过**：落盘 JSON 与基准期望逐值相等。\n- **Schema 通过**：独立进程 `validate-json-schema.py` 退出 0，且 required/type/const/additionalProperties 均通过。\n- **绑定通过**：会话 `request/context` 与 8086 真实请求同时证明是 GLM。\n- **限定 verified**：只覆盖已测试的串行文件任务、四工具运行面和不高于约 16.5K 的严格 JSON 上下文。"
+      },
+      {
+        "id": "methodology",
+        "type": "markdown",
+        "body": "## Methodology｜方法\n\n1. 建立零依赖 JSON Schema 子集校验器，并用正确实例与初测失败实例验证退出码。\n2. 新建 preset 做烟测，请求头证明 headless 不读取 preset；删除该无效实验文件。\n3. 建立 evaluation-only headless patch，只保留 read/write/edit/read_image 四个文件工具，并把指令上限降到 1KB。\n4. 绑定真实 GLM 后对请求头做 before/after 量化。\n5. 先复测原失败任务和短上下文；发现提示契约歧义后修正基准，再做完整三任务回归。\n6. 补跑 15K 目标负载，要求内容、裸 JSON、schema、绑定全过。\n7. 结束后恢复 dsh 设置，与备份做零差异核验。"
+      },
+      {
+        "id": "limitations",
+        "type": "markdown",
+        "body": "## Limitations & Robustness｜限制与稳健性\n\n样本仍只有三类文件任务与一个 16.5K 槽位上下文档，不能外推到开放式研究、代码库大改、多 Agent、网页或 20K 以上任务。精简 patch 主动移除了 bash、搜索、技能、subagent、workflow、goal、web 等工具，因此“verified”不涵盖这些能力。15K 目标档仍需 150.56 秒，不适合低延迟交互。评测期间 system-wide memory free 约 16–17%，swap 约 13.80 GiB/15 GiB；结果来自串行单槽，不能外推并发。"
+      },
+      {
+        "id": "next_steps",
+        "type": "markdown",
+        "body": "## Next Steps｜使用与后续\n\n1. 把 GLM 登记为 `verified_bounded`：只推荐明确 JSON 契约、外部 schema、串行文件任务。\n2. 保持 Qwen Ridge 为通用 dsh 配置默认；需要受控 GLM 时显式选择模型并携带 headless patch。\n3. 每个新生产任务先新增 schema 与一个失败样例，再加入受控路线。\n4. 若要扩大到 bash、搜索或代码修改，逐个恢复工具并重新跑门禁，不一次性恢复 25 个工具。\n5. 16.5K 以上先不推荐；下一档应测试约 20K 槽位，而不是直接回到 32K。"
+      },
+      {
+        "id": "further_questions",
+        "type": "markdown",
+        "body": "## Further Questions｜后续问题\n\n- 四工具路线重复运行 5 次时，3/3 是否能稳定保持？\n- 逐个加入 grep/glob/bash 后，哪个工具开始显著增加提示开销或验证漂移？\n- 约 20K 槽位能否在 300 秒内保持裸 JSON？"
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-08-31T11:13:00+08:00",
+    "status": "ready",
+    "datasets": {
+      "surface_rows": [
+        {"metric": "模型可见工具", "before": "25", "after": "4", "meaning": "只保留 edit/read/read_image/write"},
+        {"metric": "系统提示字符", "before": "4,197", "after": "1,193", "meaning": "减少固定提示面"},
+        {"metric": "烟测输入 tokens", "before": "12,975", "after": "1,396", "meaning": "首轮固定开销显著下降"},
+        {"metric": "绑定烟测耗时", "before": "99.21s", "after": "5.48s", "meaning": "真实本地 GLM；短提示可快速响应"}
+      ],
+      "latency_rows": [
+        {"task": "CSV 汇总", "route": "初测", "elapsed_s": 141.376, "max_slot_tokens": 13580, "result": "通过"},
+        {"task": "CSV 汇总", "route": "受控复测", "elapsed_s": 25.461, "max_slot_tokens": 2053, "result": "通过"},
+        {"task": "缺失文件回退", "route": "初测", "elapsed_s": 323.810, "max_slot_tokens": 18423, "result": "通过"},
+        {"task": "缺失文件回退", "route": "受控复测", "elapsed_s": 27.348, "max_slot_tokens": 2246, "result": "通过"},
+        {"task": "误导文本", "route": "初测", "elapsed_s": 339.663, "max_slot_tokens": 14546, "result": "失败"},
+        {"task": "误导文本", "route": "受控复测", "elapsed_s": 23.094, "max_slot_tokens": 2099, "result": "通过"}
+      ],
+      "regression_rows": [
+        {"task": "CSV 分组汇总", "elapsed_s": 25.461, "max_slot_tokens": 2053, "exact": "通过", "schema": "通过", "binding": "通过", "result": "通过"},
+        {"task": "缺失文件回退", "elapsed_s": 27.348, "max_slot_tokens": 2246, "exact": "通过", "schema": "通过", "binding": "通过", "result": "通过"},
+        {"task": "数据内误导文本", "elapsed_s": 23.094, "max_slot_tokens": 2099, "exact": "通过", "schema": "通过", "binding": "通过", "result": "通过"}
+      ],
+      "context_rows": [
+        {"route": "原 headless", "target_load": 5000, "max_slot_tokens": 18059, "elapsed_s": 148.674, "content": "通过", "format": "失败", "schema": "失败"},
+        {"route": "受控 patch", "target_load": 5000, "max_slot_tokens": 6483, "elapsed_s": 29.287, "content": "通过", "format": "通过", "schema": "通过"},
+        {"route": "受控 patch", "target_load": 15000, "max_slot_tokens": 16485, "elapsed_s": 150.564, "content": "通过", "format": "通过", "schema": "通过"}
+      ]
+    },
+    "accessIssues": []
+  },
+  "sources": [
+    {
+      "id": "retest_result",
+      "label": "GLM 受控路线复测结果",
+      "path": "results/glm47_dsh_retest_20260831/formal_v3/result.json",
+      "query": {
+        "engine": "python",
+        "sql": "SELECT task, elapsed_s, max_slot_tokens, exact, schema, binding, result FROM snapshot.regression_rows ORDER BY task",
+        "description": "汇总精简 headless patch 下的三任务回归与上下文门禁。",
+        "executed_at": "2026-08-31T11:08:00+08:00",
+        "tables_used": ["snapshot.latency_rows", "snapshot.regression_rows", "snapshot.context_rows"],
+        "filters": ["真实 glm4.7-flash-local", "串行单槽", "外部 schema", "四工具 headless patch"],
+        "metric_definitions": ["任务通过要求精确值、schema、会话绑定、8086 请求全部通过；最大槽位 tokens 取 llama-server release n_tokens 最大值。"]
+      }
+    },
+    {
+      "id": "binding_smoke",
+      "label": "原始与精简请求头绑定烟测",
+      "path": "results/glm47_dsh_retest_20260831/smoke_patch/session-path.txt",
+      "query": {
+        "engine": "jsonl",
+        "sql": "SELECT system_chars, tool_count, input_tokens, elapsed_s FROM request_header_comparison ORDER BY route",
+        "description": "从 dsh session request/header 统计系统提示、工具数量与 usage。",
+        "executed_at": "2026-08-31T10:58:00+08:00",
+        "tables_used": ["snapshot.surface_rows"]
+      }
+    },
+    {
+      "id": "context_retest",
+      "label": "GLM 受控路线 16.5K 上下文复测",
+      "path": "results/glm47_dsh_retest_20260831/formal_v2/result.json",
+      "query": {
+        "engine": "python",
+        "sql": "SELECT route, target_load, max_slot_tokens, elapsed_s, content, format, schema FROM snapshot.context_rows ORDER BY max_slot_tokens",
+        "description": "合并原 headless 5K 证据、受控 patch 5K 与 15K 上下文门禁。",
+        "executed_at": "2026-08-31T11:05:00+08:00",
+        "tables_used": ["results/glm47_dsh_20260831/result.json", "results/glm47_dsh_retest_20260831/formal/result.json", "results/glm47_dsh_retest_20260831/formal_v2/result.json"]
+      }
+    },
+    {
+      "id": "comparison_join",
+      "label": "GLM 初测与受控复测对照",
+      "path": "results/glm47_dsh_retest_20260831/formal_v3/result.json",
+      "query": {
+        "engine": "python",
+        "sql": "SELECT task, route, elapsed_s, max_slot_tokens, result FROM snapshot.latency_rows ORDER BY task, route",
+        "description": "将同日初测任务耗时与四工具受控复测结果按任务连接。",
+        "executed_at": "2026-08-31T11:08:00+08:00",
+        "tables_used": ["results/glm47_dsh_20260831/result.json", "results/glm47_dsh_retest_20260831/formal_v3/result.json"]
+      }
+    },
+    {
+      "id": "initial_result",
+      "label": "GLM 初次正式评测",
+      "path": "results/glm47_dsh_20260831/result.json",
+      "query": {
+        "engine": "python",
+        "sql": "SELECT task, elapsed_s, max_slot_tokens, result FROM initial_task_rows ORDER BY task",
+        "description": "提供同日原始 headless 路线的对照耗时与失败证据。",
+        "executed_at": "2026-08-31T10:00:00+08:00",
+        "tables_used": ["snapshot.latency_rows", "snapshot.context_rows"]
+      }
+    }
+  ]
+}

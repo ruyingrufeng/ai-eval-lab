@@ -774,3 +774,16 @@
 - **四关卡结论**：GLM-4.7 保持 `runnable_not_verified`，从推荐栈移出，仅保留人工监督的短任务实验。若要复测，先精简 dsh 注入、增加外部 JSON schema 门禁并降低工作窗。
 - **配置收尾**：`~/.dsh/settings.yaml` 已恢复评测前的 Qwen Ridge 默认，并与 `~/.dsh/settings.yaml.backup-glm-eval-20260831_0940` 做零差异核验；没有自动把 GLM 固化为默认。
 - **报告与复现**：`docs/reports/glm47_dsh_20260831/report.html`；基准 `benchmarks/glm47_dsh_formal_20260831.yaml`；脚本 `scripts/benchmark-glm47-dsh.py`；原始结果 `results/glm47_dsh_20260831/`。
+
+## 2026-08-31：GLM-4.7 受控 dsh 路线复测 · 限定场景晋级 verified
+
+- **初测结论不删除**：原始 25 工具 headless 路线仍不推荐；本决策新增的是一条不同、明确受限的受控路线。
+- **preset 反证**：当前 headless bundle 不挂载 agent-presets；新建精简 preset 后请求头仍为 25 工具、约 13K 输入，证明设置里的 preset 名称不影响 headless。无效实验 preset 已删除。
+- **有效修复**：新增 `benchmarks/dsh/glm47-validated-headless.patch.yml`，只保留 edit/read/read_image/write 四个工具，指令上限 1KB；请求头实测工具 25→4、系统提示 4197→1193 字符、烟测输入 12975→1396 tokens、烟测 99.21→5.48 秒。
+- **外部门禁**：新增零依赖 `scripts/validate-json-schema.py` 与三任务/上下文 schema。旧失败 JSON 会非零退出并报告数组、常量、布尔类型错误；模型自述不再能覆盖 validator。
+- **基准公平性修正**：原误导任务只给键名、没把字段类型/语义告诉模型，validator 与模型契约不对称。修正为显式整数行数、整数求和、布尔 ignored 标志后再评分。
+- **完整回归**：同一四工具 patch 下三任务 3/3；精确值、schema、会话绑定、8086 日志全部通过。耗时 25.46/27.35/23.09 秒，最大槽位 2053/2246/2099 tokens。
+- **上下文门禁**：15K 目标负载实际最大槽位 16485 tokens，150.56 秒；内容保持、裸 JSON、schema 与 GLM 绑定全部通过。
+- **新定案**：GLM 状态升级为 `verified_bounded`，仅推荐明确 JSON 契约、外部 schema、串行文件任务并使用四工具 headless patch；不覆盖 bash、搜索、技能、subagent、workflow 或 16.5K 以上场景。
+- **默认不变**：Qwen Ridge 继续作为通用 dsh 配置默认。`scripts/dsh-glm47-validated.sh` 会在运行时不是 GLM 时拒绝执行，避免 patch 生效却测到其他模型。
+- **报告**：`docs/reports/glm47_dsh_bounded_retest_20260831/report.html`；原始复测结果 `results/glm47_dsh_retest_20260831/`。

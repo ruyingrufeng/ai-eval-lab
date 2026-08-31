@@ -1,0 +1,166 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "Qwen3-TTS MLX：服务稳定，但长文保真未通过",
+    "description": "9893 新分段服务的四档长度、断连恢复、缓存与双 ASR 内容核验。",
+    "generatedAt": "2026-08-31T09:28:00+08:00",
+    "cards": [],
+    "charts": [
+      {
+        "id": "rtf_chart",
+        "title": "长文本生成速度稳定在 RTF 约 0.76",
+        "subtitle": "RTF=生成耗时/音频时长；越低越快。15 字受首轮固定开销影响。",
+        "type": "bar",
+        "dataset": "performance_rows",
+        "sourceId": "tts_benchmark",
+        "valueFormat": "number",
+        "unit": "RTF",
+        "layout": "full",
+        "encodings": {
+          "x": {"field": "length_label", "type": "nominal", "label": "文本长度"},
+          "y": {"field": "rtf", "type": "quantitative", "label": "RTF"},
+          "tooltip": [
+            {"field": "chars", "type": "quantitative", "label": "字数"},
+            {"field": "elapsed_s", "type": "quantitative", "label": "生成耗时(s)"},
+            {"field": "audio_s", "type": "quantitative", "label": "音频时长(s)"},
+            {"field": "chunks", "type": "quantitative", "label": "分段数"}
+          ]
+        }
+      }
+    ],
+    "tables": [
+      {
+        "id": "performance_table",
+        "title": "四档长度的生成与服务门禁",
+        "subtitle": "15、250、500、800 字均返回完整 MP3；RTF 为生成墙钟时间 / 音频时长。",
+        "dataset": "performance_rows",
+        "sourceId": "tts_benchmark",
+        "defaultSort": {"field": "chars", "direction": "asc"},
+        "layout": "full",
+        "columns": [
+          {"field": "chars", "label": "字数", "format": "number"},
+          {"field": "chunks", "label": "分段", "format": "number"},
+          {"field": "elapsed_s", "label": "生成耗时(s)", "format": "number"},
+          {"field": "audio_s", "label": "音频时长(s)", "format": "number"},
+          {"field": "rtf", "label": "RTF", "format": "number"},
+          {"field": "http", "label": "HTTP", "format": "number"},
+          {"field": "service_gate", "label": "服务门禁", "type": "text"}
+        ]
+      },
+      {
+        "id": "asr_table",
+        "title": "双 ASR 内容保真交叉检查",
+        "subtitle": "CER 越低越好；长度比接近 1 越好。small 在 250 字样本识别出明显尾段重复。",
+        "dataset": "asr_rows",
+        "sourceId": "asr_crosscheck",
+        "defaultSort": {"field": "chars", "direction": "asc"},
+        "layout": "full",
+        "columns": [
+          {"field": "chars", "label": "字数", "format": "number"},
+          {"field": "base_ratio", "label": "base 长度比", "format": "number"},
+          {"field": "base_cer", "label": "base CER", "format": "number"},
+          {"field": "small_ratio", "label": "small 长度比", "format": "number"},
+          {"field": "small_cer", "label": "small CER", "format": "number"},
+          {"field": "evidence", "label": "证据判定", "type": "text"}
+        ]
+      }
+    ],
+    "sources": [
+      {"id": "tts_benchmark", "label": "9893 四档长度与稳定性结果", "path": "results/qwen3tts_mlx_20260830/result.json"},
+      {"id": "asr_crosscheck", "label": "faster-whisper base/small 交叉核验", "path": "results/qwen3tts_mlx_20260830/asr_validation.json"}
+    ],
+    "blocks": [
+      {"id": "title", "type": "markdown", "body": "# Qwen3-TTS MLX：服务稳定，但长文保真未通过"},
+      {
+        "id": "technical_summary",
+        "type": "markdown",
+        "body": "## Technical Summary｜技术结论\n\n- **9893 的工程稳定性通过。** 15/250/500/800 字全部 HTTP 200，响应长度一致、音频可解码、无残留 worker；缓存命中约 1 ms。\n- **BrokenPipe 已被隔离。** 客户端提前断开不再产生二次写入 traceback，服务随后仍健康。\n- **长文内容保真未通过。** 500 与 800 字双 ASR 结果较好，但 250 字样本出现重复证据；base CER 31.86%，small 长度比 1.252、尾部 CER 65%。\n- **四关卡结论维持 runnable。** 可用于人工复核的短句按需合成；长文不得升为 verified，也不进入推荐栈。"
+      },
+      {
+        "id": "key_findings",
+        "type": "markdown",
+        "body": "## Key Findings｜关键发现与证据\n\n服务端分段、拼接、缓存、断连恢复已经从“会因客户端超时打印 BrokenPipe”修到稳定可运行。500 字拆成 3 段，800 字拆成 4 段，最终音频分别为 121.52 秒与 182.72 秒。生成速度在长文本上稳定于 RTF 约 0.76。\n\n但服务成功不等于内容正确。250 字的第二轮合成同时被两个 ASR 模型判为高误差，其中 small 识别结果长度超过参考文本 25.22%，并在末段出现重复。由于合成具有非确定性，单次绿色 HTTP 与单次较好 CER 都不足以证明长文可靠。"
+      },
+      {"id": "rtf_chart_block", "type": "chart", "chartId": "rtf_chart"},
+      {"id": "performance_table_block", "type": "table", "tableId": "performance_table"},
+      {"id": "asr_table_block", "type": "table", "tableId": "asr_table"},
+      {
+        "id": "scope_definitions",
+        "type": "markdown",
+        "body": "## Scope, Data & Metric Definitions｜范围、数据与指标\n\n本轮对象是 `127.0.0.1:9893` 的 Qwen3-TTS-1.7B CustomVoice MLX 手动按需服务，不含旧 9883 配置，也不比较其他 TTS。四条固定中文文本精确为 15、250、500、800 字。\n\n- **RTF**：生成墙钟时间除以成品音频时长，小于 1 表示生成快于音频播放。\n- **CER**：归一化字符错误率，越低越好。\n- **长度比**：ASR 假设文本长度除以参考文本长度；明显大于 1 可提示重复。\n- **结构完整门禁**：长度比 0.85–1.15 且尾部 CER 不高于 40%。\n- **长文保真门禁**：250 字及以上 CER 不高于 25%，并要求交叉核验无重复证据。"
+      },
+      {
+        "id": "methodology",
+        "type": "markdown",
+        "body": "## Methodology｜方法\n\n1. 修复服务端对客户端断连的识别，让音频与 JSON 写回共用安全发送路径。\n2. 依次提交四档固定文本，保存 MP3、响应头、耗时、哈希与健康状态。\n3. 复测缓存命中、主动客户端断连、断连后的健康检查和残留 worker。\n4. 用本机缓存的 faster-whisper base 与 small 对成品音频独立转写，计算长度比、整段 CER 与尾部 CER。\n5. 以最保守的交叉证据定级：任何关键长度出现明确重复或保真失败，都不升为 verified。"
+      },
+      {
+        "id": "limitations",
+        "type": "markdown",
+        "body": "## Limitations & Robustness｜限制与稳健性\n\n本轮每个长度只生成一条主样本，ASR 核验使用的是随后一轮成品，因此暴露了非确定性，却不足以估计失败概率。CER 会受繁简转换、同音字和 ASR 自身误差影响，不能单独充当 TTS 真值；本报告把长度膨胀、尾段重复和跨模型一致异常作为更强证据。15 字 CER 对少量字符错误非常敏感，不据此否定短句可懂度。没有运行并发压力测试，因为该服务设计为单槽、手动按需。机器资源结论也不能从进程 RSS 推导，本轮未把 memory pressure/swap 作为晋级证据。"
+      },
+      {
+        "id": "next_steps",
+        "type": "markdown",
+        "body": "## Next Steps｜下一步\n\n1. 保留 9893 为手动按需、短文本人工复核路线，状态写为 runnable。\n2. 长文增加逐段音频与逐段 ASR 门禁；失败时只重试异常段，不接受整段 HTTP 200 作为成功。\n3. 对 250/500/800 字各做至少 5 个随机种子或重复样本，估计重复率后再决定是否进入 verified。\n4. 在未通过前，长文继续使用已验证的替代路由；不要把本轮服务稳定性误写为生产推荐。"
+      },
+      {
+        "id": "further_questions",
+        "type": "markdown",
+        "body": "## Further Questions｜后续问题\n\n- 重复是在单段模型生成阶段产生，还是拼接边界诱发？\n- 固定随机种子、温度或最大 token 是否能降低 250 字附近的随机失败？\n- 逐段 ASR 自动门禁的额外延迟，是否仍优于直接使用长文替代路线？"
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-08-31T09:28:00+08:00",
+    "status": "ready",
+    "datasets": {
+      "performance_rows": [
+        {"chars": 15, "length_label": "15 字", "chunks": 1, "elapsed_s": 3.092, "audio_s": 3.12, "rtf": 0.982, "http": 200, "service_gate": "通过"},
+        {"chars": 250, "length_label": "250 字", "chunks": 1, "elapsed_s": 43.723, "audio_s": 57.60, "rtf": 0.756, "http": 200, "service_gate": "通过"},
+        {"chars": 500, "length_label": "500 字", "chunks": 3, "elapsed_s": 92.324, "audio_s": 121.52, "rtf": 0.758, "http": 200, "service_gate": "通过"},
+        {"chars": 800, "length_label": "800 字", "chunks": 4, "elapsed_s": 138.691, "audio_s": 182.72, "rtf": 0.757, "http": 200, "service_gate": "通过"}
+      ],
+      "asr_rows": [
+        {"chars": 15, "base_ratio": 1.0000, "base_cer": 0.3846, "small_ratio": 1.0000, "small_cer": 0.0769, "evidence": "短样本可懂；CER 对单字敏感"},
+        {"chars": 250, "base_ratio": 1.0000, "base_cer": 0.3186, "small_ratio": 1.2522, "small_cer": 0.2920, "evidence": "失败：尾段重复/长度膨胀"},
+        {"chars": 500, "base_ratio": 0.9978, "base_cer": 0.1261, "small_ratio": 0.9978, "small_cer": 0.1018, "evidence": "本样本通过"},
+        {"chars": 800, "base_ratio": 0.9461, "base_cer": 0.2072, "small_ratio": 0.9461, "small_cer": 0.1160, "evidence": "本样本通过"}
+      ]
+    },
+    "accessIssues": []
+  },
+  "sources": [
+    {
+      "id": "tts_benchmark",
+      "label": "9893 四档长度与稳定性结果",
+      "path": "results/qwen3tts_mlx_20260830/result.json",
+      "query": {
+        "engine": "python",
+        "sql": "SELECT chars, length_label, chunks, elapsed_s, audio_s, rtf, http, service_gate FROM snapshot.performance_rows ORDER BY chars",
+        "description": "固定文本依次请求 9893，采集 HTTP、响应体、音频时长、墙钟耗时、缓存、断连恢复与 worker 残留。",
+        "executed_at": "2026-08-30T16:24:00+08:00",
+        "tables_used": ["snapshot.performance_rows"],
+        "filters": ["精确 15/250/500/800 字", "单槽串行请求", "no_proxy=127.0.0.1,localhost"],
+        "metric_definitions": ["RTF=生成墙钟时间/成品音频时长；服务门禁要求 HTTP 200、Content-Length 一致、音频时长为正、无残留 worker。"]
+      }
+    },
+    {
+      "id": "asr_crosscheck",
+      "label": "faster-whisper base/small 交叉核验",
+      "path": "results/qwen3tts_mlx_20260830/asr_validation.json",
+      "query": {
+        "engine": "python",
+        "sql": "SELECT chars, base_ratio, base_cer, small_ratio, small_cer, evidence FROM snapshot.asr_rows ORDER BY chars",
+        "description": "对同批成品分别运行 faster-whisper base 与 small；small 明细位于同目录 asr_validation_small.json。",
+        "executed_at": "2026-08-30T16:42:00+08:00",
+        "tables_used": ["snapshot.asr_rows"],
+        "filters": ["本机缓存模型", "中文转写", "文本归一化后计算 CER"],
+        "metric_definitions": ["CER=Levenshtein 字符距离/参考长度；长度比=假设文本字符数/参考文本字符数；尾部 CER 检查末段覆盖与重复。"]
+      }
+    }
+  ]
+}

@@ -31,12 +31,12 @@
 
 ## 当前生产路由（2026-08-30 核验）
 
-- 文本统一入口为 `127.0.0.1:8086` 的 llama-server，单模型按需加载：`qwen3.6-27b-fable` 供 SillyTavern，`qwen3.8-27b-ridge` 供 Hermes `jianguo` 本地档，`glm4.7-flash` 供 dsh 短上下文本地任务。
+- 文本统一入口为 `127.0.0.1:8086` 的 llama-server，单模型按需加载：`qwen3.6-27b-fable` 供 SillyTavern，`qwen3.8-27b-ridge` 供 Hermes `jianguo`，也是当前 dsh 配置默认；`glm4.7-flash` 已完成真实 dsh 评测但仅为 `runnable_not_verified` 候选。
 - Hermes root、awei、blogger 默认使用智谱云端 `glm-4.7-flash`（200K 上下文、16K 最大输出），容量不足时依次回退 Agnes 2.5 Flash、DeepSeek V4 Flash；Hermes WebUI 运行于 `127.0.0.1:8787`。
-- 语音当前实验入口为 `127.0.0.1:9893` 的 Qwen3-TTS-1.7B CustomVoice MLX，手动按需启动；2026-08-30 正在复测长文本自动分段与 worker 超时隔离，旧 `9883` plist 不再作为有效入口。
+- 语音当前实验入口为 `127.0.0.1:9893` 的 Qwen3-TTS-1.7B CustomVoice MLX，手动按需启动；2026-08-31 复测确认服务稳定但长文内容保真失败，状态保持 `runnable`，旧 `9883` plist 不再作为有效入口。
 - 视觉 `8087` 与 ComfyUI `8188` 都按需启动，不要求与大型文本模型常驻并行。
 
-当前运行态、配置漂移修正和待办见 [docs/HANDOFF_20260830_1434.md](docs/HANDOFF_20260830_1434.md)。
+当前运行态与下一阶段见 [docs/HANDOFF_20260831_1015.md](docs/HANDOFF_20260831_1015.md)。
 
 安装并验证 MLX 文本后端：
 
@@ -122,7 +122,7 @@ python scripts/run-flux.py "your prompt" --mode quality --output /absolute/path/
 
 Flux 全身像默认使用强化构图提示词；OpenPose ControlNet 已安装并验证，但只作为精确姿态/站位控制的可选模块，不进入默认生成链。首轮 6 图评测见 `results/aesthetic/20260813-flux-fullbody-methods/report.html`。
 
-最新任务交接见 [docs/HANDOFF_20260830_1434.md](docs/HANDOFF_20260830_1434.md)：统一 8086 三路文本路由核验、Hermes 云端默认模型漂移修复、Qwen3-TTS 9893 新入口识别及首次 Git 基线。Qwen3.8 dsh Agent v8 历史终局保留在 [docs/HANDOFF_20260818_2145.md](docs/HANDOFF_20260818_2145.md)，阶段总结见 [docs/PHASE_SUMMARY_20260815.md](docs/PHASE_SUMMARY_20260815.md)。
+最新任务交接见 [docs/HANDOFF_20260831_1015.md](docs/HANDOFF_20260831_1015.md)：TTS 与 GLM/dsh 两阶段均已完成正式报告；二者都因内容或任务门禁失败停在 `runnable`，未进入推荐栈。Qwen3.8 dsh Agent v8 历史终局保留在 [docs/HANDOFF_20260818_2145.md](docs/HANDOFF_20260818_2145.md)，阶段总结见 [docs/PHASE_SUMMARY_20260815.md](docs/PHASE_SUMMARY_20260815.md)。
 
 阶段目标回顾与下一阶段计划见 [docs/PHASE_SUMMARY_20260814.md](docs/PHASE_SUMMARY_20260814.md)。
 

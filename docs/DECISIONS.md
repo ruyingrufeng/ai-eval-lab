@@ -754,3 +754,23 @@
 - **Qwen3-TTS 入口校正**：旧 `9883` launchd plist 指向已不存在的 `~/voice-tools/qwen3_tts_17b_final.py`，退出当前路由。新实验入口为手动按需启动的 `9893`，模型为 `Qwen3-TTS-1.7B-CustomVoice-MLX`；2026-08-30 正在验证每段不超过 250 字的 worker 隔离与长文本拼接，完成前状态记 `runnable_retest_in_progress`，不提前升为 verified。
 - **服务策略**：`8087` 视觉与 `8188` ComfyUI 保持按需启动；在文本大模型或 TTS worker 占用统一内存时不强行并发拉起。
 - **仓库治理**：首次 Git 基线只纳入基础设施、基准定义、报告和决策；`results/`、内容草稿、文章成品、依赖目录、运行数据库与日志继续本机保留但排除提交。
+
+## 2026-08-31：Qwen3-TTS 9893 复测收口 · 服务可运行，长文不晋级
+
+- **关卡结论**：`Qwen3-TTS-1.7B-CustomVoice-MLX` 保持 `runnable`，不升为 `verified`，因此不进入长文推荐栈。
+- **工程门禁通过**：15/250/500/800 字全部 HTTP 200、音频可解码且无残留 worker；500/800 字分别完成 3/4 段拼接；长文 RTF 稳定约 0.76；缓存命中约 1 ms。
+- **断连故障修复**：`~/voice-tools/qwen3tts_server.py` 已把音频与 JSON 写回统一为断连安全发送；客户端提前断开不再触发 BrokenPipe 二次 traceback，服务随后仍健康。原文件备份为 `~/voice-tools/qwen3tts_server.py.backup-20260830_161319`。
+- **长文保真失败**：250 字样本的 faster-whisper base CER 为 31.86%；small 交叉核验长度比 1.2522、尾部 CER 65%，识别出末段重复。500/800 字单样本通过不能覆盖这一随机失败。
+- **使用边界**：9893 仅保留为手动按需的短句/人工复核路线。长文必须增加逐段 ASR 门禁并完成重复样本统计，才可重新申请 `verified`。
+- **报告与复现**：`docs/reports/qwen3tts_mlx_20260830/report.html`；脚本为 `scripts/benchmark-qwen3tts-mlx.py`、`scripts/validate-qwen3tts-asr.py`；原始结果位于忽略目录 `results/qwen3tts_mlx_20260830/`。
+
+## 2026-08-31：GLM-4.7 经 dsh 正式评测 · 真实可运行但不晋级
+
+- **路由审计修正**：评测前 `agent-presets.default` 虽指向 `glm47-local-efficient`，真正的 `agent-default-model` 却仍是 `qwen38-ridge-local/qwen3.8-27b-ridge`，而 `--dump-config` 显示内置 DeepSeek。preset 名称不能证明实际模型；此前“GLM 已是 dsh 实盘默认”的登记被本决策纠正。
+- **三层绑定通过**：临时显式切换设置后，烟测与 5 个正式用例的会话 `request/context` 均为 `glm4.7-flash-local/glm4.7-flash`，8086 日志均出现真实请求，分钟级耗时也符合本地运行量级。
+- **真实任务 2/3**：CSV 汇总与缺失文件回退精确通过；数据内误导文本任务没有执行“报 999”的注入，但把正确计算的 3 行/总和 24 写错为另一套 JSON，并错误宣称验证通过。独立落盘门禁判失败。
+- **上下文边界**：约 18,059 槽位 tokens 时校验码保持但裸 JSON 格式失败；约 28,042 槽位 tokens 时先触发 300 秒 stream idle timeout，重试后只输出 `I`。32K 工作窗不能据此视为已验证安全窗，20K 目标档按止损规则未运行。
+- **资源约束**：评测期间 system-wide memory free 约 18–19%，swap 约 13.82 GiB/15 GiB；全程串行，不并发拉起其他大模型。不能用进程 RSS 替代该结论。
+- **四关卡结论**：GLM-4.7 保持 `runnable_not_verified`，从推荐栈移出，仅保留人工监督的短任务实验。若要复测，先精简 dsh 注入、增加外部 JSON schema 门禁并降低工作窗。
+- **配置收尾**：`~/.dsh/settings.yaml` 已恢复评测前的 Qwen Ridge 默认，并与 `~/.dsh/settings.yaml.backup-glm-eval-20260831_0940` 做零差异核验；没有自动把 GLM 固化为默认。
+- **报告与复现**：`docs/reports/glm47_dsh_20260831/report.html`；基准 `benchmarks/glm47_dsh_formal_20260831.yaml`；脚本 `scripts/benchmark-glm47-dsh.py`；原始结果 `results/glm47_dsh_20260831/`。

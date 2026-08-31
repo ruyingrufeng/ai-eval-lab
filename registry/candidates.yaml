@@ -1,5 +1,5 @@
 schema_version: 1
-updated_at: 2026-08-30
+updated_at: 2026-08-31
 host_profile: apple_m5_32gb
 
 status_values: [candidate, installable, runnable, verified, rejected, blocked_on_hardware]
@@ -9,13 +9,17 @@ current_recommended_stack:
   text:
     - {id: qwen3.6-27b-fable, status: verified, role: sillytavern}
     - {id: qwen3.8-27b-ridge, status: verified, role: hermes_jianguo_local}
-    - {id: glm4.7-flash, status: runnable, role: dsh_local_short_context}
   image:
     - {id: flux-1-schnell-q4, status: verified, role: fast}
     - {id: flux-1-dev-q4, status: verified, role: quality}
-  speech:
-    - {id: qwen3-tts-1.7b-customvoice-mlx, status: runnable, role: on_demand_tts, note: long_text_retest_in_progress_20260830}
+  speech: []
   retired_models: [qwen3-30b, qwen3.6-35b, gemma4-12b]
+
+runnable_not_recommended:
+  text:
+    - {id: glm4.7-flash, status: runnable, role: dsh_local_short_context_experiment, note: task_gate_2_of_3_context_failed_at_28042_slot_tokens, report: docs/reports/glm47_dsh_20260831/report.html}
+  speech:
+    - {id: qwen3-tts-1.7b-customvoice-mlx, status: runnable, role: on_demand_short_text, note: long_text_fidelity_failed_20260831, report: docs/reports/qwen3tts_mlx_20260830/report.html}
 
 tools:
   - id: mlx-lm

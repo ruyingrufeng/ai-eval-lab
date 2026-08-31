@@ -26,7 +26,7 @@ results/     本机测试结果（默认 gitignore）
 - 文本统一入口：8086 = llama-server（models-preset 单模型按需加载，谁调用加载谁），三路分工：
   - Qwen3.6-27B-Fable（IQ3_M，64K 单槽）→ SillyTavern 专用
   - Qwen3.8-27B-Ridge（3.7bpw，80K）→ Hermes `jianguo` 本地档；Hermes WebUI 直接运行于 8787
-  - GLM-4.7-Flash（Q4_K_M，64K 硬上限）→ dsh 用（默认本地；dsh 以 32K 工作窗口避开 30K 吞吐断崖）
+  - dsh 当前配置默认仍为 Qwen3.8-27B-Ridge；GLM-4.7-Flash（Q4_K_M，64K 硬上限）已于 2026-08-31 完成真实 dsh 评测，但任务仅 2/3、约 28K 槽位上下文失败，状态为 `runnable_not_verified`，不作为推荐默认
   - dsh 云端可切：Agnes / MiniMax-M3 / DeepSeek V4
 - 语音：9893 = Qwen3-TTS-1.7B CustomVoice MLX（手动按需启动，2026-08-30 正在做长文本分段复测）；旧 9883 launchd 配置已失效，不再作为当前入口；GPT-SoVITS / CosyVoice 实验进程在 ~/Documents/doubao/tts-bench
 - 视觉：8087 = Qwen2.5-VL-7B NSFW-Caption-V3（plist/脚本就绪，按需启动）

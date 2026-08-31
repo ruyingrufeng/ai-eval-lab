@@ -1,12 +1,12 @@
 schema_version: 1
-scanned_at: 2026-08-30
+scanned_at: 2026-08-31
 scan_type: verified_inventory
 
 service_snapshot:
-  observed_at: "2026-08-30T14:34:51+08:00"
-  llama_server_8086: {status: running, loaded_model: qwen3.8-27b-ridge}
+  observed_at: "2026-08-31T10:15:00+08:00"
+  llama_server_8086: {status: running, loaded_model: glm4.7-flash, note: evaluation_model_idle_settings_default_restored_to_qwen_ridge}
   hermes_webui_8787: {status: running}
-  qwen3_tts_mlx_9893: {status: running_retest_in_progress, mode: manual_on_demand}
+  qwen3_tts_mlx_9893: {status: runnable_manual_stopped, verification: long_text_fidelity_failed, mode: manual_on_demand}
   qwen_vl_8087: {status: configured_not_running, mode: on_demand}
   comfyui_8188: {status: installed_not_running, mode: on_demand}
   retired_endpoints:
@@ -19,7 +19,7 @@ current_text_routing:
   routes:
     - {model: qwen3.6-27b-fable, context: 65536, consumer: sillytavern}
     - {model: qwen3.8-27b-ridge, context: 81920, consumer: hermes_jianguo}
-    - {model: glm4.7-flash, context: 65536, consumer: dsh, dsh_working_window: 32768}
+    - {model: glm4.7-flash, context: 65536, consumer: dsh_candidate, dsh_tested_working_window: 32768, verification: failed}
 
 tools:
   - id: llama.cpp
@@ -38,10 +38,12 @@ tools:
     path: /Users/jacky/ComfyUI
   - id: qwen3-tts-local
     version: Qwen3-TTS-1.7B-CustomVoice-MLX
-    status: running_retest_in_progress
+    status: runnable
     path: /Users/jacky/voice-tools/qwen3tts_server.py
     endpoint: 'http://127.0.0.1:9893'
     service_mode: manual_on_demand
+    verification: short_text_usable_long_text_not_verified
+    report: docs/reports/qwen3tts_mlx_20260830/report.html
   - id: faster-whisper
     version: 1.2.1
     status: installed_unverified
@@ -63,7 +65,8 @@ tools:
   - id: dsh
     status: running
     path: /Users/jacky/voice-tools/dsh-start.sh
-    default_route: glm4.7-flash-local
+    default_route: qwen38-ridge-local
+    evaluated_candidate: {route: glm4.7-flash-local, status: runnable_not_verified, report: docs/reports/glm47_dsh_20260831/report.html}
   - id: open-webui
     version: 0.9.6
     status: installed_not_running

@@ -1,5 +1,5 @@
 schema_version: 1
-recorded_at: "2026-08-31T11:25:00+08:00"
+recorded_at: "2026-08-31T23:05:00+08:00"
 host_profile: apple_m5_32gb
 scope: environment_selection_and_validation_only
 adult_capability_policy: legal_adults_only_no_production_assets
@@ -9,7 +9,7 @@ current_production_routing:
   text:
     sillytavern: {model: qwen3_6_27b_fable_gguf, endpoint: 8086, context: 65536, state: production}
     hermes_jianguo: {model: qwen3_8_27b_ridge_gguf, endpoint: 8086, context: 81920, state: production_local_profile}
-    dsh: {configured_default_model: qwen3_8_27b_ridge_gguf, endpoint: 8086, state: general_default_unchanged, glm_bounded_lane: {model: glm4_7_flash_q4_k_m, state: verified, max_verified_slot_tokens: 16485, required_patch: benchmarks/dsh/glm47-validated-headless.patch.yml, required_validator: scripts/validate-json-schema.py, wrapper: scripts/dsh-glm47-validated.sh, report: docs/reports/glm47_dsh_bounded_retest_20260831/report.html}}
+    dsh: {configured_default_model: qwen3_8_27b_ridge_gguf, endpoint: 8086, state: general_default_unchanged, glm_bounded_lane: {model: glm4_7_flash_q4_k_m, state: verified, stability: 15_of_15, max_verified_slot_tokens: 16485, failed_tested_slot_tokens: 21472, required_patch: benchmarks/dsh/glm47-validated-headless.patch.yml, required_validator: scripts/validate-json-schema.py, wrapper: scripts/dsh-glm47-validated.sh, report: docs/reports/glm47_dsh_stability_boundary_20260831/report.html}}
   cloud_hermes:
     profiles: [root, awei, blogger]
     default: {provider: zhipu, model: glm-4.7-flash, context: 200000, max_tokens: 16384}

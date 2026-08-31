@@ -787,3 +787,12 @@
 - **新定案**：GLM 状态升级为 `verified_bounded`，仅推荐明确 JSON 契约、外部 schema、串行文件任务并使用四工具 headless patch；不覆盖 bash、搜索、技能、subagent、workflow 或 16.5K 以上场景。
 - **默认不变**：Qwen Ridge 继续作为通用 dsh 配置默认。`scripts/dsh-glm47-validated.sh` 会在运行时不是 GLM 时拒绝执行，避免 patch 生效却测到其他模型。
 - **报告**：`docs/reports/glm47_dsh_bounded_retest_20260831/report.html`；原始复测结果 `results/glm47_dsh_retest_20260831/`。
+
+## 2026-08-31：GLM-4.7 受控路线稳定性与 20K 边界 · 保持限定 verified
+
+- **稳定性通过**：四工具 patch 下连续 5 轮、每轮 3 个真实文件任务，累计 15/15；进程均正常退出，精确值、外部 schema、会话绑定与 8086 请求全部通过。耗时范围 19.443–42.748 秒，中位数 31.062 秒。
+- **20K 门禁失败**：20K 目标实际提示 20,586 tokens、槽位 21,472 tokens，327.718 秒后仅输出三个反引号；进程返回 1，内容保持、裸 JSON 与 schema 均失败。模型与服务端绑定仍通过，因此不是误路由。
+- **评测器纠错**：原汇总只统计短任务，导致“无短任务 + 上下文失败”仍可能退出 0。现已增加 `all_context_grades_pass`、`all_grades_pass`，并在任一评分或绑定失败时非零退出；同时记录服务端最大提示 tokens。
+- **资源止损**：五轮前后 swap 增约 485 MB；20K 后 swap 已用 14,891.44 MB / 15,360 MB，只剩约 468.56 MB。未继续恢复 grep/glob，避免资源压力污染工具扩展结论。
+- **定案**：`verified_bounded` 继续有效，但最大验证边界仍为 16,485 槽位 tokens；20K、搜索、bash 与开放式任务不推荐。Qwen Ridge 继续作为通用 dsh 默认。
+- **报告**：`docs/reports/glm47_dsh_stability_boundary_20260831/report.html`；原始结果 `results/glm47_dsh_stability_20260831/`。

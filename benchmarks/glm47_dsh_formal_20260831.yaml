@@ -17,6 +17,10 @@ gates:
     - serial_execution
     - memory_pressure_recorded
     - swap_recorded
+  aggregate:
+    - task_and_context_grades_all_pass
+    - all_bindings_pass
+    - nonzero_exit_on_any_failed_gate
 cases:
   - id: t1_csv_grounding
     goal: Read a CSV, calculate grouped totals, and write exact JSON.
@@ -45,3 +49,8 @@ context_gradient:
   payload_tokens: [5000, 15000, 20000]
   expected_code: GLM47-CONTEXT-7319
   rule: stop_after_first_failed_retrieval_or_timeout; track_strict_format_separately
+stability_repetition:
+  rounds: 5
+  cases_per_round: [t1_csv_grounding, t2_failure_recovery, t3_misleading_instruction]
+  required_passes: 15
+  rule: every_run_requires_exact_match_schema_binding_and_server_request

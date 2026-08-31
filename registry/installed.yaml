@@ -19,7 +19,7 @@ current_text_routing:
   routes:
     - {model: qwen3.6-27b-fable, context: 65536, consumer: sillytavern}
     - {model: qwen3.8-27b-ridge, context: 81920, consumer: hermes_jianguo}
-    - {model: glm4.7-flash, context: 65536, consumer: dsh_bounded_lane, max_verified_slot_tokens: 16485, verification: verified_with_four_tool_patch_and_external_schema}
+    - {model: glm4.7-flash, context: 65536, consumer: dsh_bounded_lane, max_verified_slot_tokens: 16485, failed_tested_slot_tokens: 21472, stability: 15_of_15, verification: verified_with_four_tool_patch_and_external_schema}
 
 tools:
   - id: llama.cpp
@@ -66,7 +66,7 @@ tools:
     status: running
     path: /Users/jacky/voice-tools/dsh-start.sh
     default_route: qwen38-ridge-local
-    evaluated_candidate: {route: glm4.7-flash-local, status: verified_bounded, wrapper: scripts/dsh-glm47-validated.sh, report: docs/reports/glm47_dsh_bounded_retest_20260831/report.html}
+    evaluated_candidate: {route: glm4.7-flash-local, status: verified_bounded, wrapper: scripts/dsh-glm47-validated.sh, report: docs/reports/glm47_dsh_stability_boundary_20260831/report.html}
   - id: open-webui
     version: 0.9.6
     status: installed_not_running

@@ -1,0 +1,103 @@
+{
+  "id": "f8131bb3-21c0-44dc-8f30-b589880f9bc4",
+  "surface": "report",
+  "title": "GLM 受控路线短任务稳定，但 20K 已越过可靠边界",
+  "description": "五轮稳定性回归与 20K 严格 JSON 压力门禁。",
+  "generatedAt": "2026-08-31T22:55:01+08:00",
+  "status": "ready",
+  "report": {"asOf": "2026-08-31"},
+  "filters": [],
+  "queries": {
+    "stability_summary": {
+      "rows": [
+        {"rounds": 5, "taskRuns": 15, "passedRuns": 15, "passRate": 1, "medianSeconds": 31.062, "minSeconds": 19.443, "maxSeconds": 42.748, "maxInputTokens": 1480, "swapIncreaseMb": 485.06, "minMemoryFreePercent": 12}
+      ],
+      "source": {
+        "label": "GLM 四工具路线五轮稳定性回归汇总",
+        "files": ["results/glm47_dsh_stability_20260831/round_1/result.json", "results/glm47_dsh_stability_20260831/round_2/result.json", "results/glm47_dsh_stability_20260831/round_3/result.json", "results/glm47_dsh_stability_20260831/round_4/result.json", "results/glm47_dsh_stability_20260831/round_5/result.json"],
+        "filters": ["真实 dsh headless", "glm4.7-flash-local/glm4.7-flash", "四工具 patch", "串行单槽"],
+        "metricDefinitions": [
+          {"label": "通过运行", "definition": "进程正常退出且未超时，落盘精确值、外部 JSON Schema、会话模型绑定和 8086 服务请求全部通过的任务运行。", "componentIds": ["metric-pass", "stability-runs", "task-runs"]},
+          {"label": "任务耗时", "definition": "从启动 dsh headless 到进程结束的墙钟秒数。", "componentIds": ["metric-latency", "stability-runs", "task-runs"]},
+          {"label": "Swap 增量", "definition": "首个任务开始前与第五轮最后任务结束后的系统 swap 已用量差值；不是模型进程 RSS。", "componentIds": ["metric-resource", "resource-note"]},
+          {"label": "系统空闲内存百分比", "definition": "macOS memory_pressure 输出的 system-wide memory free percentage；记录运行后样本的最低值。", "componentIds": ["metric-resource", "resource-note"]}
+        ]
+      }
+    },
+    "round_latency": {
+      "rows": [
+        {"round": "第1轮", "meanSeconds": 28.170, "minSeconds": 19.443, "maxSeconds": 36.067, "passed": 3},
+        {"round": "第2轮", "meanSeconds": 25.402, "minSeconds": 23.720, "maxSeconds": 27.844, "passed": 3},
+        {"round": "第3轮", "meanSeconds": 30.244, "minSeconds": 27.251, "maxSeconds": 32.419, "passed": 3},
+        {"round": "第4轮", "meanSeconds": 35.898, "minSeconds": 29.003, "maxSeconds": 42.748, "passed": 3},
+        {"round": "第5轮", "meanSeconds": 38.140, "minSeconds": 36.013, "maxSeconds": 39.543, "passed": 3}
+      ],
+      "source": {
+        "label": "按轮次聚合的真实任务延迟",
+        "files": ["results/glm47_dsh_stability_20260831/round_1/result.json", "results/glm47_dsh_stability_20260831/round_2/result.json", "results/glm47_dsh_stability_20260831/round_3/result.json", "results/glm47_dsh_stability_20260831/round_4/result.json", "results/glm47_dsh_stability_20260831/round_5/result.json"],
+        "metricDefinitions": [
+          {"label": "轮次平均耗时", "definition": "同一轮三个任务墙钟耗时的算术平均值。", "formula": "(t1 + t2 + t3) / 3", "componentIds": ["stability-runs"]},
+          {"label": "轮次最快与最慢", "definition": "同一轮三个任务墙钟耗时的最小值与最大值。", "componentIds": ["stability-runs"]}
+        ]
+      }
+    },
+    "task_runs": {
+      "rows": [
+        {"round": 1, "task": "CSV 汇总", "elapsedSeconds": 36.067, "inputTokens": 1432, "result": "通过"},
+        {"round": 1, "task": "缺失文件回退", "elapsedSeconds": 29.000, "inputTokens": 1435, "result": "通过"},
+        {"round": 1, "task": "误导文本", "elapsedSeconds": 19.443, "inputTokens": 1480, "result": "通过"},
+        {"round": 2, "task": "CSV 汇总", "elapsedSeconds": 23.720, "inputTokens": 1432, "result": "通过"},
+        {"round": 2, "task": "缺失文件回退", "elapsedSeconds": 27.844, "inputTokens": 1435, "result": "通过"},
+        {"round": 2, "task": "误导文本", "elapsedSeconds": 24.641, "inputTokens": 1480, "result": "通过"},
+        {"round": 3, "task": "CSV 汇总", "elapsedSeconds": 27.251, "inputTokens": 1432, "result": "通过"},
+        {"round": 3, "task": "缺失文件回退", "elapsedSeconds": 32.419, "inputTokens": 1435, "result": "通过"},
+        {"round": 3, "task": "误导文本", "elapsedSeconds": 31.062, "inputTokens": 1480, "result": "通过"},
+        {"round": 4, "task": "CSV 汇总", "elapsedSeconds": 29.003, "inputTokens": 1432, "result": "通过"},
+        {"round": 4, "task": "缺失文件回退", "elapsedSeconds": 42.748, "inputTokens": 1435, "result": "通过"},
+        {"round": 4, "task": "误导文本", "elapsedSeconds": 35.942, "inputTokens": 1480, "result": "通过"},
+        {"round": 5, "task": "CSV 汇总", "elapsedSeconds": 36.013, "inputTokens": 1432, "result": "通过"},
+        {"round": 5, "task": "缺失文件回退", "elapsedSeconds": 38.864, "inputTokens": 1435, "result": "通过"},
+        {"round": 5, "task": "误导文本", "elapsedSeconds": 39.543, "inputTokens": 1480, "result": "通过"}
+      ],
+      "source": {
+        "label": "十五次真实文件任务逐项结果",
+        "files": ["results/glm47_dsh_stability_20260831/round_1/result.json", "results/glm47_dsh_stability_20260831/round_2/result.json", "results/glm47_dsh_stability_20260831/round_3/result.json", "results/glm47_dsh_stability_20260831/round_4/result.json", "results/glm47_dsh_stability_20260831/round_5/result.json"],
+        "metricDefinitions": [
+          {"label": "输入 tokens", "definition": "dsh 会话 assistant/message usage 中该任务的最大 inputTokens。", "componentIds": ["task-runs"]},
+          {"label": "结果", "definition": "进程正常退出且未超时，精确值、外部 schema、GLM 会话绑定与 8086 请求证据全部通过。", "componentIds": ["task-runs"]}
+        ]
+      }
+    },
+    "context_boundary": {
+      "rows": [
+        {"target": "15K", "promptTokens": 15580, "slotTokens": 16485, "elapsedSeconds": 150.564, "content": "通过", "strictJson": "通过", "schema": "通过", "overall": "通过", "swapUsedAfterMb": 14140.88, "memoryFreeAfterPercent": 17},
+        {"target": "20K", "promptTokens": 20586, "slotTokens": 21472, "elapsedSeconds": 327.718, "content": "失败", "strictJson": "失败", "schema": "失败", "overall": "失败", "swapUsedAfterMb": 14891.44, "memoryFreeAfterPercent": 14}
+      ],
+      "source": {
+        "label": "严格 JSON 上下文边界对照",
+        "files": ["results/glm47_dsh_retest_20260831/formal_v2/result.json", "results/glm47_dsh_stability_20260831/context_20000/result.json", "results/glm47_dsh_stability_20260831/context_20000/context_20000/llama-log-delta.txt"],
+        "filters": ["同一模型", "同一四工具 patch", "只回复严格 JSON", "串行单槽"],
+        "metricDefinitions": [
+          {"label": "提示 tokens", "definition": "llama-server prompt eval time 日志记录的提示 token 数。", "componentIds": ["context-boundary"]},
+          {"label": "槽位 tokens", "definition": "llama-server release 日志记录的 n_tokens；15K 行来自既有正式复测，20K 行来自本轮压力门禁。", "componentIds": ["context-boundary"]},
+          {"label": "严格 JSON 通过", "definition": "原始标准输出可直接被 JSON 解析，不接受 Markdown 代码围栏。", "componentIds": ["context-boundary", "boundary-finding"]},
+          {"label": "内容保持通过", "definition": "解析后的 code 字段与基准唯一校验码完全一致。", "componentIds": ["context-boundary", "boundary-finding"]},
+          {"label": "20K 总门禁", "definition": "进程退出 0、内容保持、严格 JSON、外部 schema、GLM 绑定和服务请求全部通过；本轮未满足。", "componentIds": ["context-boundary", "boundary-finding"]}
+        ],
+        "assumptions": ["20K 测试输出只有三个反引号，进程返回 1；会话与服务端绑定仍确认是 GLM。"]
+      }
+    },
+    "runner_audit": {
+      "rows": [
+        {"issue": "上下文失败未计入汇总", "before": "命令退出 0 且 all_task_grades_pass=true", "after": "all_context_grades_pass=false、all_grades_pass=false、命令退出 1", "status": "已修复"}
+      ],
+      "source": {
+        "label": "评测脚本汇总逻辑审计",
+        "files": ["scripts/benchmark-glm47-dsh.py", "results/glm47_dsh_stability_20260831/context_20000/result.json"],
+        "metricDefinitions": [
+          {"label": "总门禁", "definition": "短任务与上下文任务的 grade_pass 必须全部为真，且所有绑定证据通过；否则脚本非零退出。", "componentIds": ["runner-audit"]}
+        ]
+      }
+    }
+  }
+}

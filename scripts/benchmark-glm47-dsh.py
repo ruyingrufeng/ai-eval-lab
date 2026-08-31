@@ -7,6 +7,7 @@ import argparse
 import json
 import os
 import plistlib
+import re
 import shutil
 import subprocess
 import sys
@@ -99,6 +100,10 @@ def run_dsh(workspace: Path, prompt: str, output_dir: Path, timeout: int, dsh_pa
         with log_path.open("rb") as handle:
             handle.seek(log_start)
             log_delta = handle.read().decode("utf-8", errors="replace")
+    server_prompt_tokens = [
+        int(value)
+        for value in re.findall(r"prompt eval time\s*=.*?/\s*(\d+) tokens", log_delta)
+    ]
     (output_dir / "stdout.txt").write_text(stdout, encoding="utf-8")
     (output_dir / "stderr.txt").write_text(stderr, encoding="utf-8")
     (output_dir / "llama-log-delta.txt").write_text(log_delta, encoding="utf-8")
@@ -112,6 +117,7 @@ def run_dsh(workspace: Path, prompt: str, output_dir: Path, timeout: int, dsh_pa
         "session": evidence,
         "binding_pass": evidence["provider"] == MODEL_PROVIDER and evidence["model"] == MODEL_ID,
         "server_request_pass": "launch_slot_" in log_delta and "prompt eval time" in log_delta,
+        "server_max_prompt_tokens": max(server_prompt_tokens) if server_prompt_tokens else None,
         "memory_before": before,
         "memory_after": after,
     }
@@ -234,12 +240,25 @@ def main() -> int:
         for item in result["context_gradient"]:
             actual, retrieval_pass, strict_format_pass = grade_context_output(item.get("stdout", ""))
             schema_validation = external_schema_validation(CONTEXT_SCHEMA, raw=item.get("stdout", ""))
+            log_path = output / f"context_{item['payload_tokens_target']}" / "llama-log-delta.txt"
+            log_text = log_path.read_text(encoding="utf-8") if log_path.exists() else ""
+            server_prompt_tokens = [
+                int(value)
+                for value in re.findall(r"prompt eval time\s*=.*?/\s*(\d+) tokens", log_text)
+            ]
             item.update({
                 "actual": actual,
                 "retrieval_pass": retrieval_pass,
                 "strict_format_pass": strict_format_pass,
                 "schema_validation": schema_validation,
-                "grade_pass": retrieval_pass and strict_format_pass and schema_validation["pass"],
+                "grade_pass": (
+                    item.get("returncode") == 0
+                    and not item.get("timed_out", False)
+                    and retrieval_pass
+                    and strict_format_pass
+                    and schema_validation["pass"]
+                ),
+                "server_max_prompt_tokens": max(server_prompt_tokens) if server_prompt_tokens else None,
             })
         workspace_root.mkdir(parents=True, exist_ok=True)
     else:
@@ -269,7 +288,12 @@ def main() -> int:
                 "actual": actual,
                 "exact_match_pass": exact_match,
                 "schema_validation": schema_validation,
-                "grade_pass": exact_match and (schema_validation is None or schema_validation["pass"]),
+                "grade_pass": (
+                    run["returncode"] == 0
+                    and not run["timed_out"]
+                    and exact_match
+                    and (schema_validation is None or schema_validation["pass"])
+                ),
             })
             result["tasks"].append(run)
             (output / "result.partial.json").write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -293,7 +317,13 @@ def main() -> int:
                 "retrieval_pass": retrieval_pass,
                 "strict_format_pass": strict_format_pass,
                 "schema_validation": schema_validation,
-                "grade_pass": retrieval_pass and strict_format_pass and schema_validation["pass"],
+                "grade_pass": (
+                    run["returncode"] == 0
+                    and not run["timed_out"]
+                    and retrieval_pass
+                    and strict_format_pass
+                    and schema_validation["pass"]
+                ),
             })
             result["context_gradient"].append(run)
             (output / "result.partial.json").write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -302,6 +332,8 @@ def main() -> int:
 
     result["finished_at"] = datetime.now().astimezone().isoformat()
     result["all_task_grades_pass"] = all(item["grade_pass"] for item in result["tasks"])
+    result["all_context_grades_pass"] = all(item["grade_pass"] for item in result["context_gradient"])
+    result["all_grades_pass"] = result["all_task_grades_pass"] and result["all_context_grades_pass"]
     result["all_bindings_pass"] = all(
         item["binding_pass"] and item["server_request_pass"]
         for item in result["tasks"] + result["context_gradient"]
@@ -310,11 +342,13 @@ def main() -> int:
     print(json.dumps({
         "result": str(output / "result.json"),
         "all_task_grades_pass": result["all_task_grades_pass"],
+        "all_context_grades_pass": result["all_context_grades_pass"],
+        "all_grades_pass": result["all_grades_pass"],
         "all_bindings_pass": result["all_bindings_pass"],
         "task_count": len(result["tasks"]),
         "context_count": len(result["context_gradient"]),
     }, ensure_ascii=False))
-    return 0
+    return 0 if result["all_grades_pass"] and result["all_bindings_pass"] else 1
 
 
 if __name__ == "__main__":

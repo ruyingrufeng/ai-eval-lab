@@ -29,3 +29,7 @@ benchmarks/hermes-agent*/verification_evidence.db
 
 # 误放在 docs 下的原始运行结果只保留在本机；正式证据入口是 docs/reports/。
 docs/**/results/
+
+# Fish listening assets stay local; reports and benchmark definitions are tracked.
+docs/reports/fish_s2_followup_20260903_142148/listen_audio/
+work/

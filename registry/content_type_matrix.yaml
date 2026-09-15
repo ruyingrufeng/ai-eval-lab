@@ -1,5 +1,5 @@
 schema_version: 1
-recorded_at: "2026-08-31T23:05:00+08:00"
+recorded_at: "2026-09-01T20:36:00+08:00"
 host_profile: apple_m5_32gb
 scope: environment_selection_and_validation_only
 adult_capability_policy: legal_adults_only_no_production_assets
@@ -12,9 +12,11 @@ current_production_routing:
     dsh: {configured_default_model: qwen3_8_27b_ridge_gguf, endpoint: 8086, state: general_default}
   cloud_hermes:
     profiles: [root, awei, blogger]
-    default: {provider: zhipu, model: glm-4.7-flash, context: 200000, max_tokens: 16384}
+    default: {provider: zhipu, model: glm-4-flash, context: 128000, pricing: free}
     fallback_order: [agnes-2.5-flash, deepseek-v4-flash]
   speech:
+    fish_s2_pro_mlx: {endpoint: null, state: runnable_real_novel_chapter_generated_continuity_audition_pending, service_mode: manual_cli_on_demand, role: multirole_audiobook_trial, recorded_at: 2026-09-04, report: docs/reports/tts_novel_longform_20260904/report.html}
+    f5_tts_mlx: {endpoint: null, state: runnable_real_novel_chapter_generated_continuity_audition_pending, service_mode: manual_cli_on_demand, role: multirole_audiobook_trial, recorded_at: 2026-09-04, report: docs/reports/tts_novel_longform_20260904/report.html}
     qwen3_tts_mlx: {endpoint: 9893, state: runnable_short_text_long_text_fidelity_failed, service_mode: manual_on_demand, report: docs/reports/qwen3tts_mlx_20260830/report.html}
   retired_models: [qwen3_30b, qwen3_6_35b, gemma4_12b, glm4_7_flash_local]
   retired_local_model_evidence:

@@ -1,0 +1,141 @@
+# JSON syntax is valid YAML. Synthetic test text only.
+{
+  "schema_version": 1,
+  "deployment": "/Users/jacky/Documents/Codex/2026-09-03/referenced-chatgpt-conversation-this-is-an/outputs/f5-tts-local",
+  "created_at": "2026-09-03T20:01:06.095781+08:00",
+  "references": {
+    "narrator": {
+      "path": "/Users/jacky/Documents/Codex/2026-09-03/referenced-chatgpt-conversation-this-is-an/outputs/f5-tts-local/references/narrator.wav",
+      "text": "夜色渐深，远处传来了轻轻的脚步声。她停下脚步，认真地听着。",
+      "sha256": "b5e9a29fc5c78db6056a3a074fc5b44dbce949f9806487ccb7405f42a3d6656d",
+      "source_path": "/Users/jacky/Documents/Codex/2026-09-03/referenced-chatgpt-conversation-this-is-an/outputs/fish-s2-local/experiments/fish_s2_persistent_20260903_185333/01-basic-zh.wav",
+      "source_sha256": "026f7946c063ed210bac4853ef4a31cba1d8634dcdf10c4e96b9488416d66e76",
+      "provenance": "先前 Fish 生成的合成参考；非真人克隆，情绪偏平静"
+    },
+    "A": {
+      "path": "/Users/jacky/Documents/Codex/2026-09-03/referenced-chatgpt-conversation-this-is-an/outputs/f5-tts-local/references/A.wav",
+      "text": "你终于回来了。我在这里等了很久，还以为今天见不到你了。",
+      "sha256": "20562c72d2e4fb4146c6b0d0cf3658e244d3ec42846ee6e42584c67b30973339",
+      "source_path": "/Users/jacky/Documents/Codex/2026-09-03/referenced-chatgpt-conversation-this-is-an/outputs/fish-s2-local/experiments/fish_s2_persistent_20260903_185333/voice-a.wav",
+      "source_sha256": "ca64e0d8e0efdf5e508b35c7d0a903342f28e59e39373ebc76f29ac4f335f6cb",
+      "provenance": "先前 Fish 生成的合成参考；非真人克隆，情绪偏平静"
+    },
+    "B": {
+      "path": "/Users/jacky/Documents/Codex/2026-09-03/referenced-chatgpt-conversation-this-is-an/outputs/f5-tts-local/references/B.wav",
+      "text": "别担心，我已经检查过四周。风停了，我们可以继续往前走。",
+      "sha256": "30fcc9e32485ec9a5ca2407892b86ccd056c771ce5632bcad7c1222fa00d561f",
+      "source_path": "/Users/jacky/Documents/Codex/2026-09-03/referenced-chatgpt-conversation-this-is-an/outputs/fish-s2-local/experiments/fish_s2_persistent_20260903_185333/voice-b.wav",
+      "source_sha256": "00d724dc779c363f44172aadf5a411485821566e3a1467fae41507ed21f5d7f0",
+      "provenance": "先前 Fish 生成的合成参考；非真人克隆，情绪偏平静"
+    }
+  },
+  "cases": [
+    {
+      "id": "warmup",
+      "voice": "A",
+      "text": "你好，今天我们测试中文语音。",
+      "seed": 42,
+      "group": "warmup"
+    },
+    {
+      "id": "voice_narrator",
+      "voice": "narrator",
+      "text": "你终于回来了，我一直在这里等你。",
+      "seed": 42,
+      "group": "voice_matching"
+    },
+    {
+      "id": "voice_A",
+      "voice": "A",
+      "text": "你终于回来了，我一直在这里等你。",
+      "seed": 42,
+      "group": "voice_matching"
+    },
+    {
+      "id": "voice_B",
+      "voice": "B",
+      "text": "你终于回来了，我一直在这里等你。",
+      "seed": 42,
+      "group": "voice_matching"
+    },
+    {
+      "id": "context_neutral_42",
+      "voice": "A",
+      "text": "你回来了。行李放在门口，我们明天再出发。",
+      "seed": 42,
+      "group": "semantic_context",
+      "intended_context": "neutral"
+    },
+    {
+      "id": "context_happy_42",
+      "voice": "A",
+      "text": "太好了！你终于回来了！我就知道，我们一定会再见面的！",
+      "seed": 42,
+      "group": "semantic_context",
+      "intended_context": "happy"
+    },
+    {
+      "id": "context_sad_42",
+      "voice": "A",
+      "text": "我等了你那么久……可你为什么，连最后一句话都不肯说？",
+      "seed": 42,
+      "group": "semantic_context",
+      "intended_context": "sad"
+    },
+    {
+      "id": "context_neutral_123",
+      "voice": "A",
+      "text": "你回来了。行李放在门口，我们明天再出发。",
+      "seed": 123,
+      "group": "semantic_context",
+      "intended_context": "neutral"
+    },
+    {
+      "id": "context_happy_123",
+      "voice": "A",
+      "text": "太好了！你终于回来了！我就知道，我们一定会再见面的！",
+      "seed": 123,
+      "group": "semantic_context",
+      "intended_context": "happy"
+    },
+    {
+      "id": "context_sad_123",
+      "voice": "A",
+      "text": "我等了你那么久……可你为什么，连最后一句话都不肯说？",
+      "seed": 123,
+      "group": "semantic_context",
+      "intended_context": "sad"
+    },
+    {
+      "id": "scene_narrator",
+      "voice": "narrator",
+      "text": "门外的雨渐渐停了，屋里只剩下钟摆的声音。",
+      "seed": 42,
+      "group": "scene"
+    },
+    {
+      "id": "scene_A",
+      "voice": "A",
+      "text": "你刚才听到了吗？好像有人在敲窗户。",
+      "seed": 42,
+      "group": "scene"
+    },
+    {
+      "id": "scene_B",
+      "voice": "B",
+      "text": "别怕，我去看看。你留在这里，等我回来。",
+      "seed": 42,
+      "group": "scene"
+    }
+  ],
+  "settings": {
+    "precision": "unquantized",
+    "steps": 32,
+    "method": "euler",
+    "cfg": 2,
+    "sway": -1,
+    "duration": "UTF-8 and Chinese punctuation heuristic",
+    "emotion_control": "No tag API; semantic-context screening only, expressive same-speaker references not available",
+    "manual_review": "pending"
+  }
+}

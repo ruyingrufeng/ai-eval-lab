@@ -28,6 +28,7 @@ results/     本机测试结果（默认 gitignore）
   - Qwen3.8-27B-Ridge（3.7bpw，80K）→ Hermes `jianguo` 本地档；Hermes WebUI 直接运行于 8787
   - dsh 通用配置默认为 Qwen3.8-27B-Ridge；本地 GLM-4.7-Flash 因 Agent 有效上下文不足，已于 2026-08-31 从运行配置移除并删除权重，评测材料仅作历史记录
   - dsh 云端可切：Agnes / MiniMax-M3 / DeepSeek V4
+- Hermes root、awei、blogger 仅保留智谱免费云端 `glm-4-flash`（128K）；`glm-4.7-flash` 已于 2026-09-01 从 Hermes 活动配置移除
 - 语音：9893 = Qwen3-TTS-1.7B CustomVoice MLX（手动按需启动，2026-08-30 正在做长文本分段复测）；旧 9883 launchd 配置已失效，不再作为当前入口；GPT-SoVITS / CosyVoice 实验进程在 ~/Documents/doubao/tts-bench
 - 视觉：8087 = Qwen2.5-VL-7B NSFW-Caption-V3（plist/脚本就绪，按需启动）
 - 图像：8188 = ComfyUI + Flux dev/schnell Q4_K_S 双档（含 flux-ip-adapter），RealVisXL 仅回退对照

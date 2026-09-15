@@ -1,0 +1,85 @@
+{
+  "schema_version": 2,
+  "deployment": "/Users/jacky/Documents/Codex/2026-09-03/referenced-chatgpt-conversation-this-is-an/outputs/f5-tts-local",
+  "created_at": "2026-09-04T08:59:47.856964+08:00",
+  "references": {
+    "neutral": {
+      "path": "/Users/jacky/Documents/Codex/2026-09-03/referenced-chatgpt-conversation-this-is-an/outputs/f5-tts-local/references/ravdess-actor02/neutral.wav",
+      "sha256": "8610965f88a572b73470570841fcdd01f96c2e927382cdaa8dd7ae43be087b3b",
+      "text": "Kids are talking by the door. Dogs are sitting by the door.",
+      "provenance": "RAVDESS actor 02 neutral; CC-BY-NC-SA-4.0; local non-commercial evaluation"
+    },
+    "happy": {
+      "path": "/Users/jacky/Documents/Codex/2026-09-03/referenced-chatgpt-conversation-this-is-an/outputs/f5-tts-local/references/ravdess-actor02/happy.wav",
+      "sha256": "23211f9170dfc530b6ac730ff8022b1c1523e83b6d4b77c0a001d2542625b44d",
+      "text": "Kids are talking by the door. Dogs are sitting by the door.",
+      "provenance": "RAVDESS actor 02 happy; CC-BY-NC-SA-4.0; local non-commercial evaluation"
+    },
+    "sad": {
+      "path": "/Users/jacky/Documents/Codex/2026-09-03/referenced-chatgpt-conversation-this-is-an/outputs/f5-tts-local/references/ravdess-actor02/sad.wav",
+      "sha256": "41ae1d48026671d59b56578eb30ee6c3468393d00884e20bb3eaa77f753e48ce",
+      "text": "Kids are talking by the door. Dogs are sitting by the door.",
+      "provenance": "RAVDESS actor 02 sad; CC-BY-NC-SA-4.0; local non-commercial evaluation"
+    }
+  },
+  "cases": [
+    {
+      "id": "neutral_42",
+      "voice": "neutral",
+      "text": "你回来了。我一直在这里等你。",
+      "seed": 42,
+      "group": "emotion_reference",
+      "reference_emotion": "neutral"
+    },
+    {
+      "id": "happy_42",
+      "voice": "happy",
+      "text": "你回来了。我一直在这里等你。",
+      "seed": 42,
+      "group": "emotion_reference",
+      "reference_emotion": "happy"
+    },
+    {
+      "id": "sad_42",
+      "voice": "sad",
+      "text": "你回来了。我一直在这里等你。",
+      "seed": 42,
+      "group": "emotion_reference",
+      "reference_emotion": "sad"
+    },
+    {
+      "id": "neutral_123",
+      "voice": "neutral",
+      "text": "你回来了。我一直在这里等你。",
+      "seed": 123,
+      "group": "emotion_reference",
+      "reference_emotion": "neutral"
+    },
+    {
+      "id": "happy_123",
+      "voice": "happy",
+      "text": "你回来了。我一直在这里等你。",
+      "seed": 123,
+      "group": "emotion_reference",
+      "reference_emotion": "happy"
+    },
+    {
+      "id": "sad_123",
+      "voice": "sad",
+      "text": "你回来了。我一直在这里等你。",
+      "seed": 123,
+      "group": "emotion_reference",
+      "reference_emotion": "sad"
+    }
+  ],
+  "settings": {
+    "precision": "unquantized",
+    "steps": 32,
+    "method": "euler",
+    "cfg": 2,
+    "sway": -1,
+    "duration": "UTF-8 and Chinese punctuation heuristic",
+    "emotion_control": "Reference-driven A/B: same speaker, same paired source statements, neutral/happy/sad reference; identical Chinese target and seeds.",
+    "manual_review": "pending"
+  }
+}

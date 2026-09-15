@@ -804,3 +804,149 @@
 - **运行配置清理**：从 `~/.config/llama-server/models.ini` 删除活动 preset，从 `~/.dsh/settings.yaml` 删除本地 provider，dsh preset 默认改为 `qwen-local-serial`；GLM 专用 preset 目录一并移入废纸篓。
 - **服务核验**：8086 重启后健康，仅列出 `qwen3.6-27b-fable` 与 `qwen3.8-27b-ridge`，没有 GLM 子进程或文件映射。dsh 默认保持 Ridge。
 - **可恢复性**：配置备份位于 `~/.config/llama-server/backups/glm47-retire-20260831_233534/`；清空废纸篓前权重仍可恢复。历史基准、脚本与报告保留，不再作为当前推荐路线。
+
+## 2026-09-01：Hermes 云端 GLM 只保留免费 glm-4-flash
+
+- **用户定案**：Hermes 的 GLM 路由只保留智谱免费云端 `glm-4-flash`；撤销 2026-08-30 将 root、awei、blogger 升级到 `glm-4.7-flash` 的活动配置结论，旧记录保留作为变更历史。
+- **活动配置**：root、awei、blogger 的默认模型与 zhipu provider 模型表统一改为 `glm-4-flash`，登记上下文恢复为 `128000`；活动配置中不再包含 `glm-4.7-flash`。
+- **回退与本地路线**：回退顺序保持 `agnes-2.5-flash` → `deepseek-v4-flash`；`jianguo` 继续使用本地 `qwen3.8-27b-ridge`，dsh 与 llama-server 路由不变。
+- **恢复点**：修改前配置备份位于 `~/.hermes/backups/glm4-flash-only-20260901_2036/`。
+
+## 2026-09-03：Fish S2 Pro MLX 本地部署与试听认可，保留按需试用
+
+- **用户反馈**：在当前任务试听后表示“效果还不错”，要求做好记录；记录为整体正面试听反馈，不推断盲评得分或逐角色验收。
+- **部署**：独立 Python 3.13.15 + mlx-speech 0.5.2 + MLX/Metal 0.32.2；Fish S2 Pro 8-bit 固定提交 `304a5f36d0489163ac077f22eb9425a763112f8f`，权重按官方 SHA-256 校验。环境、模型和音频保留在原 Codex 部署目录，不迁入 iCloud 仓库。
+- **实测**：13 段主套件全部生成，59.861 秒音频耗时 314.063 秒（加权 RTF 5.247）；另外角色 JSON 与参考音频路径两个 CLI 入口复现通过。ASR 10/13 文字完全一致，另 3 段仅同音字差异。
+- **统一内存**：MLX 峰值 11.093GiB、macOS peak footprint 11.210GiB、最高 RSS 1.327GiB，三种口径不能相加。保留约 16.3GiB RSS 的后台 llama-server 时出现 swap；句末样本最高 3.746GiB，不能作为绝对峰值或空闲机器性能。
+- **定案**：保留为人工复核短句与多角色段落的本地试用候选，状态 `runnable`。短句已验证可运行与用户认可，不等于项目完整 `verified`；未完成长篇一致性、声纹相似度、多 seed、队列并发和空闲/共存对照，不加入正式推荐栈，不替换现有 Qwen3-TTS 9893 路由。
+- **能力边界**：克隆用合成参考音频验证；多角色稳定分配采用固定参考声音逐句合成，原生说话人标签仅作实验；尚无自动小说拆角与情绪导演层。
+- **主报告**：`docs/reports/fish_s2_pro_mlx_20260903/report.html`；数据 `artifact.json`；原始证据 `results/fish_s2_pro_mlx_20260903/`（Git 排除）；项目启动入口 `scripts/fish-s2-local.sh`。
+
+## 2026-09-03：Fish S2 第二轮测试方案交由本地 27B 准备与执行
+
+- **用户要求**：编写测试方案，交给本地 27B 执行；本阶段只制订方案，没有启动新增测试或卸载模型。
+- **执行分工**：27B 准备并校验独立执行器；用户/外部控制器确认大模型已卸载后启动无人值守 Fish → ASR 串行测试；结束后再由 27B 分析，用户裁决听感。
+- **冻结范围**：历史 13 样例对照、1,200–1,600 字合成章节、边界片段多 seed、三角色三情绪、跨阶段同句锚点、至少 30 分钟活跃生成；上限 120 个任务 / 总墙钟 120 分钟。
+- **证据纪律**：新 run ID、新音频目录，保留原样例；退出码、计划任务集合、音频检查与验收同时通过才算对应任务成功。finished 事件不代表成功，重试不得覆盖首次失败率。
+- **判定纪律**：RTF/CER/资源与听评门槛为本轮拟定标准，不是历史结果；未填写听评写 pending_human_review。状态仍为 runnable，未测队列/共存与整本书，不自行晋级推荐栈。
+- **方案**：`docs/FISH_S2_27B_TEST_PLAN_20260903.md`；机器清单 `benchmarks/fish_s2_pro_followup_20260903.yaml`（planned_not_executed）。
+
+## 2026-09-03：Fish S2 Pro 第二轮实测——可作中性短旁白，不适合多情绪演绎
+
+- 独立基线下 120/120 任务成功，0 失败，0 hit_token_limit；加权 RTF 2.84×（第一轮 5.25×，独立 A/B 有效）；T4 锚点同角色前后 median 增幅 ≤5.1%。
+- 杰哥试听发现：
+  - 角色 A（voice-a.wav）实际听感是男声，与生成时使用的 [female voice] 标签不一致；可能是模型在 voice_a_reference 那轮没遵循性别标签。
+  - 角色 A 在 [neutral] / [excited] / [sad] 三种情绪标签下听感几乎一致，都是平淡中性声；本机短中文上情绪标签无效。
+- 角色一致性好（voice_consistency=5），但情绪切换失败意味着它**不适合**有声书 / 章节配音这种需要按角色 / 按情绪演绎的场景。
+- 适用边界收窄为：**中性短文本单声线播报 / 旁白 / 解说**。**不**替代 Qwen3-TTS 9893 做多角色多情绪内容生产。
+- 听感证据：results/fish_s2_followup_20260903_142148/listening_review.csv（27 行，A 组 6 行已填，其余待主人补全）。
+
+## 2026-09-03（修正稿）：fish-s2-review/REVIEW.md 8 项修正
+
+独立审查发现以下原始主张不能成立；已按审查意见修正报告、CER 清洗规则、CSV 归因、章节拼接与锚点拆分：
+
+1. **ASR CER 口径**：原报告同时给出 0.013 / 0.1079 / null 三套数字，根因是清洗函数漏剥方括号指令标签（如 [excited]）。修正后按"先剥 <|...|> 与 [...] 指令标签，再 NFKC + 去标点"重新计算，**加权 CER = 82 / 3217 = 2.55%**。门槛 ≤8% ✅，但仅是自动筛查，不是听评通过。
+
+2. **A/B 不成立**：第一轮 13 段 T0 全部无参考，本轮 T0 已带 narrator / voice-a / voice-b 参考，生成通路不同；T5 41 段 padding 是本轮新加；加载方式不同（每段独立子进程）。不能宣称 2.84× vs 5.25× 是严格加速比。
+
+3. **narrator 锚点 +35%**：合并三角色中位数为 +5.1%，掩盖了 narrator 单独 start→end 的 +35.2%（start 12 s → end 20 s）。按 plan §10 门槛 ≤30%，A/B 通过、narrator 不达标。
+
+4. **章节拼接已补**：用现有 21 段 T1 WAV 顺序拼接（含 0.25 s 间隔）= 272.308 s，逐段和 + 间隔 0.000 s delta 通过 ≤0.1 s 阈值。听感复核仍待主人。
+
+5. **试听归因**：CSV 中 5 / 5 / 2 / 3 数字是 Agent 推断，不是主人原话。已清空数字列，artifact_notes 只保留主人在 16:10 的原话（"角色 a 是男声…声音一致性没问题"、"没有情绪，情绪标签无效，都是很平淡的声音"）。其余 21 段未评。
+
+6. **同进程长期驻留未验**：本轮每段启动独立 tts.py 子进程（共 120 次 model_loaded），不能证明单个 Fish 进程持续驻留 30+ 分钟的内存增长或参考编码复用。
+
+7. **MLX 12 GiB 限额被击穿**：原始日志 MLX 峰值 13.948 GiB，9 段超过 12 GiB 进程内分配器限额。本次未 OOM，但说明限额偏低；不是整机硬上限。
+
+8. **不要宣称的事**：不能把自动 CER 通过当听评通过、不能把 A 听感推广到所有音色、不能用合并锚点中位数当结论、chapter 端到端还没过听感。
+
+修正版报告：`docs/reports/fish_s2_followup_20260903_142148/report.html`。保持 runnable，不晋级 verified。
+
+## 2026-09-03（recheck 修正稿 v3）：数据流闭环 + hash 可复现
+
+fish-s2-review/RECHECK.md 指出 v2 修复只在文档层落地，未真正改 analyzer 脚本与报告生成器；本轮按以下顺序整改并实测验证：
+
+1. **analyzer 真正修改（issue 1、2）**：`scripts/fish-s2-followup.py::cmd_analyze` 重写为以下行为且 hash 稳定：
+   - 从 test-matrix.yaml 读出 frozen expected case_ids 集合，T0–T4 共 79 段；first_attempt_completion 判定改为 expected_match = 缺失 0 且失败 0
+   - ASR CER 不再信任日志字段，从 asr-verification.json 用统一清洗（先剥 <|...|> 与 [...] 指令标签）重新计算
+   - 锚点改为按角色配对（narrator / A / B），原始指标 RTF，不替换为子进程耗时；旧 pooled median 字段保留但加 _warn 标注
+   - 坏哈希不计入 verified_clip_count；记录在 checksum_mismatches
+   - analyzed_at 跨多次 analyze 保留，summary.json hash 稳定可复现（已实测 HASH = a3f0f1…edd0d）
+2. **CSV 数字真清空（issue 3）**：A 组 6 行的 intelligibility / voice_consistency / naturalness 三列都设为空字符串，仅 artifact_notes 保留主人原话。
+3. **报告生成器从 summary.json 取数（issue 2 重申）**：`scripts/build-fish-s2-followup-report.py` 不再重复计算 CER 或 RTF，直接读 summary.json 与 manifest.json；evidence.summary_sha256 字段记录真实摘要哈希。
+4. **保留原 120 段音频、章节拼接、listen_review.csv、listen_audio/** 全部不删；本轮没有重跑 120 段。
+
+复跑验证：`fish-s2-followup.py analyze --run-id ...` 两次运行后 summary.json SHA-256 不变（a3f0f1564a273772b09bc7e7fe1be2be6af3f57021f54eb4c0b8f48ef9aedd0d）。
+
+修正版报告：`docs/reports/fish_s2_followup_20260903_142148/report.html`（artifact.json SHA-256 = 4603e9067ff9…ec061）。
+
+## 2026-09-03：Fish S2 接手修复与单模型持续运行补测
+
+64 段全部成功，单次模型加载下纯生成 31.53 分钟。CER 26/2267=1.1469% 通过自动筛查；加权 RTF 3.274 未达到 ≤3 目标，中段锚点降速约45%–46%，结尾约18%–21%。MLX 峰值13.948GiB，Fish 阶段 swap 峰值增量0GiB，无生成错误或资源止损。
+
+维持 runnable，不晋级推荐栈。旧轮 A 情绪平淡的用户反馈保留；新轮情绪/声线、3 个同音字尾句差异及完整章节需人工试听。不得从自动 CER 推断听感合格。已真正修复验收与报告数据流，34 项错误注入及集成检查通过；先前报告误标“已修复”由本次实现和证据取代。
+
+报告：docs/reports/fish_s2_persistent_20260903_185333/report.html。交接：docs/HANDOFF_20260903_1933.md。全部原始与失败记录保留，未变更其他模型路由。
+
+## 2026-09-03 19:50：Fish S2 本轮情绪验收未通过
+
+用户补测试听原话：“基本上同一个音色没有情绪变化，多段录音的感觉是一样的。”本轮配置的可辨情绪变化不满足需求，保持 runnable，不晋级有声小说推荐栈。仅保留环境供实验；不据此否定所有 Fish 版本，也不生成用户未给出的逐段分数。运行稳定性及文字自动筛查结果保持独立，速度目标仍未达标。反馈已绑定 summary → artifact → HTML，详见 docs/HANDOFF_20260903_1950.md。
+
+## 2026-09-04：F5-TTS MLX 中文初测进入 runnable
+
+在独立 Python 3.12 环境部署 f5-tts-mlx 0.2.6、MLX 0.32.2 与未量化 model_v1 权重。首轮 13/13 段生成和 PCM/SHA256 校验通过；除预热外 56.521 秒音频用 92.413 秒生成，加权 RTF 1.635；Qwen3-ASR 回检 224 字、CER 0。MLX 进程内峰值 2.511GiB，系统 memory pressure free 78%–87%，测试阶段 swap 峰值增量 0GiB。正式报告：docs/reports/f5_tts_mlx_20260903_2008/report.html。
+
+首次运行暴露 f5-tts-mlx 0.2.6 与 MLX 0.32.2 的 shape 类型兼容错误；仅在隔离环境将 scalar MLX duration 显式转为 Python int，保留原文件、补丁哈希和失败日志后，单进程完成整组。模型与 Vocos 权重固定 revision 并核验官方 SHA256。
+
+本轮三条参考音频均为此前 Fish 生成的偏平静合成声线。不同情绪文字只能筛查语境响应，不能证明 F5 的参考驱动情绪控制；没有原生情绪标签可验。三角色为固定参考逐句生成，不是自动选角或剧情导演。当前状态仅 runnable，待用户试听情绪、自然度和声线一致性，不进入推荐栈。代码为 MIT；上游预训练权重项目声明 CC-BY-NC，按非商业实验管理。
+
+## 2026-09-04：F5-TTS / Fish S2 独立情绪参考 A/B
+
+上一轮F5沿用Fish生成的合成参考，因此两者声音相似；该轮只能证明F5运行和克隆链路，不能比较模型音色或情绪。本轮纠正为独立RAVDESS演员02人类录音：同一演员、同两句英文，中性普通强度及开心/悲伤强烈强度。两模型使用同一24kHz衍生参考、同一中文目标句及seed 42/123，串行各生成6段。
+
+两模型12/12音频文件及证据完整。F5：31.819秒音频/50.625秒生成，RTF1.591、MLX峰值2.439GiB、swap峰值增量0；ASR发现sad_123在中文前串入参考英文，精确5/6、加权CER23/72=31.94%，内容门槛失败。Fish：23.499秒音频/61.858秒生成，RTF2.632、MLX峰值10.096GiB、swap峰值增量0；内容精确6/6、CER0。
+
+自动结果不评价情绪。情绪类别、强度、同一说话者感、自然度留给12段随机盲听；当前两者均不因本轮晋级verified。跨语言参考是混淆因素，且中性与开心/悲伤强度不完全匹配。本轮仅一个说话者、一句中文、两个seed，不推广到长篇。
+
+RAVDESS官方记录DOI 10.5281/zenodo.1188976，CC BY-NC-SA 4.0；仅本机非商业评测，保留原始归档、选中原文件、加工记录与署名。ESD因官方要求提交许可表而未下载、未使用。报告：docs/reports/tts_emotion_reference_ab_20260904/report.html。
+
+## 2026-09-04：英文情绪参考轮判失败，改用全中文普通话参考与统一响度
+
+用户试听原话：“都用中文测试吧，试听的内容有英文，声音忽大忽小。这音色说话好像一个外国人说中文。”据此，RAVDESS 英文参考轮的中文适用性判失败，仅保留为跨语言参考、英文串入和未控响度的失败证据；不再等待该轮情绪盲听，也不用于推荐结论。
+
+新一轮采用 MCAE-SPPS 演员04（女性普通话演员）的中性、开心、悲伤录音。三种情绪使用完全相同的6句中文和相同顺序；选中片段来自官方 OSF，逐文件核对 SHA-256。原始录音串接后做双遍 EBU R128 响度匹配，参考实测为 −23.0、−23.0、−23.1 LUFS。F5-TTS 与 Fish S2 使用相同中文目标句、seed 42/123 串行生成；试听副本再次统一到 −23 LUFS，原始生成文件保留。
+
+两模型均6/6生成、自动文字回检精确6/6、加权CER 0，未发现英文或参考内容串入。F5-TTS：22.261秒音频用37.447秒生成，RTF 1.682，MLX峰值2.494GiB、RSS采样峰值1.625GiB、pressure free 77%–85%、swap增量0。Fish S2：23.962秒音频用65.062秒生成，RTF 2.715，MLX峰值10.965GiB、RSS采样峰值6.053GiB、pressure free 56%–85%、swap增量0。
+
+本轮仅把中文内容、口音来源和响度干扰纠正；情绪是否可辨、是否仍像同一个中文说话者及自然度必须由用户盲听。两模型保持 runnable，不晋级 verified，不进入推荐栈。报告：docs/reports/tts_emotion_chinese_ab_20260904/report.html。
+
+## 2026-09-04 09:50：全中文短句情绪整组人工验收通过
+
+用户试听原话：“中性、开心、悲伤能听出区别；三种情绪像同一个中国人；音量稳定”。据此，本轮全中文、同一普通话演员、同一句目标、两个随机种子的12段整组测试通过情绪可辨性、说话者一致性、中文母语感和音量稳定性验收。
+
+该反馈是对随机试听整组的总体判断，没有给出F5-TTS与Fish S2的逐模型或逐片段分数，因此不据此宣布其中某一模型单独胜出。测试仍只覆盖短句、一位演员和三种情绪，未覆盖小说章节、角色切换、长程声线一致性及连续生成。本轮结论写入summary、artifact和HTML；两模型保持runnable，不直接晋级verified或推荐栈。
+
+## 2026-09-04 10:45：使用《仿生人零》第四章完成真实小说多角色长文本生成
+
+用户授权将本机《仿生人零（长篇小说）》用于长篇测试。原文仅在本机Git排除目录读取；正式基准与HTML不保存原文、切分台词或ASR转写，只记录源文件SHA-256、第四章行号和聚合指标。
+
+第四章连续正文1259字符，切为43段：旁白26、男性角色对白13、“零”4。旁白使用男性普通话中性参考，男性对白使用同一演员愤怒参考，“零”使用女性普通话悲伤参考；参考与后期响度统一。F5-TTS与Fish S2串行运行，均43/43生成并成功退出；逐段后期后按80毫秒句内停顿与260毫秒段落停顿拼接，时长误差均为0，成片综合响度均为−22.9 LUFS。
+
+F5-TTS：167.746秒原始音频、234.274秒生成、RTF1.397、CER51/1031=4.95%、MLX峰值2.532GiB、RSS1.635GiB、pressure free 76%–85%、swap增量0；成片176.406秒。Fish S2：196.768秒原始音频、516.264秒生成、RTF2.624、CER48/1031=4.66%、MLX峰值13.579GiB、RSS5.646GiB、pressure free 46%–85%、swap增量0；成片205.426秒。
+
+两者均通过8%文字自动门槛。F5更快且内存明显更低，Fish文字错误率略低；角色切换、声线连续性、情绪、停顿和整体自然度仍待用户听完整章节后判断。保持runnable，不晋级推荐栈。首次F5启动因私有清单漏deployment字段在模型加载前失败，失败记录保留，修正后用新运行编号成功。
+
+## 2026-09-04：云端低价文本模型调研（价格基准 = DeepSeek V4 Flash）
+
+按用户要求补找"便宜（≤ DeepSeek V4 Flash 价格）且能力不差"的线上模型，用 OpenRouter 2026-09-04 统一快照比价、DeepSeek 官方人民币价做锚点，登记见 `registry/cloud_models.yaml`，全文见 `docs/CLOUD_MODEL_PRICE_SURVEY_20260904.md`。
+
+核心事实：V4 Flash 已接近"能力强+便宜"的价格地板——全球同档 flash/agent 模型基本都更贵（Gemini 3.5 Flash、Claude Haiku 4.5、Kimi K3、MiniMax-M3 等），能明显更便宜的主流同档候选**目前只有 Qwen3.7-Flash**（$0.030/$0.130，约基准 0.70×，1M 上下文、视觉语言推理，官方 CNY/限流待核）。GLM-5.3-Flash、GLM-4.7-Flash、Step-3.5-Flash、Seed-1.6-Flash/2.0-mini 价格为基准 1.3–2.2×，价值在厂商多元化与多模态/长上下文而非省钱。
+
+现有路由不变（glm-4-flash 免费 → Agnes 2.5 Flash → DeepSeek V4 Flash）。所有候选保持 candidate、未过四关卡；下一步先人工核官方 CNY 直购价，再以 qwen3.7-flash 为第一优先按仓库关卡（中文长文/结构化输出/Agent 工具链/128K+ 上下文）抽测，通过后才谈改写回退链。
+
+## 2026-09-04（同日更新）：阿里系云端模型整体排除
+
+用户前车之鉴：阿里 token 计算/消耗异常偏快，决定阿里系（百炼 qwen 云端全部）不再列为候选。据此撤销 Qwen3.7-Flash 候选（原唯一严格低于 DeepSeek V4 Flash 总价的同档模型，0.70×），`registry/cloud_models.yaml` 与 `docs/CLOUD_MODEL_PRICE_SURVEY_20260904.md` 已同步（原价格数据仅作历史参照）。
+
+结论收紧为：**候选集仅剩基准价 1.3–2.2× 的多元化档（GLM-5.3-Flash / GLM-4.7-Flash / Step-3.5-Flash / Seed-1.6-Flash / Seed-2.0-mini），不存在 ≤ V4 Flash 总价的同档候选；V4 Flash 即能力与价格双下限**。现有路由与回退链不变；新增线上厂商的抽测一律加『计量核对关』（固定中文文本多轮对话，对照本地 tiktoken/分词计数，计量明显偏快即剔除），抽测第一优先改为 GLM-5.3-Flash。

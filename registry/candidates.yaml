@@ -1,5 +1,5 @@
 schema_version: 1
-updated_at: 2026-08-31
+updated_at: 2026-09-04
 host_profile: apple_m5_32gb
 
 status_values: [candidate, installable, runnable, verified, rejected, blocked_on_hardware]
@@ -19,6 +19,8 @@ current_recommended_stack:
 
 runnable_not_recommended:
   speech:
+    - {id: fish-s2-pro-int8-mlx, status: runnable, role: manual_multirole_audiobook_trial, user_audition: chinese_controlled_set_passed_20260904, note: "真实小说第四章43/43生成、CER4.66%、成片3.42分钟；角色与连续听感待验收", report: docs/reports/tts_novel_longform_20260904/report.html}
+    - {id: f5-tts-mlx, status: runnable, role: manual_multirole_audiobook_trial, user_audition: chinese_controlled_set_passed_20260904, note: "真实小说第四章43/43生成、CER4.95%、成片2.94分钟；角色与连续听感待验收", report: docs/reports/tts_novel_longform_20260904/report.html}
     - {id: qwen3-tts-1.7b-customvoice-mlx, status: runnable, role: on_demand_short_text, note: long_text_fidelity_failed_20260831, report: docs/reports/qwen3tts_mlx_20260830/report.html}
 
 tools:
@@ -67,6 +69,38 @@ tools:
     reason: 已安装，待固定版本并跑转码验收
 
 model_families:
+  - id: fish-s2-pro-int8-mlx
+    category: tts
+    status: runnable
+    priority: P1
+    source: https://huggingface.co/appautomaton/fishaudio-s2-pro-8bit-mlx
+    revision: 304a5f36d0489163ac077f22eb9425a763112f8f
+    runtime: {mlx_speech: 0.5.2, mlx: 0.32.2, python: 3.13.15}
+    license: Fish-Audio-Research-License
+    tested_at: 2026-09-03
+    user_feedback: 效果还不错。
+    measured: {suite_clips: 13, audio_seconds: 59.861, generation_seconds: 314.063, weighted_rtf: 5.246538, mlx_peak_gib: 11.093, physical_footprint_peak_gib: 11.210, sampled_swap_max_gib: 3.746}
+    selection_note: 全中文短句整组听评通过；真实小说第四章43段生成完整、CER4.66%、RTF2.624、MLX峰值13.579GiB，连续角色与章节听感待验收，不进入推荐栈。
+    followup_report: docs/reports/tts_novel_longform_20260904/report.html
+    longform_measured: {segments: 43, assembled_seconds: 205.426, weighted_cer: 0.04656, weighted_rtf: 2.62372, mlx_peak_gib: 13.579, swap_peak_delta_gib: 0.0}
+    benchmark: benchmarks/fish_s2_pro_mlx_20260903.yaml
+    report: docs/reports/fish_s2_pro_mlx_20260903/report.html
+  - id: f5-tts-mlx
+    category: tts
+    status: runnable
+    priority: P1
+    source: https://github.com/lucasnewman/f5-tts-mlx
+    revision: 2d719cadec8fd3887c8599475a5f65924d523654
+    runtime: {f5_tts_mlx: 0.2.6, mlx: 0.32.2, python: 3.12.13}
+    weights: unquantized_model_v1_safetensors
+    license: "code MIT; upstream pretrained weights CC-BY-NC"
+    tested_at: 2026-09-04
+    measured: {suite_clips: 13, measured_clips_excluding_warmup: 12, audio_seconds: 56.521, generation_seconds: 92.413, weighted_rtf: 1.635025, asr_weighted_cer: 0.0, mlx_peak_gib: 2.511, worker_rss_sample_max_gib: 1.626, swap_peak_delta_gib: 0.0}
+    selection_note: 全中文短句整组听评通过；真实小说第四章43段生成完整、CER4.95%、RTF1.397、MLX峰值2.532GiB，连续角色与章节听感待验收，不进入推荐栈。
+    followup_report: docs/reports/tts_novel_longform_20260904/report.html
+    longform_measured: {segments: 43, assembled_seconds: 176.406, weighted_cer: 0.04947, weighted_rtf: 1.39660, mlx_peak_gib: 2.532, swap_peak_delta_gib: 0.0}
+    benchmark: benchmarks/f5_tts_mlx_smoke_20260903.yaml
+    report: docs/reports/f5_tts_mlx_20260903_2008/report.html
   - id: chinese-llm-7b-14b
     category: text
     status: candidate

@@ -1,0 +1,48 @@
+id: fish_s2_persistent_supplement_20260903
+scope: one_model_process_serial_local_tts
+purpose:
+  - verify_30_minutes_active_generation_with_one_model_load
+  - repeat_three_roles_three_emotions_two_seeds
+  - pair_identical_role_anchors_after_warmup_at_start_middle_end
+runtime: scripts/fish-s2-persistent.py
+analysis: scripts/analyze-fish-persistent.py
+report: scripts/build-fish-s2-followup-report.py
+reference_source: fish_s2_followup_20260903_142148
+assets: external_deployment_experiments
+model_loads_expected: 1
+reference_encodings_expected: 3
+warmup_clips: 3
+emotion_clips: 18
+anchor_clips: 9
+filler_candidates: 90
+max_total_clips: 120
+active_seconds_excluding_warmup: 1800
+middle_anchor_after_active_seconds: 900
+execution:
+  baseline_seconds: 60
+  sample_seconds: 2
+  models_status_endpoint: http://127.0.0.1:8086/models
+  allowed_external_model_states: [sleeping, unloaded]
+  max_single_generation_seconds: 180
+  max_fish_wall_seconds: 5400
+  max_asr_clip_seconds: 120
+  max_asr_batch_seconds: 1200
+  minimum_memory_free_percent: 10
+  low_memory_consecutive_samples: 3
+  swap_abort_delta_gib: 2
+  swap_abort_growth_per_60_seconds_gib: 1
+  minimum_disk_free_gib: 20
+acceptance:
+  all_expected_attempts_and_audio_valid: true
+  weighted_rtf_max: 3
+  per_clip_rtf_p95_max: 5
+  per_role_end_rtf_slowdown_max: 0.3
+  weighted_cer_max: 0.08
+  swap_delta_max_gib: 1
+  emotion_and_voice_quality: human_review_required
+not_covered:
+  - multi_worker_concurrency
+  - automatic_novel_speaker_extraction
+  - automatic_emotion_direction
+  - real_person_clone_similarity
+  - whole_novel_production

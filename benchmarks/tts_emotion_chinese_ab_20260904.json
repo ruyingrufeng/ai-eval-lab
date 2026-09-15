@@ -1,0 +1,84 @@
+{
+  "schema_version": 2,
+  "deployment": "/Users/jacky/Documents/Codex/2026-09-03/referenced-chatgpt-conversation-this-is-an/outputs/f5-tts-local",
+  "created_at": "2026-09-04T09:31:55.773365+08:00",
+  "references": {
+    "neutral": {
+      "path": "/Users/jacky/Documents/Codex/2026-09-03/referenced-chatgpt-conversation-this-is-an/outputs/f5-tts-local/references/mcae-spps-actor04/neutral.wav",
+      "sha256": "8f202f8ae67da6e430ccee7d9d1554d99a710e615be89fa99b6e9c554e8ad666",
+      "text": "我站在广场上。我们想听听。我来回答。我们有个计划。我是主持人。我回来了。",
+      "provenance": "MCAE-SPPS actor 04; Chinese; CC-BY-NC-4.0; loudness matched to -23 LUFS"
+    },
+    "happy": {
+      "path": "/Users/jacky/Documents/Codex/2026-09-03/referenced-chatgpt-conversation-this-is-an/outputs/f5-tts-local/references/mcae-spps-actor04/happy.wav",
+      "sha256": "d830298fc98990da4fd32e216c598931001b458a0646ff7a2157a9ab993ce4c6",
+      "text": "我站在广场上。我们想听听。我来回答。我们有个计划。我是主持人。我回来了。",
+      "provenance": "MCAE-SPPS actor 04; Chinese; CC-BY-NC-4.0; loudness matched to -23 LUFS"
+    },
+    "sad": {
+      "path": "/Users/jacky/Documents/Codex/2026-09-03/referenced-chatgpt-conversation-this-is-an/outputs/f5-tts-local/references/mcae-spps-actor04/sad.wav",
+      "sha256": "a53d685029ee448cc673cb7ff00b83a52e4f5e52d7c73e7c61bf4d35b6bda7cb",
+      "text": "我站在广场上。我们想听听。我来回答。我们有个计划。我是主持人。我回来了。",
+      "provenance": "MCAE-SPPS actor 04; Chinese; CC-BY-NC-4.0; loudness matched to -23 LUFS"
+    }
+  },
+  "cases": [
+    {
+      "id": "neutral_42",
+      "voice": "neutral",
+      "text": "门开了，你终于回来了。我一直在这里等你。",
+      "seed": 42,
+      "group": "chinese_emotion_reference",
+      "reference_emotion": "neutral"
+    },
+    {
+      "id": "happy_42",
+      "voice": "happy",
+      "text": "门开了，你终于回来了。我一直在这里等你。",
+      "seed": 42,
+      "group": "chinese_emotion_reference",
+      "reference_emotion": "happy"
+    },
+    {
+      "id": "sad_42",
+      "voice": "sad",
+      "text": "门开了，你终于回来了。我一直在这里等你。",
+      "seed": 42,
+      "group": "chinese_emotion_reference",
+      "reference_emotion": "sad"
+    },
+    {
+      "id": "neutral_123",
+      "voice": "neutral",
+      "text": "门开了，你终于回来了。我一直在这里等你。",
+      "seed": 123,
+      "group": "chinese_emotion_reference",
+      "reference_emotion": "neutral"
+    },
+    {
+      "id": "happy_123",
+      "voice": "happy",
+      "text": "门开了，你终于回来了。我一直在这里等你。",
+      "seed": 123,
+      "group": "chinese_emotion_reference",
+      "reference_emotion": "happy"
+    },
+    {
+      "id": "sad_123",
+      "voice": "sad",
+      "text": "门开了，你终于回来了。我一直在这里等你。",
+      "seed": 123,
+      "group": "chinese_emotion_reference",
+      "reference_emotion": "sad"
+    }
+  ],
+  "settings": {
+    "precision": "unquantized",
+    "steps": 32,
+    "method": "euler",
+    "cfg": 2,
+    "sway": -1,
+    "emotion_control": "同一位普通话演员、相同中文参考句、三种情绪、参考响度统一为 -23 LUFS；目标与试听界面全中文。",
+    "manual_review": "pending"
+  }
+}

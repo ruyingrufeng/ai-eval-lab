@@ -1,0 +1,19 @@
+schema_version: 1
+id: tts_novel_longform_20260904
+source_policy: authorized_local_novel_gitignored_no_text_in_report
+source_basename: 仿生人零（长篇小说）.md
+source_sha256: cfb5cadbec2c54f60255159878152f2d34f191645961416f3fff55e72aefad0c
+chapter: 第四章
+design:
+  engines: [f5-tts-mlx, fish-s2-pro-int8-mlx]
+  roles: [旁白, 主人, 零]
+  references: same_mandarin_actor_per_role_loudness_matched
+  execution: serial_single_model
+  output: private_manifest_and_audio_under_gitignored_results
+gates:
+  - all_segments_generated
+  - assembled_chapter_duration_matches_segments_and_pauses
+  - asr_weighted_cer_lte_0_08
+  - no_english_reference_leakage
+  - memory_pressure_and_swap_recorded
+  - human_role_emotion_continuity_review

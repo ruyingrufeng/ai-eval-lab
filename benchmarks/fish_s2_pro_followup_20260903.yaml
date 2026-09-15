@@ -1,0 +1,56 @@
+schema_version: 1
+id: fish_s2_pro_followup_20260903
+status: planned_not_executed
+plan: docs/FISH_S2_27B_TEST_PLAN_20260903.md
+model_gate_current: runnable
+target: offline_serial_segmented_chapter_dubbing_with_human_review
+executor: local_27b_preparation_and_post_run_analysis
+compute: independent_fish_worker_then_separate_asr_worker
+require_other_large_models_unloaded: true
+preserve_existing_environment: true
+preserve_original_samples: true
+model_revision: 304a5f36d0489163ac077f22eb9425a763112f8f
+parameters: {default_max_new_tokens: 512, seeds: [42, 123, 321], mlx_limit_gib: 12, cache_mib: 256}
+cases:
+  T0: {kind: historical_matched_retest, clips: 13, separate_outputs: true}
+  T1: {kind: synthetic_chapter, chinese_chars_min: 1200, chinese_chars_max: 1600, segment_target_chars: [40, 60], segment_hard_max_chars: 80, max_segments: 40, seed: 42}
+  T2: {kind: difficult_segments_repeat, selected_segments: 6, additional_seeds: [123, 321], clips: 12}
+  T3: {kind: role_emotion, roles: 3, emotions: [neutral, excited, sad], seeds: [42, 123], clips: 18}
+  T4: {kind: identical_role_anchors, roles: 3, positions: [start, middle, end], clips: 9}
+  T5: {kind: sustained_generation, minimum_active_minutes: 30, maximum_total_generation_tasks: 120}
+limits:
+  total_wall_minutes: 120
+  fish_wall_minutes: 90
+  generation_timeout_seconds: 180
+  asr_timeout_seconds: 120
+  heartbeat_timeout_seconds: 30
+  resource_sample_seconds: 2
+  external_load_check_seconds: 5
+  thermal_sample_seconds: 30
+  disk_free_min_gib: 20
+  stop_swap_delta_gib: 2
+  stop_swap_growth_gib_per_60_seconds: 1
+  stop_memory_free_percent_below: 10
+  stop_memory_low_consecutive_samples: 3
+  stop_required_resource_fields_missing_samples: 3
+acceptance_proposed_not_measured:
+  first_attempt_completion_rate: 1.0
+  weighted_rtf_max: 3.0
+  per_clip_rtf_p95_max: 5.0
+  anchor_rtf_slowdown_max: 0.30
+  routine_swap_delta_max_gib: 1.0
+  weighted_cer_max: 0.08
+  per_clip_cer_review_above: 0.15
+  asr_length_ratio_review_outside: [0.85, 1.15]
+  confirmed_content_errors_allowed: 0
+  assembled_duration_error_max_seconds: 0.1
+  clipped_fraction_max: 0.0001
+human_review_required: true
+human_review_proposed:
+  intelligibility_min: 4
+  voice_consistency_min: 4
+  naturalness_min: 3
+  role_identification_rate_min: 0.8
+  emotion_identification_rate_min: 0.8
+repairs: {maximum_distinct_failed_clips: 3, maximum_attempts_each: 1, keep_original_failures: true}
+out_of_scope: [new_network_service, multiple_fish_workers, automatic_role_extraction, full_novel_certification, concurrent_llm_fish_inference, automatic_recommended_stack_promotion]

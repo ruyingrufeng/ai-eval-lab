@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fish S2 Pro 第二轮：27 段试听页</title>
+<style>
+:root {
+  color-scheme: light;
+  --ink: #0F0F1A; --muted: #4A4A5E; --line: rgba(108,92,231,0.20);
+  --accent: #5A4BD1; --accent2: #A29BFE; --pink: #E85A8E;
+  --grad: linear-gradient(135deg, #5A4BD1 0%, #A29BFE 50%, #E85A8E 100%);
+  --card-bg: rgba(255,255,255,0.92);
+  --shadow: 0 4px 16px rgba(108,92,231,0.12), 0 2px 4px rgba(108,92,231,0.06);
+}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(130deg,#F5F3FF 0%, #FAF5FF 50%, #FFF5F8 100%);color:var(--ink);font:17px/1.7 -apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif}
+main{max-width:1180px;margin:auto;padding:48px 24px 72px}
+header{border-top:6px solid var(--accent);padding-top:24px;margin-bottom:28px}
+h1{font-size:34px;margin:12px 0;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800}
+.meta{color:var(--muted);font-size:15px}
+.summary{font-size:19px;max-width:920px;margin:18px 0 0}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:18px}
+.card{background:var(--card-bg);border:1px solid var(--line);border-radius:16px;padding:18px 20px;box-shadow:var(--shadow)}
+.card-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.idx{background:var(--grad);color:#fff;font-weight:800;font-size:13px;padding:3px 9px;border-radius:8px}
+.cid{font-family:ui-monospace,monospace;font-size:14px;color:var(--ink);font-weight:700}
+.group-tag{font-size:13px;color:#fff;background:rgba(90,75,209,0.85);padding:3px 9px;border-radius:8px}
+.tests{font-size:15px;color:var(--ink);margin:6px 0}
+.role,.text-preview,.asr-pair{font-size:14px;color:var(--muted);margin:4px 0}
+code{background:#f4f1fc;padding:1px 6px;border-radius:5px;font-size:13px;color:var(--ink)}
+audio{width:100%;margin-top:8px}
+section{margin:32px 0}
+section h2{font-size:26px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800;margin-bottom:8px}
+.intro{color:var(--muted);font-size:15px;margin:0 0 14px}
+.emotion-toggle{margin:8px 0 14px;font-size:14px;color:var(--muted)}
+.emotion-tag{background:rgba(232,90,142,0.15);color:#C72A6B;padding:2px 8px;border-radius:6px;font-size:13px;font-weight:700}
+footer{color:var(--muted);font-size:14px;margin-top:36px;padding-top:20px;border-top:1px solid var(--line)}
+@media(max-width:650px){main{padding:24px 14px 40px}h1{font-size:28px}.cards{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+<header>
+<div class="meta">本机内容工具与模型实验室 · Fish S2 Pro 第二轮 · RUN_ID <code>fish_s2_followup_20260903_142148</code></div>
+<h1>Fish S2 Pro 第二轮：27 段试听页</h1>
+<p class="summary">本页列出 27 段代表性音频，每段说明测试意图、可听音频与原始文本。您试听后用下方评分表填写主观意见。</p>
+</header>
+
+<section><h2>T4 锚点（9 段）</h2><p class="intro">同角色同文本同 seed 在队列前/中/尾各跑一次。判断依据：start / middle / end 听起来是不是同一个人。</p><div class="cards">
+    <div class="card" id="clip-T4_narrator_start" data-group="T4">
+      <div class="card-header">
+        <span class="idx">#01</span>
+        <span class="cid">T4_narrator_start</span>
+        <span class="group-tag">T4 锚点·start</span>
+        
+      </div>
+      <div class="card-body">
+        <p class="tests"><strong>测什么：</strong>同角色同文本同 seed 在队列前/中/尾各跑一次，检验模型是否复用参考声线（start=middle=end？）。</p>
+        <p class="role"><strong>声线：</strong>旁白（女声，01-basic-zh.wav 参考）</p>
+        <p class="text-preview"><strong>参考文本：</strong><code>故事发生在深秋的一个晚上，仓库外面的街灯被风吹得直晃。</code></p>
+        
+        
+        <div class="audio-row">
+          <audio controls preload="none" src="listen_audio/T4_narrator_start.wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="clip-T4_A_start" data-group="T4">
+      <div class="card-header">
+        <span class="idx">#02</span>
+        <span class="cid">T4_A_start</span>
+        <span class="group-tag">T4 锚点·start</span>
+        
+      </div>
+      <div class="card-body">
+        <p class="tests"><strong>测什么：</strong>同角色同文本同 seed 在队列前/中/尾各跑一次，检验模型是否复用参考声线（start=middle=end？）。</p>
+        <p class="role"><strong>声线：</strong>角色 A（女声，voice-a.wav 参考）</p>
+        <p class="text-preview"><strong>参考文本：</strong><code>你终于回来了，我还以为再也见不到你了。</code></p>
+        
+        
+        <div class="audio-row">
+          <audio controls preload="none" src="listen_audio/T4_A_start.wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="clip-T4_B_start" data-group="T4">
+      <div class="card-header">
+        <span class="idx">#03</span>
+        <span class="cid">T4_B_start</span>
+        <span class="group-tag">T4 锚点·start</span>
+        
+      </div>
+      <div class="card-body">
+        <p class="tests"><strong>测什么：</strong>同角色同文本同 seed 在队列前/中/尾各跑一次，检验模型是否复用参考声线（start=middle=end？）。</p>
+        <p class="role"><strong>声线：</strong>角色 B（男声，voice-b.wav 参考）</p>
+        <p class="text-preview"><strong>参考文本：</strong><code>我们已经检查过四周，可以放心往前走了。</code></p>
+        
+        
+        <div class="audio-row">
+          <audio controls preload="none" src="listen_audio/T4_B_start.wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="clip-T4_narrator_middle" data-group="T4">
+      <div class="card-header">
+        <span class="idx">#04</span>
+        <span class="cid">T4_narrator_middle</span>
+        <span class="group-tag">T4 锚点·middle</span>
+        
+      </div>
+      <div class="card-body">
+        <p class="tests"><strong>测什么：</strong>同角色同文本同 seed 在队列前/中/尾各跑一次，检验模型是否复用参考声线（start=middle=end？）。</p>
+        <p class="role"><strong>声线：</strong>旁白（女声，01-basic-zh.wav 参考）</p>
+        <p class="text-preview"><strong>参考文本：</strong><code>故事发生在深秋的一个晚上，仓库外面的街灯被风吹得直晃。</code></p>
+        
+        
+        <div class="audio-row">
+          <audio controls preload="none" src="listen_audio/T4_narrator_middle.wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="clip-T4_A_middle" data-group="T4">
+      <div class="card-header">
+        <span class="idx">#05</span>
+        <span class="cid">T4_A_middle</span>
+        <span class="group-tag">T4 锚点·middle</span>
+        
+      </div>
+      <div class="card-body">
+        <p class="tests"><strong>测什么：</strong>同角色同文本同 seed 在队列前/中/尾各跑一次，检验模型是否复用参考声线（start=middle=end？）。</p>
+        <p class="role"><strong>声线：</strong>角色 A（女声，voice-a.wav 参考）</p>
+        <p class="text-preview"><strong>参考文本：</strong><code>你终于回来了，我还以为再也见不到你了。</code></p>
+        
+        
+        <div class="audio-row">
+          <audio controls preload="none" src="listen_audio/T4_A_middle.wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="clip-T4_B_middle" data-group="T4">
+      <div class="card-header">
+        <span class="idx">#06</span>
+        <span class="cid">T4_B_middle</span>
+        <span class="group-tag">T4 锚点·middle</span>
+        
+      </div>
+      <div class="card-body">
+        <p class="tests"><strong>测什么：</strong>同角色同文本同 seed 在队列前/中/尾各跑一次，检验模型是否复用参考声线（start=middle=end？）。</p>
+        <p class="role"><strong>声线：</strong>角色 B（男声，voice-b.wav 参考）</p>
+        <p class="text-preview"><strong>参考文本：</strong><code>我们已经检查过四周，可以放心往前走了。</code></p>
+        
+        
+        <div class="audio-row">
+          <audio controls preload="none" src="listen_audio/T4_B_middle.wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="clip-T4_narrator_end" data-group="T4">
+      <div class="card-header">
+        <span class="idx">#07</span>
+        <span class="cid">T4_narrator_end</span>
+        <span class="group-tag">T4 锚点·end</span>
+        
+      </div>
+      <div class="card-body">
+        <p class="tests"><strong>测什么：</strong>同角色同文本同 seed 在队列前/中/尾各跑一次，检验模型是否复用参考声线（start=middle=end？）。</p>
+        <p class="role"><strong>声线：</strong>旁白（女声，01-basic-zh.wav 参考）</p>
+        <p class="text-preview"><strong>参考文本：</strong><code>故事发生在深秋的一个晚上，仓库外面的街灯被风吹得直晃。</code></p>
+        
+        
+        <div class="audio-row">
+          <audio controls preload="none" src="listen_audio/T4_narrator_end.wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="clip-T4_A_end" data-group="T4">
+      <div class="card-header">
+        <span class="idx">#08</span>
+        <span class="cid">T4_A_end</span>
+        <span class="group-tag">T4 锚点·end</span>
+        
+      </div>
+      <div class="card-body">
+        <p class="tests"><strong>测什么：</strong>同角色同文本同 seed 在队列前/中/尾各跑一次，检验模型是否复用参考声线（start=middle=end？）。</p>
+        <p class="role"><strong>声线：</strong>角色 A（女声，voice-a.wav 参考）</p>
+        <p class="text-preview"><strong>参考文本：</strong><code>你终于回来了，我还以为再也见不到你了。</code></p>
+        
+        
+        <div class="audio-row">
+          <audio controls preload="none" src="listen_audio/T4_A_end.wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="clip-T4_B_end" data-group="T4">
+      <div class="card-header">
+        <span class="idx">#09</span>
+        <span class="cid">T4_B_end</span>
+        <span class="group-tag">T4 锚点·end</span>
+        
+      </div>
+      <div class="card-body">
+        <p class="tests"><strong>测什么：</strong>同角色同文本同 seed 在队列前/中/尾各跑一次，检验模型是否复用参考声线（start=middle=end？）。</p>
+        <p class="role"><strong>声线：</strong>角色 B（男声，voice-b.wav 参考）</p>
+        <p class="text-preview"><strong>参考文本：</strong><code>我们已经检查过四周，可以放心往前走了。</code></p>
+        
+        
+        <div class="audio-row">
+          <audio controls preload="none" src="listen_audio/T4_B_end.wav"></audio>
+        </div>
+      </div>
+    </div></div></section><section><h2>T3 同声线不同情绪（9 段）</h2><p class="intro">同声线同文本，差一个情绪标签。判断依据：换情绪会不会换人。情绪标签默认隐藏，调试时打开。</p><div class="emotion-toggle"><label><input type="checkbox" id="showEmotion"> 显示 T3 情绪标签</label></div><div class="cards">
+    <div class="card" id="clip-T3_narrator_neutral_seed42" data-group="T3">
+      <div class="card-header">
+        <span class="idx">#10</span>
+        <span class="cid">T3_narrator_neutral_seed42</span>
+        <span class="group-tag">T3 同声线·neutral</span>
+        <span class="emotion-tag" data-emotion="neutral" style="display:none">neutral</span>
+      </div>
+      <div class="card-body">
+        <p class="tests"><strong>测什么：</strong>相同声线、相同文本、不同情绪标签。检验情绪切换是否会改变声纹（应该是同一个人演绎不同情绪，而不是换人）。</p>
+        <p class="role"><strong>声线：</strong>旁白</p>
+        <p class="text-preview"><strong>参考文本：</strong><code>夜色越来越深，远处的灯光也一点点地暗下去。</code></p>
+        
+        
+        <div class="audio-row">
+          <audio controls preload="none" src="listen_audio/T3_narrator_neutral_seed42.wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="clip-T3_narrator_excited_seed42" data-group="T3">
+      <div class="card-header">
+        <span class="idx">#11</span>
+        <span class="cid">T3_narrator_excited_seed42</span>
+        <span class="group-tag">T3 同声线·excited</span>
+        <span class="emotion-tag" data-emotion="excited" style="display:none">excited</span>
+      </div>
+      <div class="card-body">
+        <p class="tests"><strong>测什么：</strong>相同声线、相同文本、不同情绪标签。检验情绪切换是否会改变声纹（应该是同一个人演绎不同情绪，而不是换人）。</p>
+        <p class="role"><strong>声线：</strong>旁白</p>
+        <p class="text-preview"><strong>参考文本：</strong><code>夜色越来越深，远处的灯光也一点点地暗下去。</code></p>
+        
+        
+        <div class="audio-row">
+          <audio controls preload="none" src="listen_audio/T3_narrator_excited_seed42.wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="clip-T3_narrator_sad_seed42" data-group="T3">
+      <div class="card-header">
+        <span class="idx">#12</span>
+        <span class="cid">T3_narrator_sad_seed42</span>
+        <span class="group-tag">T3 同声线·sad</span>
+        <span class="emotion-tag" data-emotion="sad" style="display:none">sad</span>
+      </div>
+      <div class="card-body">
+        <p class="tests"><strong>测什么：</strong>相同声线、相同文本、不同情绪标签。检验情绪切换是否会改变声纹（应该是同一个人演绎不同情绪，而不是换人）。</p>
+        <p class="role"><strong>声线：</strong>旁白</p>
+        <p class="text-preview"><strong>参考文本：</strong><code>夜色越来越深，远处的灯光也一点点地暗下去。</code></p>
+        
+        
+        <div class="audio-row">
+          <audio controls preload="none" src="listen_audio/T3_narrator_sad_seed42.wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="clip-T3_A_neutral_seed42" data-group="T3">
+      <div class="card-header">
+        <span class="idx">#13</span>
+        <span class="cid">T3_A_neutral_seed42</span>
+        <span class="group-tag">T3 同声线·neutral</span>
+        <span class="emotion-tag" data-emotion="neutral" style="display:none">neutral</span>
+      </div>
+      <div class="card-body">
+        <p class="tests"><strong>测什么：</strong>相同声线、相同文本、不同情绪标签。检验情绪切换是否会改变声纹（应该是同一个人演绎不同情绪，而不是换人）。</p>
+        <p class="role"><strong>声线：</strong>角色 A</p>
+        <p class="text-preview"><strong>参考文本：</strong><code>你终于回来了。我在这里等了很久，还以为今天见不到你了。</code></p>
+        
+        
+        <div class="audio-row">
+          <audio controls preload="none" src="listen_audio/T3_A_neutral_seed42.wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="clip-T3_A_excited_seed42" data-group="T3">
+      <div class="card-header">
+        <span class="idx">#14</span>
+        <span class="cid">T3_A_excited_seed42</span>
+        <span class="group-tag">T3 同声线·excited</span>
+        <span class="emotion-tag" data-emotion="excited" style="display:none">excited</span>
+      </div>
+      <div class="card-body">
+        <p class="tests"><strong>测什么：</strong>相同声线、相同文本、不同情绪标签。检验情绪切换是否会改变声纹（应该是同一个人演绎不同情绪，而不是换人）。</p>
+        <p class="role"><strong>声线：</strong>角色 A</p>
+        <p class="text-preview"><strong>参考文本：</strong><code>你终于回来了。我在这里等了很久，还以为今天见不到你了。</code></p>
+        
+        
+        <div class="audio-row">
+          <audio controls preload="none" src="listen_audio/T3_A_excited_seed42.wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="clip-T3_A_sad_seed42" data-group="T3">
+      <div class="card-header">
+        <span class="idx">#15</span>
+        <span class="cid">T3_A_sad_seed42</span>
+        <span class="group-tag">T3 同声线·sad</span>
+        <span class="emotion-tag" data-emotion="sad" style="display:none">sad</span>
+      </div>
+      <div class="card-body">
+        <p class="tests"><strong>测什么：</strong>相同声线、相同文本、不同情绪标签。检验情绪切换是否会改变声纹（应该是同一个人演绎不同情绪，而不是换人）。</p>
+        <p class="role"><strong>声线：</strong>角色 A</p>
+        <p class="text-preview"><strong>参考文本：</strong><code>你终于回来了。我在这里等了很久，还以为今天见不到你了。</code></p>
+        
+        
+        <div class="audio-row">
+          <audio controls preload="none" src="listen_audio/T3_A_sad_seed42.wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="clip-T3_B_neutral_seed42" data-group="T3">
+      <div class="card-header">
+        <span class="idx">#16</span>
+        <span class="cid">T3_B_neutral_seed42</span>
+        <span class="group-tag">T3 同声线·neutral</span>
+        <span class="emotion-tag" data-emotion="neutral" style="display:none">neutral</span>
+      </div>
+      <div class="card-body">
+        <p class="tests"><strong>测什么：</strong>相同声线、相同文本、不同情绪标签。检验情绪切换是否会改变声纹（应该是同一个人演绎不同情绪，而不是换人）。</p>
+        <p class="role"><strong>声线：</strong>角色 B</p>
+        <p class="text-preview"><strong>参考文本：</strong><code>别担心，我已经检查过四周。风停了，我们可以继续往前走。</code></p>
+        
+        
+        <div class="audio-row">
+          <audio controls preload="none" src="listen_audio/T3_B_neutral_seed42.wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="clip-T3_B_excited_seed42" data-group="T3">
+      <div class="card-header">
+        <span class="idx">#17</span>
+        <span class="cid">T3_B_excited_seed42</span>
+        <span class="group-tag">T3 同声线·excited</span>
+        <span class="emotion-tag" data-emotion="excited" style="display:none">excited</span>
+      </div>
+      <div class="card-body">
+        <p class="tests"><strong>测什么：</strong>相同声线、相同文本、不同情绪标签。检验情绪切换是否会改变声纹（应该是同一个人演绎不同情绪，而不是换人）。</p>
+        <p class="role"><strong>声线：</strong>角色 B</p>
+        <p class="text-preview"><strong>参考文本：</strong><code>别担心，我已经检查过四周。风停了，我们可以继续往前走。</code></p>
+        
+        
+        <div class="audio-row">
+          <audio controls preload="none" src="listen_audio/T3_B_excited_seed42.wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="clip-T3_B_sad_seed42" data-group="T3">
+      <div class="card-header">
+        <span class="idx">#18</span>
+        <span class="cid">T3_B_sad_seed42</span>
+        <span class="group-tag">T3 同声线·sad</span>
+        <span class="emotion-tag" data-emotion="sad" style="display:none">sad</span>
+      </div>
+      <div class="card-body">
+        <p class="tests"><strong>测什么：</strong>相同声线、相同文本、不同情绪标签。检验情绪切换是否会改变声纹（应该是同一个人演绎不同情绪，而不是换人）。</p>
+        <p class="role"><strong>声线：</strong>角色 B</p>
+        <p class="text-preview"><strong>参考文本：</strong><code>别担心，我已经检查过四周。风停了，我们可以继续往前走。</code></p>
+        
+        
+        <div class="audio-row">
+          <audio controls preload="none" src="listen_audio/T3_B_sad_seed42.wav"></audio>
+        </div>
+      </div>
+    </div></div></section><section><h2>ASR 自动转写异常片段（9 段）</h2><p class="intro">ASR 自动转写 CER 最高的 9 段。多为多音字、专有名词、数字日期。请听感判断：是模型发音不准，还是 ASR 误识别。</p><div class="cards">
+    <div class="card" id="clip-T2_6_names_seed42" data-group="ASR">
+      <div class="card-header">
+        <span class="idx">#19</span>
+        <span class="cid">T2_6_names_seed42</span>
+        <span class="group-tag">ASR 异常片段</span>
+        
+      </div>
+      <div class="card-body">
+        <p class="tests"><strong>测什么：</strong>ASR 自动转写 CER=0.175（参考文本 vs ASR 转写差异）。听感上请判断：是模型发音不标准，还是 ASR 误识别？两者都属可接受；不要把 ASR 错误直接等同于 TTS 错误。</p>
+        
+        
+        <p class="asr-pair"><strong>ASR 参考：</strong><code>FBE 实验室的林博士、Chen 教授、Helen 工程师，今天下午两点半要在三号楼 B 区见面。</code></p>
+        <p class="asr-pair"><strong>ASR 转写：</strong><code>FBE 实验室的林博士、陈教授、Hi Ling 工程师，今天下午两点半要在三号楼 B 区见面。</code>（CER=0.175）</p>
+        <div class="audio-row">
+          <audio controls preload="none" src="listen_audio/T2_6_names_seed42.wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="clip-T2_6_names_seed321" data-group="ASR">
+      <div class="card-header">
+        <span class="idx">#20</span>
+        <span class="cid">T2_6_names_seed321</span>
+        <span class="group-tag">ASR 异常片段</span>
+        
+      </div>
+      <div class="card-body">
+        <p class="tests"><strong>测什么：</strong>ASR 自动转写 CER=0.175（参考文本 vs ASR 转写差异）。听感上请判断：是模型发音不标准，还是 ASR 误识别？两者都属可接受；不要把 ASR 错误直接等同于 TTS 错误。</p>
+        
+        
+        <p class="asr-pair"><strong>ASR 参考：</strong><code>FBE 实验室的林博士、Chen 教授、Helen 工程师，今天下午两点半要在三号楼 B 区见面。</code></p>
+        <p class="asr-pair"><strong>ASR 转写：</strong><code>FBE 实验室的林博士、陈教授、Hi Ling 工程师今天下午两点半要在三号楼 B 区见面。</code>（CER=0.175）</p>
+        <div class="audio-row">
+          <audio controls preload="none" src="listen_audio/T2_6_names_seed321.wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="clip-T0_scene_6_B" data-group="ASR">
+      <div class="card-header">
+        <span class="idx">#21</span>
+        <span class="cid">T0_scene_6_B</span>
+        <span class="group-tag">ASR 异常片段</span>
+        
+      </div>
+      <div class="card-body">
+        <p class="tests"><strong>测什么：</strong>ASR 自动转写 CER=0.100（参考文本 vs ASR 转写差异）。听感上请判断：是模型发音不标准，还是 ASR 误识别？两者都属可接受；不要把 ASR 错误直接等同于 TTS 错误。</p>
+        
+        
+        <p class="asr-pair"><strong>ASR 参考：</strong><code>[chuckle]走吧，我们带它一起回家。</code></p>
+        <p class="asr-pair"><strong>ASR 转写：</strong><code>走吧，我们带他一起回家。</code>（CER=0.100）</p>
+        <div class="audio-row">
+          <audio controls preload="none" src="listen_audio/T0_scene_6_B.wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="clip-T2_6_names_seed123" data-group="ASR">
+      <div class="card-header">
+        <span class="idx">#22</span>
+        <span class="cid">T2_6_names_seed123</span>
+        <span class="group-tag">ASR 异常片段</span>
+        
+      </div>
+      <div class="card-body">
+        <p class="tests"><strong>测什么：</strong>ASR 自动转写 CER=0.100（参考文本 vs ASR 转写差异）。听感上请判断：是模型发音不标准，还是 ASR 误识别？两者都属可接受；不要把 ASR 错误直接等同于 TTS 错误。</p>
+        
+        
+        <p class="asr-pair"><strong>ASR 参考：</strong><code>FBE 实验室的林博士、Chen 教授、Helen 工程师，今天下午两点半要在三号楼 B 区见面。</code></p>
+        <p class="asr-pair"><strong>ASR 转写：</strong><code>FBE 实验室的林博士、陈教授、Helen 工程师今天下午两点半要在三号楼B区见面。</code>（CER=0.100）</p>
+        <div class="audio-row">
+          <audio controls preload="none" src="listen_audio/T2_6_names_seed123.wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="clip-T1_chapter_seg14" data-group="ASR">
+      <div class="card-header">
+        <span class="idx">#23</span>
+        <span class="cid">T1_chapter_seg14</span>
+        <span class="group-tag">ASR 异常片段</span>
+        
+      </div>
+      <div class="card-body">
+        <p class="tests"><strong>测什么：</strong>ASR 自动转写 CER=0.095（参考文本 vs ASR 转写差异）。听感上请判断：是模型发音不标准，还是 ASR 误识别？两者都属可接受；不要把 ASR 错误直接等同于 TTS 错误。</p>
+        
+        
+        <p class="asr-pair"><strong>ASR 参考：</strong><code>[excited]回去我给它热一点牛奶，它看起来很饿。我家里还有几条小毛巾，正好可以给它垫一下，让它先暖暖身子。</code></p>
+        <p class="asr-pair"><strong>ASR 转写：</strong><code>回去我给他热一点牛奶，他看起来很饿。我家里还有几条小毛巾，正好可以给他垫一下，让他先暖暖身子。</code>（CER=0.095）</p>
+        <div class="audio-row">
+          <audio controls preload="none" src="listen_audio/T1_chapter_seg14.wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="clip-T1_chapter_seg12" data-group="ASR">
+      <div class="card-header">
+        <span class="idx">#24</span>
+        <span class="cid">T1_chapter_seg12</span>
+        <span class="group-tag">ASR 异常片段</span>
+        
+      </div>
+      <div class="card-body">
+        <p class="tests"><strong>测什么：</strong>ASR 自动转写 CER=0.082（参考文本 vs ASR 转写差异）。听感上请判断：是模型发音不标准，还是 ASR 误识别？两者都属可接受；不要把 ASR 错误直接等同于 TTS 错误。</p>
+        
+        
+        <p class="asr-pair"><strong>ASR 参考：</strong><code>[chuckle]走吧，我们带它一起回家，今晚就让它住我房间。明天再带它去兽医那里检查一下，看看它到底有没有受伤，要不要打一针。</code></p>
+        <p class="asr-pair"><strong>ASR 转写：</strong><code>走吧，我们带他一起回家。今晚就让他住我房间，明天再带他去兽医那里检查一下，看看他到底有没有受伤，要不要打一针。</code>（CER=0.082）</p>
+        <div class="audio-row">
+          <audio controls preload="none" src="listen_audio/T1_chapter_seg12.wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="clip-T1_chapter_seg15" data-group="ASR">
+      <div class="card-header">
+        <span class="idx">#25</span>
+        <span class="cid">T1_chapter_seg15</span>
+        <span class="group-tag">ASR 异常片段</span>
+        
+      </div>
+      <div class="card-body">
+        <p class="tests"><strong>测什么：</strong>ASR 自动转写 CER=0.077（参考文本 vs ASR 转写差异）。听感上请判断：是模型发音不标准，还是 ASR 误识别？两者都属可接受；不要把 ASR 错误直接等同于 TTS 错误。</p>
+        
+        
+        <p class="asr-pair"><strong>ASR 参考：</strong><code>[low voice]我们慢慢走，别惊到它，让它自己跟上。路上如果有车，我们先把它抱起来，过完马路再放它下来。前面那盏路灯有点闪，我们绕一下。</code></p>
+        <p class="asr-pair"><strong>ASR 转写：</strong><code>我们慢慢走，别惊到他，让他自己跟上。路上如果有车，我们先把他抱起来，过完马路再放他下来。前面那盏路灯有点闪，我们绕一下。</code>（CER=0.077）</p>
+        <div class="audio-row">
+          <audio controls preload="none" src="listen_audio/T1_chapter_seg15.wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="clip-T1_chapter_seg06" data-group="ASR">
+      <div class="card-header">
+        <span class="idx">#26</span>
+        <span class="cid">T1_chapter_seg06</span>
+        <span class="group-tag">ASR 异常片段</span>
+        
+      </div>
+      <div class="card-body">
+        <p class="tests"><strong>测什么：</strong>ASR 自动转写 CER=0.058（参考文本 vs ASR 转写差异）。听感上请判断：是模型发音不标准，还是 ASR 误识别？两者都属可接受；不要把 ASR 错误直接等同于 TTS 错误。</p>
+        
+        
+        <p class="asr-pair"><strong>ASR 参考：</strong><code>空气里有一种旧木头发霉的味道，让人忍不住皱起眉头。他下意识地把林薇往身后挡了挡，又朝她点了点头，让她贴在自己背后。</code></p>
+        <p class="asr-pair"><strong>ASR 转写：</strong><code>空气里有一种旧木头发霉的味道，让人忍不住皱起眉头。他下意识地把林威往身后挡了挡，又朝他点了点头，让他贴在自己背后。</code>（CER=0.058）</p>
+        <div class="audio-row">
+          <audio controls preload="none" src="listen_audio/T1_chapter_seg06.wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="clip-T2_3_pause_seed123" data-group="ASR">
+      <div class="card-header">
+        <span class="idx">#27</span>
+        <span class="cid">T2_3_pause_seed123</span>
+        <span class="group-tag">ASR 异常片段</span>
+        
+      </div>
+      <div class="card-body">
+        <p class="tests"><strong>测什么：</strong>ASR 自动转写 CER=0.056（参考文本 vs ASR 转写差异）。听感上请判断：是模型发音不标准，还是 ASR 误识别？两者都属可接受；不要把 ASR 错误直接等同于 TTS 错误。</p>
+        
+        
+        <p class="asr-pair"><strong>ASR 参考：</strong><code>停一下……听，那边有人在叫。等一下，我先过去看。</code></p>
+        <p class="asr-pair"><strong>ASR 转写：</strong><code>停一下，停！那边有人在叫。等一下，我先过去看。</code>（CER=0.056）</p>
+        <div class="audio-row">
+          <audio controls preload="none" src="listen_audio/T2_3_pause_seed123.wav"></audio>
+        </div>
+      </div>
+    </div></div></section>
+
+<footer>
+<p>评分字段：<code>clip_id, perceived_role, perceived_emotion, intelligibility_1to5, voice_consistency_1to5, naturalness_1to5, artifact_notes, content_error, decision</code></p>
+<p>1=明显不合格 / 3=勉强可用 / 5=自然稳定。</p>
+<p>runner pid 42407 · monitor pid 42455 · 测试窗口 2026-09-03 14:23–15:08 · baseline 独立（27B 未驻留）</p>
+</footer>
+</main>
+<script>
+document.getElementById('showEmotion')?.addEventListener('change', (e) => {
+  document.querySelectorAll('.emotion-tag').forEach(el => {
+    el.style.display = e.target.checked ? 'inline-block' : 'none';
+  });
+});
+</script>
+</body>
+</html>

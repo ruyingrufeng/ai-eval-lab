@@ -21,6 +21,37 @@ current_text_routing:
     - {model: qwen3.8-27b-ridge, context: 81920, consumer: hermes_jianguo}
 
 tools:
+  - id: fish-s2-pro-local
+    version: mlx-speech-0.5.2_fish-s2-pro-int8
+    status: runnable
+    verified_at: "2026-09-03"
+    verification_scope: persistent_30min_and_content_auto_screen_pass_speed_and_emotion_requirements_failed
+    path: /Users/jacky/Documents/Codex/2026-09-03/referenced-chatgpt-conversation-this-is-an/outputs/fish-s2-local
+    entrypoint: scripts/fish-s2-local.sh
+    service_mode: manual_cli_on_demand
+    endpoint: null
+    user_audition: {date: 2026-09-03, feedback: 效果还不错。}
+    latest_user_audition: {date: 2026-09-03, feedback: 基本上同一个音色没有情绪变化，多段录音的感觉是一样的。, emotion_verdict: fail}
+    controlled_chinese_audition: {date: 2026-09-04, feedback: 中性、开心、悲伤能听出区别；三种情绪像同一个中国人；音量稳定, scope: combined_blind_set_no_per_model_score, verdict: pass}
+    report: docs/reports/tts_novel_longform_20260904/report.html
+    chinese_emotion_report: docs/reports/tts_emotion_chinese_ab_20260904/report.html
+    prior_emotion_report: docs/reports/fish_s2_persistent_20260903_185333/report.html
+    first_report: docs/reports/fish_s2_pro_mlx_20260903/report.html
+  - id: f5-tts-mlx
+    version: f5-tts-mlx-0.2.6_unquantized-model-v1
+    status: runnable
+    verified_at: "2026-09-04"
+    verification_scope: real_novel_chapter_43_segments_generated_content_gate_pass_continuity_audition_pending
+    path: /Users/jacky/Documents/Codex/2026-09-03/referenced-chatgpt-conversation-this-is-an/outputs/f5-tts-local
+    entrypoint: run.sh
+    service_mode: manual_cli_on_demand
+    endpoint: null
+    model_revision: 2d719cadec8fd3887c8599475a5f65924d523654
+    controlled_chinese_audition: {date: 2026-09-04, feedback: 中性、开心、悲伤能听出区别；三种情绪像同一个中国人；音量稳定, scope: combined_blind_set_no_per_model_score, verdict: pass}
+    report: docs/reports/tts_novel_longform_20260904/report.html
+    chinese_emotion_report: docs/reports/tts_emotion_chinese_ab_20260904/report.html
+    failed_cross_language_report: docs/reports/tts_emotion_reference_ab_20260904/report.html
+    first_report: docs/reports/f5_tts_mlx_20260903_2008/report.html
   - id: llama.cpp
     version: 9830
     status: running

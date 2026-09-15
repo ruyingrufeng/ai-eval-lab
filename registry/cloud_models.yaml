@@ -1,0 +1,101 @@
+# 云端 API 模型候选登记（仅调研登记，不含本机安装；本机工具/模型见 candidates.yaml）
+schema_version: 1
+updated_at: 2026-09-04
+scope: cloud_text_and_multimodal_api_only
+price_baseline:
+  model: deepseek-v4-flash-0731
+  rule: "便宜=总价不高于 DeepSeek V4 Flash；能力下限=其档位（coding/reasoning/agent 优化大厂 flash 档）。阿里系（qwen 云端全部）已于 2026-09-04 由用户整体排除（token 计量/消耗前车之鉴），见 excluded"
+  openrouter_usd_per_1m: {in: 0.065, out: 0.180, recorded_at: 2026-09-04}
+  official_cny_verified_at: 2026-09-04
+  official_cny_per_1m: {in_cache_hit_idle: 0.05, in_cache_hit_peak: 0.10, in_uncached_idle: 1.5, in_uncached_peak: 3.0, out_idle: 4.5, out_peak: 9.0}
+  survey: docs/CLOUD_MODEL_PRICE_SURVEY_20260904.md
+  evidence: results/cloud_model_scan/openrouter_models.json
+
+candidates:
+  - id: glm-5.3-flash
+    vendor: zhipu
+    channel: bigmodel
+    category: text_api
+    status: candidate
+    context: 1310720
+    modalities: [text, image]
+    reasoning: true
+    openrouter_usd_per_1m: {in: 0.075, out: 0.250, recorded_at: 2026-09-04}
+    mix_cost_ratio_vs_baseline: 1.37
+    official_cny: to_verify
+    notes: "原生多模态 + agentic coding；智谱为本仓库现役厂商，接链成本最低"
+  - id: glm-4.7-flash
+    vendor: zhipu
+    channel: bigmodel
+    category: text_api
+    status: candidate
+    context: 200000
+    modalities: [text]
+    reasoning: true
+    openrouter_usd_per_1m: {in: 0.060, out: 0.400, recorded_at: 2026-09-04}
+    mix_cost_ratio_vs_baseline: 2.09
+    official_cny: to_verify
+    notes: "30B 级 SOTA 开源档；2026-09-01 曾从 Hermes 活动配置移除，复用需先看交接 20260901_2036 并重测"
+  - id: step-3.5-flash
+    vendor: stepfun
+    channel: stepfun_platform
+    category: text_api
+    status: candidate
+    context: 262144
+    modalities: [text]
+    reasoning: true
+    openrouter_usd_per_1m: {in: 0.100, out: 0.300, recorded_at: 2026-09-04}
+    mix_cost_ratio_vs_baseline: 1.65
+    official_cny: to_verify
+    notes: "196B MoE（11B active）开源，必要时可自托管"
+  - id: seed-1.6-flash
+    vendor: bytedance
+    channel: volcengine
+    category: text_api
+    status: candidate
+    context: 262144
+    modalities: [text, image]
+    reasoning: true
+    openrouter_usd_per_1m: {in: 0.075, out: 0.300, recorded_at: 2026-09-04}
+    mix_cost_ratio_vs_baseline: 1.61
+    official_cny: to_verify
+    notes: "多模态深度思考档"
+  - id: seed-2.0-mini
+    vendor: bytedance
+    channel: volcengine
+    category: text_api
+    status: candidate
+    context: 262144
+    modalities: [text]
+    reasoning: false
+    openrouter_usd_per_1m: {in: 0.100, out: 0.400, recorded_at: 2026-09-04}
+    mix_cost_ratio_vs_baseline: 2.15
+    official_cny: to_verify
+    notes: "面向低时延/高并发/成本场景"
+  - id: minimax-m3
+    vendor: minimax
+    channel: minimax_platform
+    category: text_api
+    status: candidate
+    context: 1048576
+    modalities: [text, image, video]
+    reasoning: true
+    openrouter_usd_per_1m: {in: 0.300, out: 1.200, recorded_at: 2026-09-04}
+    mix_cost_ratio_vs_baseline: 6.45
+    official_cny: to_verify
+    notes: "在册（dsh 切换项，历史结论），按新基准明显不便宜；仅 1M 多模态长程场景保留意义"
+
+excluded:
+  - id: qwen3.7-flash
+    vendor: alibaba
+    channel: bailian
+    decided_at: 2026-09-04
+    reason: "用户前车之鉴：阿里 token 计量/消耗异常偏快；阿里系（百炼 qwen 云端）整体排除，不再列为候选"
+    note: "原为唯一严格低于基准价的候选（0.70×）；价格数据保留于 results/cloud_model_scan 与调研文档，仅作历史参照"
+
+free_routes_reference:
+  - {route: glm-4-flash_official, vendor: zhipu, context: 128000, note: "已在 Hermes root/awei/blogger 默认在役（2026-09-01）"}
+  - {route: glm-5.2:free_openrouter, vendor: zhipu, context: 256000, note: "限流免费路由"}
+  - {route: minimax-m3:free_openrouter, vendor: minimax, context: 1048576, note: "限流免费路由"}
+
+verification_notes: "所有候选状态均为 candidate：价格快照 2026-09-04 取自 OpenRouter 统一口径，官方人民币直购价待核；能力判断仅基于厂商定位与开放信息，未过仓库四关卡抽测。阿里系已于 2026-09-04 由用户排除（token 计量前车之鉴），候选集仅剩 1.3–2.2× 多元化档，无严格更便宜候选。晋级路径与新增『计量抽测关』见调研文档『下一步』。"

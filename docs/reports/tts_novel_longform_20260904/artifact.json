@@ -1,0 +1,1357 @@
+{
+  "schema_version": 2,
+  "id": "tts_novel_longform_20260904",
+  "as_of": "2026-09-04",
+  "title": "真实小说章节：F5-TTS 与 Fish S2 长文本测试",
+  "gate": "runnable",
+  "gate_label": "runnable · 真实章节整体听感通过，局部调参待复测",
+  "summary": "授权小说第四章两模型均43/43生成，CER低于8%。用户确认旁白稳定性、角色串音、情绪、停顿和整体自然度都还不错；F5情绪更明显但旁白偏快，Fish男主相对偏小。",
+  "metrics": [
+    {
+      "label": "F5-TTS 章节时长",
+      "value": "2.94 分钟",
+      "note": "43段及段落停顿"
+    },
+    {
+      "label": "F5-TTS 速度",
+      "value": "1.397×",
+      "note": "纯生成时间 / 原始片段音频时长"
+    },
+    {
+      "label": "F5-TTS 文字错误率",
+      "value": "4.95%",
+      "note": "51/1031"
+    },
+    {
+      "label": "Fish S2 章节时长",
+      "value": "3.42 分钟",
+      "note": "43段及段落停顿"
+    },
+    {
+      "label": "Fish S2 速度",
+      "value": "2.624×",
+      "note": "纯生成时间 / 原始片段音频时长"
+    },
+    {
+      "label": "Fish S2 文字错误率",
+      "value": "4.66%",
+      "note": "48/1031"
+    }
+  ],
+  "sections": [
+    {
+      "id": "scope",
+      "title": "测试范围",
+      "paragraphs": [
+        "素材为用户指定的本机小说，仅记录文件哈希、第四章行号和统计量；原文、切分文本和ASR转写不写入报告。",
+        "连续章节1259个源字符，43个音频片段：旁白26、男性对白13、“零”4。两模型使用同一私有清单并串行运行。"
+      ]
+    },
+    {
+      "id": "content",
+      "title": "生成与拼接",
+      "table": {
+        "columns": [
+          "模型",
+          "片段",
+          "加权CER",
+          "生成时间",
+          "成片时长",
+          "拼接时长误差"
+        ],
+        "rows": [
+          [
+            "F5-TTS",
+            43,
+            "4.95%",
+            "234.3s",
+            "176.4s",
+            "0.000s"
+          ],
+          [
+            "Fish S2",
+            43,
+            "4.66%",
+            "516.3s",
+            "205.4s",
+            "0.000s"
+          ]
+        ]
+      },
+      "paragraphs": [
+        "两模型均43/43生成并成功退出；成片前逐段统一响度，再按80毫秒句内停顿和260毫秒段落停顿拼接，完整章节最终统一为−23 LUFS。",
+        "CER主要筛查错字、漏字、重复和参考串入；短感叹词的单字误差比例会被放大。"
+      ]
+    },
+    {
+      "id": "resource",
+      "title": "本机资源",
+      "table": {
+        "columns": [
+          "模型",
+          "MLX峰值",
+          "RSS采样峰值",
+          "可用内存比例",
+          "交换空间增量"
+        ],
+        "rows": [
+          [
+            "F5-TTS",
+            "2.532 GiB",
+            "1.635 GiB",
+            "76%–85%",
+            "0.000 GiB"
+          ],
+          [
+            "Fish S2",
+            "13.579 GiB",
+            "5.646 GiB",
+            "46%–85%",
+            "0.000 GiB"
+          ]
+        ]
+      },
+      "paragraphs": [
+        "MLX与RSS口径不可相加；两模型串行，系统pressure和swap用于整机风险判断。"
+      ]
+    },
+    {
+      "id": "review",
+      "title": "人工试听结论",
+      "paragraphs": [
+        "旁白稳定性、角色串音、情绪、停顿和整体自然度都还不错。f5 的情绪更明显，f5 的旁白语速快了。fish s2 男主的声音偏小。",
+        "针对本轮两条完整第四章成片的人工试听；不补造数值分数。",
+        "整章整体听感通过。F5下一轮需降低旁白语速；Fish下一轮需提高男主相对响度。上述调参方向尚未复测。"
+      ]
+    },
+    {
+      "id": "limits",
+      "title": "边界",
+      "bullets": [
+        "本轮只覆盖一个章节、三种角色通道和约3至4分钟成片。",
+        "角色分配由本地切分规则提供，不测试自动小说角色识别。",
+        "逐段响度处理属于后期链路，会减少模型原始响度差异；不足0.5秒的片段使用限制12dB增益的RMS校准。",
+        "首次F5启动因私有清单漏字段在模型加载前失败；失败记录保留，修正后使用新运行编号。"
+      ]
+    }
+  ],
+  "evidence": {
+    "schema_version": 1,
+    "run_id": "tts_novel_longform_20260904",
+    "analyzed_at": "2026-09-04T10:57:28.404562+08:00",
+    "source": {
+      "basename": "仿生人零（长篇小说）.md",
+      "sha256": "cfb5cadbec2c54f60255159878152f2d34f191645961416f3fff55e72aefad0c",
+      "chapter": "第四章",
+      "line_start": 276,
+      "line_end": 334,
+      "source_chars": 1259,
+      "rendered_chars": 1169,
+      "content_embedded": false
+    },
+    "design": {
+      "segments": 43,
+      "roles": {
+        "旁白": 26,
+        "主人": 13,
+        "零": 4
+      },
+      "references": "两位普通话演员；男性中性/愤怒、女性悲伤；全部响度匹配",
+      "private_manifest_sha256": "cfbf2ebf08caf457228520eec8bca6abdc21c73aa411fd565d2a22321b01b41a"
+    },
+    "engines": {
+      "F5-TTS": {
+        "clips": 43,
+        "audio_seconds": 167.74625,
+        "generation_seconds": 234.27384867088404,
+        "weighted_rtf": 1.3965966373071472,
+        "mlx_peak_gib": 2.5318816136568785,
+        "rss_max_gib": 1.634613037109375,
+        "pressure_free_min": 76,
+        "pressure_free_max": 85,
+        "swap_peak_delta_gib": 0.0,
+        "asr": {
+          "edits_total": 51,
+          "refs_total": 1031,
+          "weighted_cer": 0.049466537342386034,
+          "per_clip": [
+            {
+              "name": "segment_001",
+              "ref_chars": 1,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_002",
+              "ref_chars": 53,
+              "edits": 2,
+              "cer": 0.03773584905660377,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_003",
+              "ref_chars": 63,
+              "edits": 2,
+              "cer": 0.031746031746031744,
+              "length_ratio": 1.0,
+              "review_flags": [
+                "tail_mismatch"
+              ]
+            },
+            {
+              "name": "segment_004",
+              "ref_chars": 4,
+              "edits": 1,
+              "cer": 0.25,
+              "length_ratio": 1.0,
+              "review_flags": [
+                "cer"
+              ]
+            },
+            {
+              "name": "segment_005",
+              "ref_chars": 31,
+              "edits": 1,
+              "cer": 0.03225806451612903,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_006",
+              "ref_chars": 10,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_007",
+              "ref_chars": 16,
+              "edits": 2,
+              "cer": 0.125,
+              "length_ratio": 1.0,
+              "review_flags": [
+                "tail_mismatch"
+              ]
+            },
+            {
+              "name": "segment_008",
+              "ref_chars": 54,
+              "edits": 2,
+              "cer": 0.037037037037037035,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_009",
+              "ref_chars": 48,
+              "edits": 2,
+              "cer": 0.041666666666666664,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_010",
+              "ref_chars": 2,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_011",
+              "ref_chars": 24,
+              "edits": 1,
+              "cer": 0.041666666666666664,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_012",
+              "ref_chars": 5,
+              "edits": 2,
+              "cer": 0.4,
+              "length_ratio": 1.2,
+              "review_flags": [
+                "cer",
+                "length_ratio"
+              ]
+            },
+            {
+              "name": "segment_013",
+              "ref_chars": 2,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_014",
+              "ref_chars": 23,
+              "edits": 2,
+              "cer": 0.08695652173913043,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_015",
+              "ref_chars": 17,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_016",
+              "ref_chars": 10,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_017",
+              "ref_chars": 19,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_018",
+              "ref_chars": 92,
+              "edits": 2,
+              "cer": 0.021739130434782608,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_019",
+              "ref_chars": 4,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_020",
+              "ref_chars": 30,
+              "edits": 1,
+              "cer": 0.03333333333333333,
+              "length_ratio": 1.0,
+              "review_flags": [
+                "tail_mismatch"
+              ]
+            },
+            {
+              "name": "segment_021",
+              "ref_chars": 14,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_022",
+              "ref_chars": 50,
+              "edits": 3,
+              "cer": 0.06,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_023",
+              "ref_chars": 3,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_024",
+              "ref_chars": 1,
+              "edits": 1,
+              "cer": 1.0,
+              "length_ratio": 1.0,
+              "review_flags": [
+                "cer"
+              ]
+            },
+            {
+              "name": "segment_025",
+              "ref_chars": 28,
+              "edits": 3,
+              "cer": 0.10714285714285714,
+              "length_ratio": 1.0,
+              "review_flags": [
+                "tail_mismatch"
+              ]
+            },
+            {
+              "name": "segment_026",
+              "ref_chars": 70,
+              "edits": 2,
+              "cer": 0.02857142857142857,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_027",
+              "ref_chars": 21,
+              "edits": 3,
+              "cer": 0.14285714285714285,
+              "length_ratio": 1.0,
+              "review_flags": [
+                "tail_mismatch"
+              ]
+            },
+            {
+              "name": "segment_028",
+              "ref_chars": 12,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_029",
+              "ref_chars": 15,
+              "edits": 1,
+              "cer": 0.06666666666666667,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_030",
+              "ref_chars": 20,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_031",
+              "ref_chars": 64,
+              "edits": 8,
+              "cer": 0.125,
+              "length_ratio": 1.0,
+              "review_flags": [
+                "tail_mismatch"
+              ]
+            },
+            {
+              "name": "segment_032",
+              "ref_chars": 3,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_033",
+              "ref_chars": 20,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_034",
+              "ref_chars": 18,
+              "edits": 2,
+              "cer": 0.1111111111111111,
+              "length_ratio": 0.9444444444444444,
+              "review_flags": [
+                "tail_mismatch"
+              ]
+            },
+            {
+              "name": "segment_035",
+              "ref_chars": 31,
+              "edits": 2,
+              "cer": 0.06451612903225806,
+              "length_ratio": 1.0,
+              "review_flags": [
+                "tail_mismatch"
+              ]
+            },
+            {
+              "name": "segment_036",
+              "ref_chars": 59,
+              "edits": 3,
+              "cer": 0.05084745762711865,
+              "length_ratio": 1.0,
+              "review_flags": [
+                "tail_mismatch"
+              ]
+            },
+            {
+              "name": "segment_037",
+              "ref_chars": 24,
+              "edits": 1,
+              "cer": 0.041666666666666664,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_038",
+              "ref_chars": 16,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_039",
+              "ref_chars": 6,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_040",
+              "ref_chars": 19,
+              "edits": 1,
+              "cer": 0.05263157894736842,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_041",
+              "ref_chars": 13,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_042",
+              "ref_chars": 15,
+              "edits": 1,
+              "cer": 0.06666666666666667,
+              "length_ratio": 1.0,
+              "review_flags": [
+                "tail_mismatch"
+              ]
+            },
+            {
+              "name": "segment_043",
+              "ref_chars": 1,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            }
+          ]
+        },
+        "source_hashes": {
+          "/Users/jacky/Library/Mobile Documents/com~apple~CloudDocs/AI 项目/内容工厂管理/results/tts_novel_longform_f5_20260904_1022/manifest.json": "cfbf2ebf08caf457228520eec8bca6abdc21c73aa411fd565d2a22321b01b41a",
+          "/Users/jacky/Library/Mobile Documents/com~apple~CloudDocs/AI 项目/内容工厂管理/results/tts_novel_longform_f5_20260904_1022/events.jsonl": "60572b26e0535d010529aa89bb19258e3ca865aacda85c27f879a7b5b77ec881",
+          "/Users/jacky/Library/Mobile Documents/com~apple~CloudDocs/AI 项目/内容工厂管理/results/tts_novel_longform_f5_20260904_1022/resources.jsonl": "a972d9f0db80bbe21471933624d94eb357c1c9feef8b40950cf34da576228f3a",
+          "/Users/jacky/Library/Mobile Documents/com~apple~CloudDocs/AI 项目/内容工厂管理/results/tts_novel_longform_f5_20260904_1022/status.json": "94d56f6ab3361496d6330b316f5d5fdcb9e591892672f1eeee9777c3d7fe026d",
+          "/Users/jacky/Library/Mobile Documents/com~apple~CloudDocs/AI 项目/内容工厂管理/results/tts_novel_longform_f5_20260904_1022/worker-result.json": "b4f1720f0bf41449a164bf741923fb8ca43a312144a5b75ada2dfe203b353b2a",
+          "/Users/jacky/Library/Mobile Documents/com~apple~CloudDocs/AI 项目/内容工厂管理/results/tts_novel_longform_f5_20260904_1022/asr.json": "26478ec8c6df0e6464bdd2c420e52935888497c0ffb24939f13e7ba1ab6deab4",
+          "/Users/jacky/Library/Mobile Documents/com~apple~CloudDocs/AI 项目/内容工厂管理/results/tts_novel_longform_f5_20260904_1022/asr-status.json": "3de36bd7eb6bd3329a9b21daab57ce94a0f4763a528e20443b11cf245306be8d"
+        },
+        "assembled_path": "/Users/jacky/Documents/Codex/2026-09-03/referenced-chatgpt-conversation-this-is-an/outputs/f5-tts-local/results/tts_novel_longform_20260904/audio/f5-chapter.wav",
+        "assembled_sha256": "07d48a41b17ff7be326d07b8c52093f834bfd07b3fac8737c4fc067efc488f21",
+        "assembled_seconds": 176.40625,
+        "expected_assembled_seconds": 176.40625,
+        "duration_delta_seconds": 0.0,
+        "segment_rms_dbfs_min": -24.592551591866524,
+        "segment_rms_dbfs_max": -21.922591496563566,
+        "short_clip_rms_fallback_count": 3,
+        "normalization_methods": [
+          {
+            "segment_id": "segment_001",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_002",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_003",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_004",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_005",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_006",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_007",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_008",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_009",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_010",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_011",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_012",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_013",
+            "method": "rms_short_clip_capped_12db"
+          },
+          {
+            "segment_id": "segment_014",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_015",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_016",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_017",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_018",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_019",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_020",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_021",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_022",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_023",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_024",
+            "method": "rms_short_clip_capped_12db"
+          },
+          {
+            "segment_id": "segment_025",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_026",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_027",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_028",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_029",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_030",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_031",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_032",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_033",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_034",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_035",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_036",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_037",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_038",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_039",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_040",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_041",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_042",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_043",
+            "method": "rms_short_clip_capped_12db"
+          }
+        ],
+        "assembled_loudness": {
+          "integrated_lufs": -22.9,
+          "true_peak_dbfs": -2.9
+        }
+      },
+      "Fish S2": {
+        "clips": 43,
+        "audio_seconds": 196.768,
+        "generation_seconds": 516.264,
+        "weighted_rtf": 2.6237193039518623,
+        "mlx_peak_gib": 13.579,
+        "rss_max_gib": 5.64556884765625,
+        "pressure_free_min": 46,
+        "pressure_free_max": 85,
+        "swap_peak_delta_gib": 0.0,
+        "asr": {
+          "edits_total": 48,
+          "refs_total": 1031,
+          "weighted_cer": 0.04655674102812803,
+          "per_clip": [
+            {
+              "name": "segment_001",
+              "ref_chars": 1,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_002",
+              "ref_chars": 53,
+              "edits": 2,
+              "cer": 0.03773584905660377,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_003",
+              "ref_chars": 63,
+              "edits": 2,
+              "cer": 0.031746031746031744,
+              "length_ratio": 1.0,
+              "review_flags": [
+                "tail_mismatch"
+              ]
+            },
+            {
+              "name": "segment_004",
+              "ref_chars": 4,
+              "edits": 1,
+              "cer": 0.25,
+              "length_ratio": 1.0,
+              "review_flags": [
+                "cer"
+              ]
+            },
+            {
+              "name": "segment_005",
+              "ref_chars": 31,
+              "edits": 1,
+              "cer": 0.03225806451612903,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_006",
+              "ref_chars": 10,
+              "edits": 1,
+              "cer": 0.1,
+              "length_ratio": 1.0,
+              "review_flags": [
+                "tail_mismatch"
+              ]
+            },
+            {
+              "name": "segment_007",
+              "ref_chars": 16,
+              "edits": 2,
+              "cer": 0.125,
+              "length_ratio": 1.0,
+              "review_flags": [
+                "tail_mismatch"
+              ]
+            },
+            {
+              "name": "segment_008",
+              "ref_chars": 54,
+              "edits": 2,
+              "cer": 0.037037037037037035,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_009",
+              "ref_chars": 48,
+              "edits": 2,
+              "cer": 0.041666666666666664,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_010",
+              "ref_chars": 2,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_011",
+              "ref_chars": 24,
+              "edits": 1,
+              "cer": 0.041666666666666664,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_012",
+              "ref_chars": 5,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_013",
+              "ref_chars": 2,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_014",
+              "ref_chars": 23,
+              "edits": 2,
+              "cer": 0.08695652173913043,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_015",
+              "ref_chars": 17,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_016",
+              "ref_chars": 10,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_017",
+              "ref_chars": 19,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_018",
+              "ref_chars": 92,
+              "edits": 2,
+              "cer": 0.021739130434782608,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_019",
+              "ref_chars": 4,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_020",
+              "ref_chars": 30,
+              "edits": 1,
+              "cer": 0.03333333333333333,
+              "length_ratio": 1.0,
+              "review_flags": [
+                "tail_mismatch"
+              ]
+            },
+            {
+              "name": "segment_021",
+              "ref_chars": 14,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_022",
+              "ref_chars": 50,
+              "edits": 3,
+              "cer": 0.06,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_023",
+              "ref_chars": 3,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_024",
+              "ref_chars": 1,
+              "edits": 1,
+              "cer": 1.0,
+              "length_ratio": 1.0,
+              "review_flags": [
+                "cer"
+              ]
+            },
+            {
+              "name": "segment_025",
+              "ref_chars": 28,
+              "edits": 3,
+              "cer": 0.10714285714285714,
+              "length_ratio": 1.0,
+              "review_flags": [
+                "tail_mismatch"
+              ]
+            },
+            {
+              "name": "segment_026",
+              "ref_chars": 70,
+              "edits": 5,
+              "cer": 0.07142857142857142,
+              "length_ratio": 1.042857142857143,
+              "review_flags": []
+            },
+            {
+              "name": "segment_027",
+              "ref_chars": 21,
+              "edits": 3,
+              "cer": 0.14285714285714285,
+              "length_ratio": 1.0,
+              "review_flags": [
+                "tail_mismatch"
+              ]
+            },
+            {
+              "name": "segment_028",
+              "ref_chars": 12,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_029",
+              "ref_chars": 15,
+              "edits": 1,
+              "cer": 0.06666666666666667,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_030",
+              "ref_chars": 20,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_031",
+              "ref_chars": 64,
+              "edits": 6,
+              "cer": 0.09375,
+              "length_ratio": 1.0,
+              "review_flags": [
+                "tail_mismatch"
+              ]
+            },
+            {
+              "name": "segment_032",
+              "ref_chars": 3,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_033",
+              "ref_chars": 20,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_034",
+              "ref_chars": 18,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_035",
+              "ref_chars": 31,
+              "edits": 1,
+              "cer": 0.03225806451612903,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_036",
+              "ref_chars": 59,
+              "edits": 3,
+              "cer": 0.05084745762711865,
+              "length_ratio": 1.0,
+              "review_flags": [
+                "tail_mismatch"
+              ]
+            },
+            {
+              "name": "segment_037",
+              "ref_chars": 24,
+              "edits": 1,
+              "cer": 0.041666666666666664,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_038",
+              "ref_chars": 16,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_039",
+              "ref_chars": 6,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_040",
+              "ref_chars": 19,
+              "edits": 1,
+              "cer": 0.05263157894736842,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_041",
+              "ref_chars": 13,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            },
+            {
+              "name": "segment_042",
+              "ref_chars": 15,
+              "edits": 1,
+              "cer": 0.06666666666666667,
+              "length_ratio": 1.0,
+              "review_flags": [
+                "tail_mismatch"
+              ]
+            },
+            {
+              "name": "segment_043",
+              "ref_chars": 1,
+              "edits": 0,
+              "cer": 0.0,
+              "length_ratio": 1.0,
+              "review_flags": []
+            }
+          ]
+        },
+        "source_hashes": {
+          "/Users/jacky/Library/Mobile Documents/com~apple~CloudDocs/AI 项目/内容工厂管理/results/tts_novel_longform_fish_20260904_1026/manifest.json": "cfbf2ebf08caf457228520eec8bca6abdc21c73aa411fd565d2a22321b01b41a",
+          "/Users/jacky/Library/Mobile Documents/com~apple~CloudDocs/AI 项目/内容工厂管理/results/tts_novel_longform_fish_20260904_1026/events.jsonl": "f137ed0ffaedcacff7b1f3325535c261e162aa98de4c95ca2f70509ebe5f07a7",
+          "/Users/jacky/Library/Mobile Documents/com~apple~CloudDocs/AI 项目/内容工厂管理/results/tts_novel_longform_fish_20260904_1026/resources.jsonl": "2a0bc32d9b681d5e7b01ba60c7c0536c5a113cc83ccd39b1c76b0deb0a41722f",
+          "/Users/jacky/Library/Mobile Documents/com~apple~CloudDocs/AI 项目/内容工厂管理/results/tts_novel_longform_fish_20260904_1026/status.json": "c023950b84dfd4f12940ca6deec73461a63d7adb91c1d317facb03d2c5c96fca",
+          "/Users/jacky/Library/Mobile Documents/com~apple~CloudDocs/AI 项目/内容工厂管理/results/tts_novel_longform_fish_20260904_1026/worker-result.json": "19f1b6eedf7ccdfe3253d4623254b4383e6bab4ab7983c94b04676f342eb379c",
+          "/Users/jacky/Library/Mobile Documents/com~apple~CloudDocs/AI 项目/内容工厂管理/results/tts_novel_longform_fish_20260904_1026/asr.json": "6a8f374529586c4ab720b0b57b3cbc1912989f27d24166960fe90bf3fe763a87",
+          "/Users/jacky/Library/Mobile Documents/com~apple~CloudDocs/AI 项目/内容工厂管理/results/tts_novel_longform_fish_20260904_1026/asr-status.json": "44725c4829100d05f542d84fae84a9eae7926d52445df0c10e970df63e6a29e0"
+        },
+        "assembled_path": "/Users/jacky/Documents/Codex/2026-09-03/referenced-chatgpt-conversation-this-is-an/outputs/f5-tts-local/results/tts_novel_longform_20260904/audio/fish-chapter.wav",
+        "assembled_sha256": "1bd91d4322a758759fdf59b1c35265436726e8afa801648c0c47bf44b2a7eba0",
+        "assembled_seconds": 205.42641666666665,
+        "expected_assembled_seconds": 205.42641666666665,
+        "duration_delta_seconds": 0.0,
+        "segment_rms_dbfs_min": -24.826440685209114,
+        "segment_rms_dbfs_max": -20.617100366028854,
+        "short_clip_rms_fallback_count": 3,
+        "normalization_methods": [
+          {
+            "segment_id": "segment_001",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_002",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_003",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_004",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_005",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_006",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_007",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_008",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_009",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_010",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_011",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_012",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_013",
+            "method": "rms_short_clip_capped_12db"
+          },
+          {
+            "segment_id": "segment_014",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_015",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_016",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_017",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_018",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_019",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_020",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_021",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_022",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_023",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_024",
+            "method": "rms_short_clip_capped_12db"
+          },
+          {
+            "segment_id": "segment_025",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_026",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_027",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_028",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_029",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_030",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_031",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_032",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_033",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_034",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_035",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_036",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_037",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_038",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_039",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_040",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_041",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_042",
+            "method": "ebu_r128"
+          },
+          {
+            "segment_id": "segment_043",
+            "method": "rms_short_clip_capped_12db"
+          }
+        ],
+        "assembled_loudness": {
+          "integrated_lufs": -22.9,
+          "true_peak_dbfs": -2.3
+        }
+      }
+    },
+    "human_review": {
+      "recorded_at": "2026-09-04T10:52:00+08:00",
+      "verbatim": "旁白稳定性、角色串音、情绪、停顿和整体自然度都还不错。f5 的情绪更明显，f5 的旁白语速快了。fish s2 男主的声音偏小。",
+      "overall": {
+        "narrator_stability": "pass_positive",
+        "role_bleeding": "pass_positive",
+        "emotion": "pass_positive",
+        "pauses": "pass_positive",
+        "overall_naturalness": "pass_positive"
+      },
+      "model_findings": {
+        "F5-TTS": [
+          "情绪更明显",
+          "旁白语速偏快"
+        ],
+        "Fish S2": [
+          "男主声音相对偏小"
+        ]
+      },
+      "scope": "针对本轮两条完整第四章成片的人工试听；不补造数值分数。"
+    },
+    "automatic_claim": "自动门槛只覆盖完整性、文字、拼接、响度、速度和资源；角色与情绪连续性由人工试听。",
+    "failed_attempt": {
+      "run": "tts_novel_longform_f5_20260904_1020",
+      "reason": "private manifest missing deployment field; failed before model load and generation"
+    },
+    "source_hashes": {
+      "/Users/jacky/Library/Mobile Documents/com~apple~CloudDocs/AI 项目/内容工厂管理/results/tts_novel_longform_20260904/user-feedback.json": "b36df6b0031a96f0c5bacc76d13f8d73285ef3beb82adb9d939acbe6435ff7c0"
+    }
+  }
+}

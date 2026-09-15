@@ -1,0 +1,30 @@
+schema_version: 1
+id: fish_s2_pro_mlx_20260903
+scope: synthetic_short_chinese_tts_cloning_emotion_and_multicast
+host: apple_m5_32gb
+status: runnable
+gate_note: user_audition_positive_full_project_acceptance_incomplete
+model: appautomaton/fishaudio-s2-pro-8bit-mlx
+revision: 304a5f36d0489163ac077f22eb9425a763112f8f
+runtime: {python: 3.13.15, mlx_speech: 0.5.2, mlx: 0.32.2, mlx_metal: 0.32.2}
+parameters: {max_new_tokens: 512, default_seed: 42, reference_seeds: [123, 321], mlx_memory_limit_gib: 12, mlx_cache_limit_mib: 256}
+cases:
+  - {id: basic_zh, count: 1, purpose: no_reference_chinese_narration}
+  - {id: synthetic_references, count: 2, purpose: generated_voice_a_and_b}
+  - {id: clone_emotions, count: 3, purpose: same_reference_same_text_neutral_excited_sad}
+  - {id: speaker_tags_experimental, count: 1, purpose: single_generation_speaker_tokens_not_identity_certification}
+  - {id: multicast_scene, count: 6, purpose: fixed_reference_per_role_sequential_generation, gap_seconds: 0.25}
+extra_cli_checks: [scene_json_two_lines, reference_audio_path]
+backcheck: {model: qwen3_asr_1.7b_int8, language: Chinese, expected_clips: 13, ignore_punctuation: true, homophones_not_silently_corrected: true}
+resource_conditions:
+  preexisting_llama_server_rss_gib_approx: 16.3
+  swap_baseline_gib: 0
+  sampling: mlx_allocator_peak_plus_process_rss_100ms_plus_system_pressure_and_swap_at_clip_boundaries
+  dedicated_idle_host_baseline: not_tested
+  interference_factor: not_computed
+not_tested: [long_novel_consistency, multiple_seed_failure_rate, queue_concurrency, speaker_similarity_score, human_voice_clone_similarity, streaming_first_audio_latency]
+commands:
+  - './scripts/fish-s2-local.sh --suite --log logs/new-validation.jsonl'
+  - '在外部部署目录执行 ./verify-audio.sh --metrics logs/new-validation.jsonl --output logs/new-asr.json'
+asset_policy: audio_and_reference_assets_remain_in_external_deployment_directory
+report: docs/reports/fish_s2_pro_mlx_20260903/report.html

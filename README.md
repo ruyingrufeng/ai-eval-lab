@@ -138,3 +138,8 @@ MIT License — 随便用，保留版权声明就行。
 ---
 
 如果这个项目对你有帮助，欢迎 Star ⭐，也欢迎提交你自己机器上的测试结果。
+
+## 生态关联
+
+- [**百灵 Bailing**](https://github.com/ruyingrufeng/bailing) — 数字个体与跨运行环境连续性的开放实验，评测方法论的本源项目
+- [**dsh-minimax-tts**](https://github.com/ruyingrufeng/dsh-minimax-tts) — DSH 双引擎 TTS 插件，语音链路评测的实践对象之一
